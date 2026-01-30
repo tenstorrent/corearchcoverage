@@ -1,0 +1,6 @@
+[submodule "magic_enum"]
+	path = magic_enum
+	url = https://github.com/Neargye/magic_enum
+[submodule "whisper"]
+	path = whisper
+	url = https://github.com/tenstorrent/whisper
