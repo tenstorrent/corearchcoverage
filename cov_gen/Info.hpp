@@ -1,10 +1,6 @@
 #pragma once
 
-#include <string>
-#include <iostream>
-#include <fstream>
-#include <set>
-#include <vector>
+#include "common_types.h"
 #include "magic_enum/magic_enum.hpp"
 #include "InstEntry.hpp"
 #include "trapEnums.hpp"

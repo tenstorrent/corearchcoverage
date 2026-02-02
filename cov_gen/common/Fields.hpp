@@ -1,7 +1,6 @@
 #pragma once
 
-#include <string>
-#include <vector>
+#include "common_types.h"
 #include "Enum.hpp"
 
 namespace ArchCov {
@@ -10,7 +9,7 @@ namespace ArchCov {
       struct Field
       {
         std::string name;
-        uint32_t width;
+        uint64_t width;
         Enum descriptors;
       };
 
@@ -25,6 +24,6 @@ namespace ArchCov {
 
   class Csr : public Fields {
     public:
-      uint32_t num;
+      uint64_t num;
   };
 }

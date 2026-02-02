@@ -15,9 +15,6 @@ using namespace ArchCov;
 using namespace VectorCategories;
 using namespace CsrCategories;
 
-typedef std::pair<std::string, uint64_t> pair_t;
-typedef std::vector<pair_t> vec_t;
-typedef std::map<std::string, vec_t> map_t;
 
 #define MAX_FIELD_WIDTH 5
 
