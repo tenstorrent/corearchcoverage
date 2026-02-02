@@ -10,7 +10,8 @@
 #include "Points.hpp"
 #include "InstEntry.hpp"
 #include "FpRegs.hpp"
-#include "magic_enum.hpp"
+#include "magic_enum/magic_enum.hpp"
+#include "magic_enum/magic_enum_utility.hpp"
 #include "instforms.hpp"
 
 using namespace ArchCov;
@@ -190,6 +191,15 @@ Info<URV>::addCsrs(csrBins& csrs) const
         Csr pl;
         pl.num = uint32_t(num);
         for (const auto& field : fields) {
+          // special enums for certain CSR fields
+          if (csr->getNumber() == CsrNumber::SATP and field.field == "MODE") {
+            Enum e;
+            magic_enum::enum_for_each<VirtMem::Mode>([&e] (auto val) {
+              constexpr VirtMem::Mode mode = val;
+              e.enu(std::string(magic_enum::enum_name(mode)), unsigned(mode));
+            });
+            pl.field(ArchCov::Csr::Field{field.field, field.width, e});
+          }
           else if (csr->getNumber() == CsrNumber::VTYPE and field.field == "LMUL") {
             Enum e;
             magic_enum::enum_for_each<GroupMultiplier>([&e] (auto val) {
@@ -223,8 +233,10 @@ Info<URV>::addPrivilegeMode(enumBins& enums) const
   Enum bins;
   magic_enum::enum_for_each<PrivilegeMode>([&bins] (auto val) {
     constexpr PrivilegeMode mode = val;
-    bins.enu(std::string(magic_enum::enum_name(mode)), unsigned(mode));
-  );
+    bool disable = false;
+    if (not disable)
+      bins.enu(std::string(magic_enum::enum_name(mode)), unsigned(mode));
+  });
   enums.emplace_back(std::string(magic_enum::enum_name(p)), bins);
 }
 
@@ -303,7 +315,6 @@ Info<URV>::addPageSize(enumBins& enums) const
 {
   Enum bins;
   Pte57 pte(0);
-
   for (uint32_t level = 0; level < pte.levels(); ++level) {
     std::string sizeStr = VirtMem::pageSize(VirtMem::Mode::Sv57, level);
     bins.enu(sizeStr, level);

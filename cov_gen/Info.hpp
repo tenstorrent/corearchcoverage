@@ -5,7 +5,7 @@
 #include <fstream>
 #include <set>
 #include <vector>
-#include "magic_enum.hpp"
+#include "magic_enum/magic_enum.hpp"
 #include "InstEntry.hpp"
 #include "trapEnums.hpp"
 #include "Hart.hpp"
@@ -75,7 +75,7 @@ namespace ArchCov
     void addInsts(attBins& atts, instBins& insts) const;
 
     void addCsrs(csrBins& csr) const;
-
+    
     template <Point p>
     void addPrivilegeMode(enumBins& enums) const;
 
