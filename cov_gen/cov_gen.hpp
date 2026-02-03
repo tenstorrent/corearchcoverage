@@ -55,16 +55,16 @@ class CovGen {
         std::string filename;  //FIXME : Add support to accept filename from user. Currently, hardcoded to cp_pkg.sv
         typename Info<URV>::enumBins    enumsMap;
         typename Info<URV>::attBins     attsMap;
-        typename Info<URV>::csrBins     csrsMap;
-        typename Info<URV>::instBins    instsMap;
-        typename Info<URV>::fieldsBins  fieldsMap;
+        //typename Info<URV>::csrBins     csrsMap;
+        //typename Info<URV>::instBins    instsMap;
+        //typename Info<URV>::fieldsBins  fieldsMap;
         std::map<std::string, unsigned> archInfoPointsMap;
 
         //Vectors to organize strings to be printed into the SV Package.
         std::vector<std::string> enumStrings;
         std::vector<std::string> attributeStrings;
-        std::vector<std::string> instStrings;
-        std::vector<std::string> csrStrings;
+        // std::vector<std::string> instStrings;
+        // std::vector<std::string> csrStrings;
         std::vector<std::string> globalVarStrings;
         std::vector<std::string> archInfoPoints;
 
@@ -80,15 +80,15 @@ class CovGen {
 
         void printAttributes(std::ofstream& CpFile);
 
-        void printInstrs(std::ofstream& CpFile);
+        //void printInstrs(std::ofstream& CpFile);
 
-        void printCsrs(std::ofstream& CpFile);
+        //void printCsrs(std::ofstream& CpFile);
 
         void printFooter(std::ofstream& CpFile);
 
         //void gen_attribute(std::string attrName, Attribute attrVal, std::string& attrAsString);
 
-        //void gen_enum(std::string enumName, Enum enumVal, std::string& enumAsString);
+        //void gen_enum(std::string enumName, enum_val_t enumVal, std::string& enumAsString);
 
         void create_bin(Bin bin, std::string& binAsString);
 
@@ -144,16 +144,16 @@ class CovGen {
         void convertToEnumStrings();
 
         //Converts non-enum data collected from ArchInfo to equivalent SV declaration strings.
-        void convertToAttributeStrings();
+        // void convertToAttributeStrings();
 
         //Generates SV declarations for all the coverpoints available.
         void convertToArchInfoPointStrings();
 
         //Generates SV declarations for all instruction fields.
-        void convertToInstrStrings();
+        // void convertToInstrStrings();
 
         //Generates SV declarations for all instruction fields.
-        void convertToCsrStrings();
+        // void convertToCsrStrings();
 
         //Wrapper function for extracting enums/attributes from ArchInfo.
         void extractArchInfo();

@@ -5,6 +5,7 @@ LDFLAGS =
 
 # Directories
 SRCDIR = .
+COMMON_DIR = ./common
 
 WHISPER_DIR = ../whisper
 WHISPER_BUILD_DIR = $(WHISPER_DIR)/build-$(shell uname -s)
@@ -44,15 +45,16 @@ MAIN_SRC := main.cpp
 MAIN_OBJ := $(BUILD_DIR)/main.o
 
 # Source files in cov_gen directory
-COV_GEN_SRCS := cov_gen.cpp csrs.cpp utils.cpp vector.cpp Info.cpp
+COV_GEN_SRCS := cov_gen.cpp csrs.cpp vector.cpp Info.cpp
 COV_GEN_OBJS := $(COV_GEN_SRCS:%.cpp=$(BUILD_DIR)/%.o)
 
 # Include paths
 INCLUDES = -I$(SRCDIR) \
-		   -I$(WHISPER_DIR) \
-		   -I$(MAGIC_ENUM_DIR) \
-		   -I$(BOOST_INC) \
-		   -I$(THIRD_PARTY_DIR)
+	   -I$(COMMON_DIR) \
+	   -I$(WHISPER_DIR) \
+	   -I$(MAGIC_ENUM_DIR) \
+	   -I$(BOOST_INC) \
+	   -I$(THIRD_PARTY_DIR)
 
 # Library paths and libraries
 LIBDIRS = -L$(BOOST_LIB_DIR) \
@@ -80,7 +82,7 @@ $(BUILD_DIR)/%.o: %.cpp | $(BUILD_DIR)
 
 # Link the executable
 $(TARGET): $(MAIN_OBJ) $(COV_GEN_OBJS) 
-	$(CXX) $(CXXFLAGS) -o $@ $^ $(LIBDIRS) $(LIBS) $(SOFTFLOAT_DIR)/$(SOFTFLOAT_LIB) $(VIRTUAL_MEM_DIR)/$(VIRTUAL_MEM_LIB) $(PCI_DIR)/$(PCI_LIB) 
+	$(CXX) $(CXXFLAGS) -Wl,-rpath=$(BOOST_LIB_DIR) -o $@ $^ $(LIBDIRS) $(LIBS) $(SOFTFLOAT_DIR)/$(SOFTFLOAT_LIB) $(VIRTUAL_MEM_DIR)/$(VIRTUAL_MEM_LIB) $(PCI_DIR)/$(PCI_LIB) 
 
 #==============================================================================
 # Clean

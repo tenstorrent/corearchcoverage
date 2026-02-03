@@ -1,29 +1,29 @@
-#pragma once
+//#pragma once
 
-#include "common_types.h"
-#include "Enum.hpp"
+// #include "types.hpp"
+// #include "Enum.hpp"
 
-namespace ArchCov {
-  class Fields {
-    public:
-      struct Field
-      {
-        std::string name;
-        uint64_t width;
-        Enum descriptors;
-      };
+// namespace ArchCov {
+//   class Fields {
+//     public:
+//       struct Field
+//       {
+//         std::string name;
+//         uint64_t    width;
+//         Enum        descriptors;
+//       };
 
-      void field(struct Field f)
-      { fields.push_back(f); }
+//       void field(struct Field f)
+//       { fields.push_back(f); }
 
-      void clear()
-      { fields.clear(); }
+//       void clear()
+//       { fields.clear(); }
 
-      std::vector<struct Field> fields;
-  };
+//       std::vector<struct Field> fields;
+//   };
 
-  class Csr : public Fields {
-    public:
-      uint64_t num;
-  };
-}
+//   class Csr : public Fields {
+//     public:
+//       uint64_t num;
+//   };
+// }

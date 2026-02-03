@@ -1,17 +1,18 @@
-#pragma once
+// #pragma once
 
-#include <string> 
-#include <map> 
+// #include <string> 
+// #include <map> 
+// #include "types.hpp"
 
-namespace ArchCov {
-  class Enum {
-    public:
-      void enu(std::string s, uint64_t v)
-      { descriptor[s] = v; }
+// namespace ArchCov {
+//   class Enum {
+//     public:
+//       void enu(std::string s, uint64_t v)
+//       { descriptor[s] = v; }
 
-      void clear()
-      { descriptor.clear(); }
+//       void clear()
+//       { descriptor.clear(); }
 
-      std::map<std::string, uint64_t> descriptor;
-  };
-}
+//       map_of_descriptor_t descriptor;
+//   };
+// }

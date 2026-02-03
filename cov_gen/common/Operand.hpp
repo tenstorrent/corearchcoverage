@@ -1,13 +1,20 @@
-#pragma once
+// #pragma once
 
-#include "common_types.h"
+// #include "types.hpp"
+// #include "Attribute.hpp"
+// #include "Enum.hpp"
+// #include "Points.hpp"
+// #include <variant>
+// #include "InstEntry.hpp"
 
-struct Operand {
-    Point pOperand;
-    operand_t operand;
-    WdRiscv::OperandType type;
-    WdRiscv::OperandMode mode;
-
-    Point     pValue;
-    Attribute value;
-};
+// namespace ArchCov {
+//   class Operand {
+//        public:
+//        Point                             pOperand;
+//        Point                             pValue;
+//        std::variant<Attribute, Enum>     operand;
+//        Attribute                         value;
+//        WdRiscv::OperandType              type;
+//        WdRiscv::OperandMode              mode;
+//     };
+// }
