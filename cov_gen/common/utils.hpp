@@ -9,19 +9,19 @@
 #include <unordered_map>
 #include <bitset>
 
-std::string convert_to_lowercase(std::string data) {
+inline std::string convert_to_lowercase(std::string data) {
     std::transform(data.begin(), data.end(), data.begin(),
     [](unsigned char c){ return std::tolower(c); });
     return data;
 }
 
-std::string convert_to_uppercase(std::string data) {
+inline std::string convert_to_uppercase(std::string data) {
     std::transform(data.begin(), data.end(), data.begin(),
     [](unsigned char c){ return std::toupper(c); });
     return data;
 }
 
-std::string convert_set_to_string(std::set<uint64_t> binVals) {
+inline std::string convert_set_to_string(std::set<uint64_t> binVals) {
     std::ostringstream ss;
     std::vector<std::string> vals; 
     for(auto binVal : binVals) {
@@ -33,7 +33,7 @@ std::string convert_set_to_string(std::set<uint64_t> binVals) {
     return ss.str();
 }
 
-std::string convert_vector_to_string(std::vector<std::string> binVals) {
+inline std::string convert_vector_to_string(std::vector<std::string> binVals) {
     std::ostringstream ss;
     std::sort(binVals.begin(),binVals.end());
     if (!binVals.empty()) { 
@@ -43,11 +43,11 @@ std::string convert_vector_to_string(std::vector<std::string> binVals) {
 }
 
 
-void format_cg_name (std::string& input) {
+inline void format_cg_name (std::string& input) {
   std::replace( input.begin(), input.end(), '.', '_'); 
 }
 
-std::string trim(const std::string& str,
+inline std::string trim(const std::string& str,
                  const std::string& whitespace = " \t")
 {
     const auto strBegin = str.find_first_not_of(whitespace);
@@ -85,7 +85,7 @@ std::string trim(const std::string& str,
 //}
 
 template<typename T>
-void sort_vector_pairs(std::vector<std::pair<std::string,T>>& vecData) {
+inline void sort_vector_pairs(std::vector<std::pair<std::string,T>>& vecData) {
     std::sort(vecData.begin(), vecData.end(), [](auto &left, auto &right) {
         return left.first < right.first;
     });

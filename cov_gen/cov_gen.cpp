@@ -7,7 +7,6 @@
 #include "cov_gen.hpp"
 #include "Hart.hpp"
 #include "regex"
-#include "common/utils.hpp"
 #include "vector.hpp"
 #include "csrs.hpp"
 #include "common/types.hpp"
@@ -28,7 +27,7 @@ CovGen<URV>::CovGen(WdRiscv::Hart<URV>& hart,std::string filename)
     this->extractArchInfo();
     this->convertToArchInfoPointStrings();
     this->convertToEnumStrings();
-    //this->convertToAttributeStrings();
+    this->convertToAttributeStrings();
     //this->convertToCsrStrings();
     //this->convertToInstrStrings();
 
@@ -267,38 +266,25 @@ void CovGen<URV>::convertToEnumStrings()  {
     for(auto enums : enumsMap) {
         enumAsString = "";
         //gen_enum(enums.name, enums.enum_values, enumAsString);
-        std::cout<<"DEBUG : ENUM FIRST " << enums.name << " ENUM VALUES : " << enums.enum_values.size() <<std::endl;
-        enumStrings.push_back(enumAsString);
+        std::cout<<"DEBUG : ENUM FIRST " << enums.getName() << " ENUM VALUES : " << enums.toSvEnum() <<std::endl;
+        enumStrings.push_back(enums.toSvEnum());
     }
 }
 
 // Converts entries of the attsMap collected from Whisper to SystemVerilog Strings.
-// template <typename URV>
-// void CovGen<URV>::convertToAttributeStrings() {
-//     std::string attrAsString;
-//     for(auto var: attsMap) {
-//         attrAsString = "";
-//         gen_attribute(std::get<0>(var), std::get<1>(var), attrAsString);
-//         attributeStrings.push_back(attrAsString);
-//     }
-//     for (auto var: fieldsMap) {
-//         Attribute a;
-//         attrAsString = "";
-//         auto string_ = std::get<0>(var);
-//         auto fields_ = std::get<1>(var);
-//         auto resolve = std::get<2>(var);
-//         for (auto f: fields_.fields) {
-//             if (resolve == Info<URV>::RESOLVE::NONE || resolve == Info<URV>::RESOLVE::SEPARATE) {
-//                 a.width = f.width;
-//             } else if (resolve == Info<URV>::RESOLVE::COALESCE) {
-//                 a.width += f.width;
-//             }
-//         }
-//         gen_attribute(string_, a, attrAsString);
-//         attributeStrings.push_back(attrAsString);
-//     }
-//     std::sort(attributeStrings.begin(),attributeStrings.end());
-// }
+template <typename URV>
+void CovGen<URV>::convertToAttributeStrings() {
+    std::string attrAsString = "";
+    for(auto var: attsMap) {
+        attrAsString = var.toSvAttribute();
+        attributeStrings.push_back(attrAsString);
+    }
+    for (auto var: fieldsMap) {
+        attrAsString = var.toSvFields();
+        attributeStrings.push_back(attrAsString);
+    }
+    std::sort(attributeStrings.begin(),attributeStrings.end());
+}
 
 //Converts all the available ArchInfo Coverpoints to SystemVerilog Enums.
 template <typename URV>
@@ -668,7 +654,7 @@ void CovGen<URV>::convertToArchInfoPointStrings() {
 
 template <typename URV>
 void CovGen<URV>::extractArchInfo() {
-    arch_info.points(enumsMap, attsMap);// fieldsMap, instsMap, csrsMap);
+    arch_info.points(enumsMap, attsMap, fieldsMap);// instsMap, csrsMap);
     // sort_vector_pairs<Enum>     (enumsMap);
     // sort_vector_pairs<Attribute>(attsMap);
     // sort_vector_pairs<Inst>     (instsMap);

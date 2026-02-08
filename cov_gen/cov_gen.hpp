@@ -52,12 +52,12 @@ class CovGen {
     private :
         //Handle to the ArchInfo class that collects data from whisper.
         Info<URV> arch_info;
-        std::string filename;  //FIXME : Add support to accept filename from user. Currently, hardcoded to cp_pkg.sv
+        std::string filename;  
         typename Info<URV>::enumBins    enumsMap;
         typename Info<URV>::attBins     attsMap;
+        typename Info<URV>::fieldsBins  fieldsMap;
         //typename Info<URV>::csrBins     csrsMap;
         //typename Info<URV>::instBins    instsMap;
-        //typename Info<URV>::fieldsBins  fieldsMap;
         std::map<std::string, unsigned> archInfoPointsMap;
 
         //Vectors to organize strings to be printed into the SV Package.
@@ -144,7 +144,7 @@ class CovGen {
         void convertToEnumStrings();
 
         //Converts non-enum data collected from ArchInfo to equivalent SV declaration strings.
-        // void convertToAttributeStrings();
+        void convertToAttributeStrings();
 
         //Generates SV declarations for all the coverpoints available.
         void convertToArchInfoPointStrings();

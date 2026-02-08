@@ -27,86 +27,86 @@ Info<URV>::Info(Hart<URV>& hart)
 
 template <typename URV>
 void
-Info<URV>::points(enumBins& enums, attBins& atts) const //fieldsBins& fields, instBins& insts, csrBins& csrs) const
+Info<URV>::points(enumBins& enums, attBins& atts, fieldsBins& fields) const //instBins& insts, csrBins& csrs) const
 {
   enums.clear();
   atts.clear();
+  fields.clear();
   // insts.clear();
   // csrs.clear();
-  // fields.clear();
 
   // addInsts(atts, insts);
   // addCsrs(csrs);
   addPrivilegeMode<Point::PrivilegeMode>(enums);
   addPrivilegeMode<Point::NextPrivilegeMode>(enums);
 
-  // addPtes<Point::FPTENonLeaf>(fields);
-  // addPtes<Point::FPTENonLeaf_GStageLevel1>(fields);
-  // addPtes<Point::FPTENonLeaf_GStageLevel2>(fields);
-  // addPtes<Point::FPTENonLeaf_GStageLevel3>(fields);
-  // addPtes<Point::FPTENonLeaf_GStageLevel4>(fields);
-  // addPtes<Point::FPTENonLeaf_GStageLevel5>(fields);
+  addPtes<Point::FPTENonLeaf>(fields);
+  addPtes<Point::FPTENonLeaf_GStageLevel1>(fields);
+  addPtes<Point::FPTENonLeaf_GStageLevel2>(fields);
+  addPtes<Point::FPTENonLeaf_GStageLevel3>(fields);
+  addPtes<Point::FPTENonLeaf_GStageLevel4>(fields);
+  addPtes<Point::FPTENonLeaf_GStageLevel5>(fields);
 
-  // addPtes<Point::FPTELeaf>(fields);
-  // addPtes<Point::FPTELeaf_GStageLevel1>(fields);
-  // addPtes<Point::FPTELeaf_GStageLevel2>(fields);
-  // addPtes<Point::FPTELeaf_GStageLevel3>(fields);
-  // addPtes<Point::FPTELeaf_GStageLevel4>(fields);
-  // addPtes<Point::FPTELeaf_GStageLevel5>(fields);
+  addPtes<Point::FPTELeaf>(fields);
+  addPtes<Point::FPTELeaf_GStageLevel1>(fields);
+  addPtes<Point::FPTELeaf_GStageLevel2>(fields);
+  addPtes<Point::FPTELeaf_GStageLevel3>(fields);
+  addPtes<Point::FPTELeaf_GStageLevel4>(fields);
+  addPtes<Point::FPTELeaf_GStageLevel5>(fields);
 
-  // addPtes<Point::DPTENonLeaf>(fields);
-  // addPtes<Point::DPTENonLeaf_GStageLevel1>(fields);
-  // addPtes<Point::DPTENonLeaf_GStageLevel2>(fields);
-  // addPtes<Point::DPTENonLeaf_GStageLevel3>(fields);
-  // addPtes<Point::DPTENonLeaf_GStageLevel4>(fields);
-  // addPtes<Point::DPTENonLeaf_GStageLevel5>(fields);
+  addPtes<Point::DPTENonLeaf>(fields);
+  addPtes<Point::DPTENonLeaf_GStageLevel1>(fields);
+  addPtes<Point::DPTENonLeaf_GStageLevel2>(fields);
+  addPtes<Point::DPTENonLeaf_GStageLevel3>(fields);
+  addPtes<Point::DPTENonLeaf_GStageLevel4>(fields);
+  addPtes<Point::DPTENonLeaf_GStageLevel5>(fields);
 
-  // addPtes<Point::DPTELeaf>(fields);
-  // addPtes<Point::DPTELeaf_GStageLevel1>(fields);
-  // addPtes<Point::DPTELeaf_GStageLevel2>(fields);
-  // addPtes<Point::DPTELeaf_GStageLevel3>(fields);
-  // addPtes<Point::DPTELeaf_GStageLevel4>(fields);
-  // addPtes<Point::DPTELeaf_GStageLevel5>(fields);
+  addPtes<Point::DPTELeaf>(fields);
+  addPtes<Point::DPTELeaf_GStageLevel1>(fields);
+  addPtes<Point::DPTELeaf_GStageLevel2>(fields);
+  addPtes<Point::DPTELeaf_GStageLevel3>(fields);
+  addPtes<Point::DPTELeaf_GStageLevel4>(fields);
+  addPtes<Point::DPTELeaf_GStageLevel5>(fields);
 
-  // addPtes<Point::FVPTE>(fields);
-  // addPtes<Point::FVPTE_Level1>(fields);
-  // addPtes<Point::FVPTE_Level2>(fields);
-  // addPtes<Point::FVPTE_Level3>(fields);
-  // addPtes<Point::FVPTE_Level4>(fields);
-  // addPtes<Point::FVPTE_Level5>(fields);
-  // addPtes<Point::DVPTE>(fields);
-  // addPtes<Point::DVPTE_Level1>(fields);
-  // addPtes<Point::DVPTE_Level2>(fields);
-  // addPtes<Point::DVPTE_Level3>(fields);
-  // addPtes<Point::DVPTE_Level4>(fields);
-  // addPtes<Point::DVPTE_Level5>(fields);
+  addPtes<Point::FVPTE>(fields);
+  addPtes<Point::FVPTE_Level1>(fields);
+  addPtes<Point::FVPTE_Level2>(fields);
+  addPtes<Point::FVPTE_Level3>(fields);
+  addPtes<Point::FVPTE_Level4>(fields);
+  addPtes<Point::FVPTE_Level5>(fields);
+  addPtes<Point::DVPTE>(fields);
+  addPtes<Point::DVPTE_Level1>(fields);
+  addPtes<Point::DVPTE_Level2>(fields);
+  addPtes<Point::DVPTE_Level3>(fields);
+  addPtes<Point::DVPTE_Level4>(fields);
+  addPtes<Point::DVPTE_Level5>(fields);
 
-  // addPageSize<Point::FPageSize>(enums);
-  // addPageSize<Point::DPageSize>(enums);
-  // addPageSize<Point::FPageSize_GStageLevel1>(enums);
-  // addPageSize<Point::DPageSize_GStageLevel1>(enums);
-  // addPageSize<Point::FPageSize_GStageLevel2>(enums);
-  // addPageSize<Point::DPageSize_GStageLevel2>(enums);
-  // addPageSize<Point::FPageSize_GStageLevel3>(enums);
-  // addPageSize<Point::DPageSize_GStageLevel3>(enums);
-  // addPageSize<Point::FPageSize_GStageLevel4>(enums);
-  // addPageSize<Point::DPageSize_GStageLevel4>(enums);
-  // addPageSize<Point::FPageSize_GStageLevel5>(enums);
-  // addPageSize<Point::DPageSize_GStageLevel5>(enums);
-  // addPageSize<Point::FVPageSize>(enums);
-  // addPageSize<Point::DVPageSize>(enums);
+  addPageSize<Point::FPageSize>(enums);
+  addPageSize<Point::DPageSize>(enums);
+  addPageSize<Point::FPageSize_GStageLevel1>(enums);
+  addPageSize<Point::DPageSize_GStageLevel1>(enums);
+  addPageSize<Point::FPageSize_GStageLevel2>(enums);
+  addPageSize<Point::DPageSize_GStageLevel2>(enums);
+  addPageSize<Point::FPageSize_GStageLevel3>(enums);
+  addPageSize<Point::DPageSize_GStageLevel3>(enums);
+  addPageSize<Point::FPageSize_GStageLevel4>(enums);
+  addPageSize<Point::DPageSize_GStageLevel4>(enums);
+  addPageSize<Point::FPageSize_GStageLevel5>(enums);
+  addPageSize<Point::DPageSize_GStageLevel5>(enums);
+  addPageSize<Point::FVPageSize>(enums);
+  addPageSize<Point::DVPageSize>(enums);
 
-  // addPageSize<Point::FPageCrossSize>(enums);
-  // addPageSize<Point::DPageCrossSize>(enums);
-  // addPageCross<Point::FPageCross>(atts);
-  // addPageCross<Point::DPageCross>(atts);
+  addPageSize<Point::FPageCrossSize>(enums);
+  addPageSize<Point::DPageCrossSize>(enums);
+  addPageCross<Point::FPageCross>(atts);
+  addPageCross<Point::DPageCross>(atts);
 
-  // addInterrupt(enums);
-  // addException(enums);
-  // addCancelLrCause(enums);
-  // addPmas(fields);
-  // addPmps(fields);
-  // addAtts(atts);
+  addInterrupt(enums);
+  addException(enums);
+  addCancelLrCause(enums);
+  //addPmas(fields);
+  //addPmps(fields);
+  addAtts(atts);
 }
 
 
@@ -235,205 +235,205 @@ Info<URV>::addPrivilegeMode(enumBins& enums) const
   Enum enum_bin(std::string(magic_enum::enum_name(p)));
   magic_enum::enum_for_each<PrivilegeMode>([&enum_bin] (auto val) {
     constexpr PrivilegeMode mode = val;
-    enum_bin.add_enum_value(std::string(magic_enum::enum_name(mode)), uint64_t(mode));
+    enum_bin.addEnumValue(std::string(magic_enum::enum_name(mode)), uint64_t(mode));
   });
   enums.push_back(enum_bin);
 }
 
-// template <typename URV>
-// template <Point p>
-// void
-// Info<URV>::addPtes(fieldsBins& fields) const
-// {
+template <typename URV>
+template <Point p>
+void
+Info<URV>::addPtes(fieldsBins& fields) const
+{
 
-//   Fields f = Fields();
+  Fields f = Fields();
 
-//   if constexpr (isRv64_) {
-//     Pte57 pte(~0ULL);
-//     std::bitset<64> bits;
+  if constexpr (isRv64_) {
+    Pte57 pte(~0ULL);
+    std::bitset<64> bits;
 
-//     bits = pte.valid();
-//     f.field({"v", uint32_t(bits.count()), {}});
-//     bits = pte.read();
-//     f.field({"r", uint32_t(bits.count()), {}});
-//     bits = pte.write();
-//     f.field({"w", uint32_t(bits.count()), {}});
-//     bits = pte.exec();
-//     f.field({"x", uint32_t(bits.count()), {}});
-//     bits = pte.user();
-//     f.field({"u", uint32_t(bits.count()), {}});
-//     bits = pte.global();
-//     f.field({"g", uint32_t(bits.count()), {}});
-//     bits = pte.accessed();
-//     f.field({"a", uint32_t(bits.count()), {}});
-//     bits = pte.dirty();
-//     f.field({"d", uint32_t(bits.count()), {}});
-//     bits = pte.rsw();
-//     f.field({"rsw", uint32_t(bits.count()), {}});
-//     bits = pte.ppn();
-//     f.field({"ppn", uint32_t(bits.count()), {}});
-//     bits = pte.reserved(false);
-//     f.field({"res", uint32_t(bits.count()), {}});
-//     bits = pte.pbmt();
-//     f.field({"pbmt", uint32_t(bits.count()), {}});
-//     bits = pte.hasNapot();
-//     f.field({"napot", uint32_t(bits.count()), {}});
-//   }
-//   else {
-//     Pte32 pte(~0U);
-//     std::bitset<32> bits;
+    bits = pte.valid();
+    f.addField(Field("v", Attribute(uint64_t(bits.count()))));
+    bits = pte.read();
+    f.addField(Field("r", Attribute(uint64_t(bits.count()))));
+    bits = pte.write();
+    f.addField(Field("w", Attribute(uint64_t(bits.count()))));
+    bits = pte.exec();
+    f.addField(Field("x", Attribute(uint64_t(bits.count()))));
+    bits = pte.user();
+    f.addField(Field("u", Attribute(uint64_t(bits.count()))));
+    bits = pte.global();
+    f.addField(Field("g", Attribute(uint64_t(bits.count()))));
+    bits = pte.accessed();
+    f.addField(Field("a", Attribute(uint64_t(bits.count()))));
+    bits = pte.dirty();
+    f.addField(Field("d", Attribute(uint64_t(bits.count()))));
+    bits = pte.rsw();
+    f.addField(Field("rsw", Attribute(uint64_t(bits.count()))));
+    bits = pte.ppn();
+    f.addField(Field("ppn", Attribute(uint64_t(bits.count()))));
+    bits = pte.reserved(false);
+    f.addField(Field("res", Attribute(uint64_t(bits.count()))));
+    bits = pte.pbmt();
+    f.addField(Field("pbmt", Attribute(uint64_t(bits.count()))));
+    bits = pte.hasNapot();
+    f.addField(Field("napot", Attribute(uint64_t(bits.count()))));
+  }
+  else {
+    Pte32 pte(~0U);
+    std::bitset<32> bits;
 
-//     bits = pte.valid();
-//     f.field({"v", uint32_t(bits.count()), {}});
-//     bits = pte.read();
-//     f.field({"r", uint32_t(bits.count()), {}});
-//     bits = pte.write();
-//     f.field({"w", uint32_t(bits.count()), {}});
-//     bits = pte.exec();
-//     f.field({"x", uint32_t(bits.count()), {}});
-//     bits = pte.user();
-//     f.field({"u", uint32_t(bits.count()), {}});
-//     bits = pte.global();
-//     f.field({"g", uint32_t(bits.count()), {}});
-//     bits = pte.accessed();
-//     f.field({"a", uint32_t(bits.count()), {}});
-//     bits = pte.dirty();
-//     f.field({"d", uint32_t(bits.count()), {}});
-//     bits = pte.rsw();
-//     f.field({"rsw", uint32_t(bits.count()), {}});
-//     bits = pte.ppn();
-//     f.field({"ppn", uint32_t(bits.count()), {}});
-//     bits = pte.res();
-//   }
-//   fields.emplace_back(std::string(magic_enum::enum_name(p)), f, RESOLVE::COALESCE);
-// }
+    bits = pte.valid();
+    f.addField(Field("v", Attribute(uint64_t(bits.count()))));
+    bits = pte.read();
+    f.addField(Field("r", Attribute(uint64_t(bits.count()))));
+    bits = pte.write();
+    f.addField(Field("w", Attribute(uint64_t(bits.count()))));
+    bits = pte.exec();
+    f.addField(Field("x", Attribute(uint64_t(bits.count()))));
+    bits = pte.user();
+    f.addField(Field("u", Attribute(uint64_t(bits.count()))));
+    bits = pte.global();
+    f.addField(Field("g", Attribute(uint64_t(bits.count()))));
+    bits = pte.accessed();
+    f.addField(Field("a", Attribute(uint64_t(bits.count()))));
+    bits = pte.dirty();
+    f.addField(Field("d", Attribute(uint64_t(bits.count()))));
+    bits = pte.rsw();
+    f.addField(Field("rsw", Attribute(uint64_t(bits.count()))));
+    bits = pte.ppn();
+    f.addField(Field("ppn", Attribute(uint64_t(bits.count()))));
+    bits = pte.res();
+    f.addField(Field("res", Attribute(uint64_t(bits.count()))));
+  }
+  f.setName(std::string(magic_enum::enum_name(p)));
+  fields.push_back(f);
+}
 
-// template <typename URV>
-// template <Point p>
-// void
-// Info<URV>::addPageSize(enumBins& enums) const
-// {
-//   Enum bins;
-//   Pte57 pte(0);
-//   for (uint32_t level = 0; level < pte.levels(); ++level) {
-//     std::string sizeStr = VirtMem::pageSize(VirtMem::Mode::Sv57, level);
-//     bins.enu(sizeStr, level);
-//   }
-//   enums.emplace_back(std::string(magic_enum::enum_name(p)), bins);
-// }
+template <typename URV>
+template <Point p>
+void
+Info<URV>::addPageSize(enumBins& enums) const
+{
+  Enum enum_bin(std::string(magic_enum::enum_name(p)));
+  Pte57 pte(0);
 
-// template <typename URV>
-// void
-// Info<URV>::addCancelLrCause(enumBins& enums) const
-// {
-//   Enum bins;
-//   magic_enum::enum_for_each<CancelLrCause>([&bins] (auto val) {
-//     constexpr CancelLrCause cause = val;
-//     bins.enu(std::string(magic_enum::enum_name(cause)), unsigned(cause));
-//   });
-//   enums.emplace_back(std::string(magic_enum::enum_name(Point::CancelLrCause)), bins);
-// }
+  for (uint64_t level = 0; level < pte.levels(); ++level) {
+    std::string sizeStr = VirtMem::pageSize(VirtMem::Mode::Sv57, level);
+    enum_bin.addEnumValue(sizeStr, level);
+  }
+  enums.push_back(enum_bin);
+}
 
-// template <typename URV>
-// template <Point p>
-// void
-// Info<URV>::addPageCross(attBins& atts) const
-// {
-//   Attribute att(1);
-//   atts.emplace_back(std::string(magic_enum::enum_name(p)), att, RESOLVE::NONE);
-//}
 
-// template <typename URV>
-// void
-// Info<URV>::addInterrupt(enumBins& enums) const
-// {
-//   Enum bins;
-//   magic_enum::enum_for_each<InterruptCause>([&bins] (auto val) {
-//     constexpr InterruptCause cause = val;
-//     bool disable = false;
-//     // if (std::string(magic_enum::enum_name(cause)).find("RESERVED") != std::string::npos)
-//     //   disable = true;
-//     if (not disable)
-//       bins.enu(std::string(magic_enum::enum_name(cause)), unsigned(cause));
-//     if (cause == InterruptCause::MAX_CAUSE)
-//       disable = true;
-//   });
-//   enums.emplace_back(std::string(magic_enum::enum_name(Point::Interrupt)), bins);
-//}
+template <typename URV>
+void
+Info<URV>::addCancelLrCause(enumBins& enums) const
+{
+  Enum enum_bin(std::string(magic_enum::enum_name(Point::CancelLrCause)));
+  magic_enum::enum_for_each<CancelLrCause>([&enum_bin] (auto val) {
+    constexpr CancelLrCause cause = val;
+    enum_bin.addEnumValue(std::string(magic_enum::enum_name(cause)), unsigned(cause));
+  });
+  enums.push_back(enum_bin);
+}
 
-// template <typename URV>
-// void
-// Info<URV>::addException(enumBins& enums) const
-// {
-//   Enum bins;
-//   magic_enum::enum_for_each<ExceptionCause>([&bins] (auto val) {
-//     constexpr ExceptionCause cause = val;
-//     bool disable = false;
-//     // if (std::string(magic_enum::enum_name(cause)).find("RESERVED") != std::string::npos)
-//     //   disable = true;
-//     if (cause == ExceptionCause::MAX_CAUSE or cause == ExceptionCause::NONE)
-//       disable = true;
+template <typename URV>
+template <Point p>
+void
+Info<URV>::addPageCross(attBins& atts) const
+{
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(p)), 1));
+}
 
-//     if (not disable)
-//       bins.enu(std::string(magic_enum::enum_name(cause)), unsigned(cause));
-//   });
-//   enums.emplace_back(std::string(magic_enum::enum_name(Point::Exception)), bins);
-// }
+template <typename URV>
+void
+Info<URV>::addInterrupt(enumBins& enums) const
+{
+  Enum enum_bin(std::string(magic_enum::enum_name(Point::Interrupt)));
+  magic_enum::enum_for_each<InterruptCause>([&enum_bin] (auto val) {
+    constexpr InterruptCause cause = val;
+    bool disable = false;
+    if (std::string(magic_enum::enum_name(cause)).find("RESERVED") != std::string::npos)
+      disable = true;
+    if (not disable)
+      enum_bin.addEnumValue(std::string(magic_enum::enum_name(cause)), unsigned(cause));
+  });
+  enums.push_back(enum_bin);
+}
 
-// template <typename URV>
-// void
-// Info<URV>::addAtts(attBins& atts) const
-// {
-//   atts.emplace_back(std::string(magic_enum::enum_name(Point::HartIndex)),      Attribute(64), RESOLVE::SEPARATE);
+template <typename URV>
+void
+Info<URV>::addException(enumBins& enums) const
+{
+  Enum enum_bin(std::string(magic_enum::enum_name(Point::Exception)));
+  magic_enum::enum_for_each<ExceptionCause>([&enum_bin] (auto val) {
+    constexpr ExceptionCause cause = val;
+    bool disable = false;
+    if (std::string(magic_enum::enum_name(cause)).find("RESERVED") != std::string::npos)
+      disable = true;
+    if (cause == ExceptionCause::MAX_CAUSE or cause == ExceptionCause::NONE)
+      disable = true;
+    if (not disable)
+      enum_bin.addEnumValue(std::string(magic_enum::enum_name(cause)), unsigned(cause));
+  });
+  enums.push_back(enum_bin);
+}
 
-//   atts.emplace_back(std::string(magic_enum::enum_name(Point::VirtLdStAddr)),   Attribute(64), RESOLVE::SEPARATE);
-//   atts.emplace_back(std::string(magic_enum::enum_name(Point::PhysLdStAddr)),   Attribute(64), RESOLVE::SEPARATE);
-//   atts.emplace_back(std::string(magic_enum::enum_name(Point::LastStoreValue)), Attribute(64), RESOLVE::SEPARATE);
+template <typename URV>
+void
+Info<URV>::addAtts(attBins& atts) const
+{
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::HartIndex)), 64));
 
-//   atts.emplace_back(std::string(magic_enum::enum_name(Point::VirtPc)),         Attribute(64), RESOLVE::NONE);
-//   atts.emplace_back(std::string(magic_enum::enum_name(Point::PhysPc)),         Attribute(64), RESOLVE::NONE);
-//   atts.emplace_back(std::string(magic_enum::enum_name(Point::NextVirtPc)),     Attribute(64), RESOLVE::NONE);
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::VirtLdStAddr)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::PhysLdStAddr)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::LastStoreValue)), 64));
 
-//   atts.emplace_back(std::string(magic_enum::enum_name(Point::LdStMisal)),       Attribute(1),  RESOLVE::NONE);
-//   atts.emplace_back(std::string(magic_enum::enum_name(Point::VirtualMode)),     Attribute(1),  RESOLVE::NONE);
-//   atts.emplace_back(std::string(magic_enum::enum_name(Point::NextVirtualMode)), Attribute(1),  RESOLVE::NONE);
-//   atts.emplace_back(std::string(magic_enum::enum_name(Point::DebugMode)),       Attribute(1),  RESOLVE::NONE);
-//   atts.emplace_back(std::string(magic_enum::enum_name(Point::NextDebugMode)),   Attribute(1),  RESOLVE::NONE);
-//   atts.emplace_back(std::string(magic_enum::enum_name(Point::ValidLR)),         Attribute(1),  RESOLVE::NONE);
-//   atts.emplace_back(std::string(magic_enum::enum_name(Point::NumVectorPagesAccessed)), Attribute(64), RESOLVE::NONE);
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::VirtPc)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::PhysPc)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::NextVirtPc)), 64));
 
-//   atts.emplace_back(std::string(magic_enum::enum_name(Point::DPmaMultihit)), Attribute(1), RESOLVE::NONE);
-//   atts.emplace_back(std::string(magic_enum::enum_name(Point::FPmaMultihit)), Attribute(1), RESOLVE::NONE);
-//   atts.emplace_back(std::string(magic_enum::enum_name(Point::DPmpMultihit)), Attribute(1), RESOLVE::NONE);
-//   atts.emplace_back(std::string(magic_enum::enum_name(Point::FPmpMultihit)), Attribute(1), RESOLVE::NONE);
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::LdStMisal)), 1));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::VirtualMode)), 1));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::NextVirtualMode)), 1));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::DebugMode)), 1));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::NextDebugMode)), 1));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::ValidLR)), 1));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::NumVectorPagesAccessed)), 64));
 
-//   atts.emplace_back(std::string(magic_enum::enum_name(Point::DPmpIndex)), Attribute(64), RESOLVE::NONE);
-//   atts.emplace_back(std::string(magic_enum::enum_name(Point::FPmpIndex)), Attribute(64), RESOLVE::NONE);
-//   atts.emplace_back(std::string(magic_enum::enum_name(Point::FPmpCrossingIndex)), Attribute(64), RESOLVE::NONE);
-//   atts.emplace_back(std::string(magic_enum::enum_name(Point::DPmpCrossingIndex)), Attribute(64), RESOLVE::NONE);
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::DPmaMultihit)), 1));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::FPmaMultihit)), 1));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::DPmpMultihit)), 1));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::FPmpMultihit)), 1));
 
-//   atts.emplace_back(std::string(magic_enum::enum_name(Point::DGPA)),               Attribute(64), RESOLVE::NONE);
-//   atts.emplace_back(std::string(magic_enum::enum_name(Point::DGPA_GStageLevel1)),  Attribute(64), RESOLVE::NONE);
-//   atts.emplace_back(std::string(magic_enum::enum_name(Point::DGPA_GStageLevel2)),  Attribute(64), RESOLVE::NONE);
-//   atts.emplace_back(std::string(magic_enum::enum_name(Point::DGPA_GStageLevel3)),  Attribute(64), RESOLVE::NONE);
-//   atts.emplace_back(std::string(magic_enum::enum_name(Point::DGPA_GStageLevel4)),  Attribute(64), RESOLVE::NONE);
-//   atts.emplace_back(std::string(magic_enum::enum_name(Point::DGPA_GStageLevel5)),  Attribute(64), RESOLVE::NONE);
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::DPmpIndex)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::FPmpIndex)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::FPmpCrossingIndex)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::DPmpCrossingIndex)), 64));
 
-//   atts.emplace_back(std::string(magic_enum::enum_name(Point::FGPA)),               Attribute(64), RESOLVE::NONE);
-//   atts.emplace_back(std::string(magic_enum::enum_name(Point::FGPA_GStageLevel1)),  Attribute(64), RESOLVE::NONE);
-//   atts.emplace_back(std::string(magic_enum::enum_name(Point::FGPA_GStageLevel2)),  Attribute(64), RESOLVE::NONE);
-//   atts.emplace_back(std::string(magic_enum::enum_name(Point::FGPA_GStageLevel3)),  Attribute(64), RESOLVE::NONE);
-//   atts.emplace_back(std::string(magic_enum::enum_name(Point::FGPA_GStageLevel4)),  Attribute(64), RESOLVE::NONE);
-//   atts.emplace_back(std::string(magic_enum::enum_name(Point::FGPA_GStageLevel5)),  Attribute(64), RESOLVE::NONE);
-//   atts.emplace_back(std::string(magic_enum::enum_name(Point::Trigger)),            Attribute(64), RESOLVE::NONE);
-//   atts.emplace_back(std::string(magic_enum::enum_name(Point::TriggerHitVec)),      Attribute(64), RESOLVE::NONE);
-//   atts.emplace_back(std::string(magic_enum::enum_name(Point::FPmaFault)),          Attribute(64), RESOLVE::NONE);
-//   atts.emplace_back(std::string(magic_enum::enum_name(Point::DPmaFault)),          Attribute(64), RESOLVE::NONE);
-//   atts.emplace_back(std::string(magic_enum::enum_name(Point::FPtwFaultIsLeaf)),    Attribute(1),  RESOLVE::NONE);
-//   atts.emplace_back(std::string(magic_enum::enum_name(Point::DPtwFaultIsLeaf)),    Attribute(1),  RESOLVE::NONE);
-//   atts.emplace_back(std::string(magic_enum::enum_name(Point::FPtwFaultLevel)),     Attribute(64), RESOLVE::NONE);
-//   atts.emplace_back(std::string(magic_enum::enum_name(Point::DPtwFaultLevel)),     Attribute(64), RESOLVE::NONE);
-// }
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::DGPA)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::DGPA_GStageLevel1)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::DGPA_GStageLevel2)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::DGPA_GStageLevel3)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::DGPA_GStageLevel4)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::DGPA_GStageLevel5)), 64));
+
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::FGPA)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::FGPA_GStageLevel1)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::FGPA_GStageLevel2)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::FGPA_GStageLevel3)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::FGPA_GStageLevel4)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::FGPA_GStageLevel5)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::Trigger)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::TriggerHitVec)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::FPmaFault)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::DPmaFault)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::FPtwFaultIsLeaf)), 1));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::DPtwFaultIsLeaf)), 1));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::FPtwFaultLevel)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::DPtwFaultLevel)), 64));
+}
 
 // template <typename URV>
 // void
