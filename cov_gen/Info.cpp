@@ -278,6 +278,7 @@ Info<URV>::addPtes(fieldsBins& fields) const
     f.addField(Field("pbmt", Attribute(uint64_t(bits.count()))));
     bits = pte.hasNapot();
     f.addField(Field("napot", Attribute(uint64_t(bits.count()))));
+    f.setTotalWidth(57);
   }
   else {
     Pte32 pte(~0U);
@@ -305,6 +306,7 @@ Info<URV>::addPtes(fieldsBins& fields) const
     f.addField(Field("ppn", Attribute(uint64_t(bits.count()))));
     bits = pte.res();
     f.addField(Field("res", Attribute(uint64_t(bits.count()))));
+    f.setTotalWidth(32);
   }
   f.setName(std::string(magic_enum::enum_name(p)));
   fields.push_back(f);

@@ -280,8 +280,11 @@ void CovGen<URV>::convertToAttributeStrings() {
         attributeStrings.push_back(attrAsString);
     }
     for (auto var: fieldsMap) {
-        attrAsString = var.toSvFields();
-        attributeStrings.push_back(attrAsString);
+        std::vector<std::string> fieldsAsString = var.toSvFields();
+        for(auto fieldAsString : fieldsAsString) {
+            attributeStrings.push_back(fieldAsString);
+            //std::cout<<"DEBUG : ATTRIBUTE STRING : " << fieldAsString << std::endl;
+        }
     }
     std::sort(attributeStrings.begin(),attributeStrings.end());
 }
@@ -655,7 +658,7 @@ void CovGen<URV>::convertToArchInfoPointStrings() {
 template <typename URV>
 void CovGen<URV>::extractArchInfo() {
     arch_info.points(enumsMap, attsMap, fieldsMap);// instsMap, csrsMap);
-    // sort_vector_pairs<Enum>     (enumsMap);
+    //sort_vector_pairs<Enum>     (enumsMap);
     // sort_vector_pairs<Attribute>(attsMap);
     // sort_vector_pairs<Inst>     (instsMap);
     // sort_vector_pairs<Csr>      (csrsMap);
@@ -712,16 +715,16 @@ void CovGen<URV>::printEnums(std::ofstream& CpFile) {
     CpFile << "\t//}\n";
 }
 
-// template <typename URV>
-// void CovGen<URV>::printAttributes(std::ofstream& CpFile) {
+template <typename URV>
+void CovGen<URV>::printAttributes(std::ofstream& CpFile) {
 
-//     CpFile << "\t//Attribute variables\n";
-//     CpFile << "\t//Attributes {\n";
-//     for(auto attributeString : attributeStrings) {
-//         CpFile << "\t" + attributeString + "\n";
-//     }
-//     CpFile << "\t\n//}\n"; 
-// }
+    CpFile << "\t//Attribute variables\n";
+    CpFile << "\t//Attributes {\n";
+    for(auto attributeString : attributeStrings) {
+        CpFile << "\t" + attributeString + "\n";
+    }
+    CpFile << "\t\n//}\n"; 
+}
 
 // template <typename URV>
 // void CovGen<URV>::printCsrs(std::ofstream& CpFile) {
@@ -767,8 +770,8 @@ void CovGen<URV>::generateCpPackage() {
     printEnums(CpFile);
     CpFile << "\n";
 
-    // printAttributes(CpFile);
-    // CpFile << "\n";
+    printAttributes(CpFile);
+    CpFile << "\n";
 
     // printCsrs(CpFile);
     // CpFile << "\n";

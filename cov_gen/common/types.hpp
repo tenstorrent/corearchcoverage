@@ -67,7 +67,11 @@ public:
     void setWidth(uint64_t width) { width_ = width; }
 
     std::string toSvAttribute() const {
-        return "logic [" + std::to_string(width_ - 1) + ":0] " + getName() + ";";
+        if(width_ > 1) {
+            return "logic [" + std::to_string(width_ - 1) + ":0] " + getName() + ";";
+        } else {
+            return "logic " + getName() + ";";
+        }
     }
 
 private:
@@ -208,6 +212,7 @@ public:
  
     std::vector<Field> fields_;
     std::string name_ = "";
+    uint64_t totalWidth_ = 0;
 
     void setName(const std::string& name) {
         name_ = name;
@@ -217,14 +222,39 @@ public:
         return name_;
     }
 
-    std::string toSvFields() const {
-        std::string fieldsAsString = "";
+    uint64_t getTotalWidth() const {
+        return totalWidth_;
+    }
+
+    void setTotalWidth(uint64_t width) {
+        totalWidth_ = width;
+    }
+    void printFields() const {
+        std::cout<<"DEBUG : FIELDS : " << name_ << " SIZE : " << fields_.size() << std::endl;
+        for(auto field : fields_) {
+            std::cout<<"DEBUG : FIELD : " << field.getName() << " WIDTH : " << field.getAttribute().getWidth() << std::endl;
+        }
+    }
+    
+    std::vector<std::string> toSvFields() const {
+        std::vector<std::string> fieldsAsString;
+        printFields();
         for(auto field : fields_) {
             if(field.isAttribute()) {
-                fieldsAsString += field.getAttribute().toSvAttribute() + "\n";
+                if(field.getAttribute().getWidth() > 1) {
+                    fieldsAsString.push_back("logic [" + std::to_string(field.getAttribute().getWidth() - 1) + ":0] " + name_ + "_" + field.getName() + ";");
+                } else {
+                    fieldsAsString.push_back("logic " + name_ + "_" + field.getName() + ";");
+                }
             } else if(field.isEnum()) {
-                fieldsAsString += field.getEnum().toSvEnum() + "\n";
+                fieldsAsString.push_back(field.getEnum().toSvEnum());
             }
+
+        }
+        if(totalWidth_ > 1) { 
+            fieldsAsString.push_back("logic [" + std::to_string(totalWidth_ - 1) + ":0] " + name_ + "_end;");
+        } else {
+            fieldsAsString.push_back("logic " + name_ + "_end;");
         }
         return fieldsAsString;
     }
