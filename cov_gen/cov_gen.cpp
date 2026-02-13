@@ -28,7 +28,7 @@ CovGen<URV>::CovGen(WdRiscv::Hart<URV>& hart,std::string filename)
     this->convertToArchInfoPointStrings();
     this->convertToEnumStrings();
     this->convertToAttributeStrings();
-    //this->convertToCsrStrings();
+    this->convertToCsrStrings();
     //this->convertToInstrStrings();
 
 }
@@ -266,7 +266,6 @@ void CovGen<URV>::convertToEnumStrings()  {
     for(auto enums : enumsMap) {
         enumAsString = "";
         //gen_enum(enums.name, enums.enum_values, enumAsString);
-        std::cout<<"DEBUG : ENUM FIRST " << enums.getName() << " ENUM VALUES : " << enums.toSvEnum() <<std::endl;
         enumStrings.push_back(enums.toSvEnum());
     }
 }
@@ -283,7 +282,6 @@ void CovGen<URV>::convertToAttributeStrings() {
         std::vector<std::string> fieldsAsString = var.toSvFields();
         for(auto fieldAsString : fieldsAsString) {
             attributeStrings.push_back(fieldAsString);
-            //std::cout<<"DEBUG : ATTRIBUTE STRING : " << fieldAsString << std::endl;
         }
     }
     std::sort(attributeStrings.begin(),attributeStrings.end());
@@ -295,15 +293,14 @@ void CovGen<URV>::convertToArchInfoPointStrings() {
     auto archInfoPoints = magic_enum::enum_entries<Point>();
     int entry_count = 0;
     for(auto val : archInfoPoints){
-        std::cout << "DEBUG : ENTRY COUNT : " << entry_count << " ARCH INFO POINT : " << std::string(val.second) << std::endl;
         archInfoPointsMap["POINT_" + std::string(val.second)] =  unsigned(val.first);
         entry_count += 1;
     }
 
 }
 
-// template <typename URV>
-// void CovGen<URV>::convertToCsrStrings() {
+template <typename URV>
+void CovGen<URV>::convertToCsrStrings() {
 //     Enum csrEnum;
 //     std::vector<ArchCov::Csr::Field> formatted_fields;
 //     bool isCsr = 1;
@@ -398,7 +395,10 @@ void CovGen<URV>::convertToArchInfoPointStrings() {
 //     std::string csrEnumAsString;
 //     gen_enum("csrEnum",csrEnum,csrEnumAsString);
 //     enumStrings.push_back(csrEnumAsString);
-// }
+    for(auto csr : csrsMap) {
+        csrStrings.push_back(csr.toSvCsr());
+    }
+}
 
 // template <typename URV>
 // void CovGen<URV>::convertToInstrStrings() {
@@ -657,7 +657,7 @@ void CovGen<URV>::convertToArchInfoPointStrings() {
 
 template <typename URV>
 void CovGen<URV>::extractArchInfo() {
-    arch_info.points(enumsMap, attsMap, fieldsMap);// instsMap, csrsMap);
+    arch_info.points(enumsMap, attsMap, fieldsMap, csrsMap);// instsMap, csrsMap);
     //sort_vector_pairs<Enum>     (enumsMap);
     // sort_vector_pairs<Attribute>(attsMap);
     // sort_vector_pairs<Inst>     (instsMap);
@@ -678,7 +678,6 @@ void CovGen<URV>::printHeader(std::ofstream& CpFile) {
 template <typename URV>
 void CovGen<URV>::printArchInfoPoints(std::ofstream& CpFile) {
 
-    std::cout << "DEBUG : ARCH INFO POINTS MAP SIZE : " << archInfoPointsMap.size() << std::endl;
     int NumArchCoverPoints = archInfoPointsMap.size();
     CpFile << "\tparameter NUM_ARCH_COVER_POINTS = " << NumArchCoverPoints << ";\n\n";
 
@@ -726,17 +725,17 @@ void CovGen<URV>::printAttributes(std::ofstream& CpFile) {
     CpFile << "\t\n//}\n"; 
 }
 
-// template <typename URV>
-// void CovGen<URV>::printCsrs(std::ofstream& CpFile) {
+template <typename URV>
+void CovGen<URV>::printCsrs(std::ofstream& CpFile) {
 
-//     CpFile << "\t//Csr Classes\n";
-//     CpFile << "\t//Csrs {\n";
-//     for(auto csrString : csrStrings) {
-//         CpFile << "\t" + csrString + "\n";
-//     }
-//     CpFile << "//}\n";
+    CpFile << "\t//Csr Classes\n";
+    CpFile << "\t//Csrs {\n";
+    for(auto csrString : csrStrings) {
+        CpFile << "\t" + csrString + "\n";
+    }
+    CpFile << "//}\n";
 
-//}
+}
 
 // template <typename URV>
 // void CovGen<URV>::printInstrs(std::ofstream& CpFile) {
@@ -773,8 +772,8 @@ void CovGen<URV>::generateCpPackage() {
     printAttributes(CpFile);
     CpFile << "\n";
 
-    // printCsrs(CpFile);
-    // CpFile << "\n";
+    printCsrs(CpFile);
+    CpFile << "\n";
 
     // printInstrs(CpFile);
     // CpFile << "\n";

@@ -230,7 +230,6 @@ public:
         totalWidth_ = width;
     }
     void printFields() const {
-        std::cout<<"DEBUG : FIELDS : " << name_ << " SIZE : " << fields_.size() << std::endl;
         for(auto field : fields_) {
             std::cout<<"DEBUG : FIELD : " << field.getName() << " WIDTH : " << field.getAttribute().getWidth() << std::endl;
         }
@@ -238,7 +237,6 @@ public:
     
     std::vector<std::string> toSvFields() const {
         std::vector<std::string> fieldsAsString;
-        printFields();
         for(auto field : fields_) {
             if(field.isAttribute()) {
                 if(field.getAttribute().getWidth() > 1) {
@@ -263,6 +261,33 @@ public:
 class Csr : public Fields {
   public:
     uint64_t num;
+
+    uint64_t getNum() const {
+        return num;
+    }
+
+    void setNum(uint64_t num) {
+        this->num = num;
+    }
+
+    std::string toSvCsr() const {
+        std::string csrAsString = "class " + getName() + "_csr;\n";
+        for(auto field : fields_) {
+            if(field.isAttribute()) {
+                if(field.getAttribute().getWidth() > 1) {
+                    csrAsString += "\t\tlogic [" + std::to_string(field.getAttribute().getWidth() - 1) + ":0] " + getName() + "_" + field.getName() + ";";
+                } else {
+                    csrAsString += "\t\tlogic " + getName() + "_" + field.getName() + ";";
+                }
+            } else if(field.isEnum()) {
+                csrAsString += field.getEnum().toSvEnum();
+            }
+            csrAsString += "\n";
+        }
+        csrAsString += "endclass : " + getName() + "_csr;\n";
+        csrAsString += "\n";
+        return csrAsString;
+    }
 };
 
 /**

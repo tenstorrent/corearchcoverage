@@ -27,16 +27,16 @@ Info<URV>::Info(Hart<URV>& hart)
 
 template <typename URV>
 void
-Info<URV>::points(enumBins& enums, attBins& atts, fieldsBins& fields) const //instBins& insts, csrBins& csrs) const
+Info<URV>::points(enumBins& enums, attBins& atts, fieldsBins& fields, csrBins& csrs) const //instBins& insts, csrBins& csrs) const
 {
   enums.clear();
   atts.clear();
   fields.clear();
   // insts.clear();
-  // csrs.clear();
+  csrs.clear();
 
   // addInsts(atts, insts);
-  // addCsrs(csrs);
+  addCsrs(csrs);
   addPrivilegeMode<Point::PrivilegeMode>(enums);
   addPrivilegeMode<Point::NextPrivilegeMode>(enums);
 
@@ -179,53 +179,53 @@ Info<URV>::points(enumBins& enums, attBins& atts, fieldsBins& fields) const //in
 //}
 
 
-// template <typename URV>
-// void
-// Info<URV>::addCsrs(csrBins& csrs) const
-// {
-//   for (uint32_t reg = 0; reg < uint32_t(CsrNumber::MAX_CSR_); ++reg) {
-//     CsrNumber num = static_cast<CsrNumber>(reg);
-//     const auto csr = hart_.csRegs().findCsr(num);
-    
-//     if (csr) {
-//       const auto fields = csr->fields();
-//       if (fields.size() > 0) { // defined fields?
-//         Csr pl;
-//         pl.num = uint32_t(num);
-//         for (const auto& field : fields) {
-//           // special enums for certain CSR fields
-//           if (csr->getNumber() == CsrNumber::SATP and field.field == "MODE") {
-//             Enum e;
-//             magic_enum::enum_for_each<VirtMem::Mode>([&e] (auto val) {
-//               constexpr VirtMem::Mode mode = val;
-//               e.enu(std::string(magic_enum::enum_name(mode)), unsigned(mode));
-//             });
-//             pl.field(ArchCov::Csr::Field{field.field, field.width, e});
-//           }
-//           else if (csr->getNumber() == CsrNumber::VTYPE and field.field == "LMUL") {
-//             Enum e;
-//             magic_enum::enum_for_each<GroupMultiplier>([&e] (auto val) {
-//               constexpr GroupMultiplier lmul = val;
-//               e.enu(std::string(magic_enum::enum_name(lmul)), unsigned(lmul));
-//             });
-//             pl.field(ArchCov::Csr::Field{field.field, field.width, e});
-//           }
-//           else if (csr->getNumber() == CsrNumber::VTYPE and field.field == "SEW") {
-//             Enum e;
-//             magic_enum::enum_for_each<ElementWidth>([&e] (auto val) {
-//               constexpr ElementWidth sew = val;
-//               e.enu(std::string(magic_enum::enum_name(sew)), unsigned(sew));
-//             });
-//             pl.field(ArchCov::Csr::Field{field.field, field.width, e});
-//           }
-//           else
-//             pl.field(ArchCov::Csr::Field{field.field, field.width, {}});
-//         }
-//         csrs.emplace_back(csr->getName(), pl);
-//       }
-//     }
-//   }
-// }
+template <typename URV>
+void
+Info<URV>::addCsrs(csrBins& csrs) const
+{
+  for (uint64_t reg = 0; reg < uint64_t(CsrNumber::MAX_CSR_); ++reg) {
+
+    const auto csr = hart_.csRegs().findCsr(static_cast<CsrNumber>(reg));
+    if (csr) {
+      const auto fields = csr->fields();
+      if (fields.size() > 0) { // defined fields?
+        Csr pl;
+        pl.num = reg;
+        pl.setName(std::string(csr->getName()));
+        for (const auto& field : fields) {
+          // special enums for certain CSR fields
+          // if (csr->getNumber() == CsrNumber::SATP and field.field == "MODE") {
+          //   Enum e("SATP_MODE");
+          //   magic_enum::enum_for_each<VirtMem::Mode>([&e] (auto val) {
+          //     constexpr VirtMem::Mode mode = val;
+          //     e.addEnumValue(std::string(magic_enum::enum_name(mode)), uint64_t(mode));
+          //   });
+          //   pl.addField(Field(field.field, e));
+          // }
+          // else if (csr->getNumber() == CsrNumber::VTYPE and field.field == "LMUL") {
+          //   // Enum e;
+          //   // magic_enum::enum_for_each<GroupMultiplier>([&e] (auto val) {
+          //   //   constexpr GroupMultiplier lmul = val;
+          //   //   e.enu(std::string(magic_enum::enum_name(lmul)), unsigned(lmul));
+          //   // });
+          //   // pl.field(ArchCov::Csr::Field{field.field, field.width, e});
+          // }
+          // else if (csr->getNumber() == CsrNumber::VTYPE and field.field == "SEW") {
+          //   // Enum e;
+          //   // magic_enum::enum_for_each<ElementWidth>([&e] (auto val) {
+          //   //   constexpr ElementWidth sew = val;
+          //   //   e.enu(std::string(magic_enum::enum_name(sew)), unsigned(sew));
+          //   // });
+          //   // pl.field(ArchCov::Csr::Field{field.field, field.width, e});
+          // }
+          // else
+            pl.addField(Field(field.field, field.width));
+        }
+        csrs.push_back(pl);
+      }
+    }
+  }
+}
 
 template <typename URV>
 template <Point p>
