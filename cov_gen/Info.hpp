@@ -32,21 +32,19 @@ namespace ArchCov
 
     typedef typename std::vector<Csr> csrBins;
 
-    // typedef std::pair<std::string, Inst> instType;
-    // typedef typename std::vector<instType> instBins;
+    typedef typename std::vector<Inst> instBins;
 
     void dumpInfo()
     {
       enumBins enums;
       attBins atts;
       fieldsBins fields;
-      // instBins insts;
+      instBins insts;
       csrBins csrs;
-
-      points(enums, atts, fields, csrs); //fields, insts, csrs);
+      points(enums, atts, fields, insts, csrs); 
     }
 
-    void points(enumBins& enums, attBins& atts, fieldsBins& fields, csrBins& csrs) const; //instBins& insts, csrBins& csrs) const;
+    void points(enumBins& enums, attBins& atts, fieldsBins& fields, instBins& insts, csrBins& csrs) const; //instBins& insts, csrBins& csrs) const;
 
     Group getGroup(Point p) const
     {
@@ -62,7 +60,7 @@ namespace ArchCov
 
   protected:
 
-    // void addInsts(attBins& atts, instBins& insts) const;
+    void addInsts(attBins& atts, instBins& insts) const;
 
     void addCsrs(csrBins& csr) const;
     

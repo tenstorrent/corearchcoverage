@@ -57,13 +57,13 @@ class CovGen {
         typename Info<URV>::attBins     attsMap;
         typename Info<URV>::fieldsBins  fieldsMap;
         typename Info<URV>::csrBins     csrsMap;
-        //typename Info<URV>::instBins    instsMap;
+        typename Info<URV>::instBins    instsMap;
         std::map<std::string, unsigned> archInfoPointsMap;
 
         //Vectors to organize strings to be printed into the SV Package.
         std::vector<std::string> enumStrings;
         std::vector<std::string> attributeStrings;
-        // std::vector<std::string> instStrings;
+        std::vector<std::string> instStrings;
         std::vector<std::string> csrStrings;
         std::vector<std::string> globalVarStrings;
         std::vector<std::string> archInfoPoints;
@@ -80,7 +80,7 @@ class CovGen {
 
         void printAttributes(std::ofstream& CpFile);
 
-        //void printInstrs(std::ofstream& CpFile);
+        void printInstrs(std::ofstream& CpFile);
 
         void printCsrs(std::ofstream& CpFile);
 
@@ -150,7 +150,7 @@ class CovGen {
         void convertToArchInfoPointStrings();
 
         //Generates SV declarations for all instruction fields.
-        // void convertToInstrStrings();
+        void convertToInstrStrings();
 
         //Generates SV declarations for all instruction fields.
         void convertToCsrStrings();

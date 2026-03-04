@@ -27,15 +27,15 @@ Info<URV>::Info(Hart<URV>& hart)
 
 template <typename URV>
 void
-Info<URV>::points(enumBins& enums, attBins& atts, fieldsBins& fields, csrBins& csrs) const //instBins& insts, csrBins& csrs) const
+Info<URV>::points(enumBins& enums, attBins& atts, fieldsBins& fields, instBins& insts, csrBins& csrs) const //instBins& insts, csrBins& csrs) const
 {
   enums.clear();
   atts.clear();
   fields.clear();
-  // insts.clear();
+  insts.clear();
   csrs.clear();
 
-  // addInsts(atts, insts);
+  addInsts(atts, insts);
   addCsrs(csrs);
   addPrivilegeMode<Point::PrivilegeMode>(enums);
   addPrivilegeMode<Point::NextPrivilegeMode>(enums);
@@ -110,73 +110,74 @@ Info<URV>::points(enumBins& enums, attBins& atts, fieldsBins& fields, csrBins& c
 }
 
 
-// template <typename URV>
-// void
-// Info<URV>::addInsts(attBins& atts, instBins& insts) const
-// {
-//   atts.emplace_back(std::string(magic_enum::enum_name(Point::Inst)), Attribute(32), RESOLVE::NONE);
+template <typename URV>
+void
+Info<URV>::addInsts(attBins& atts, instBins& insts) const
+{
+  atts.emplace_back(Attribute(std::string(magic_enum::enum_name(Point::Inst)), 32));
 
-//   // generate Enum for csr
-//   Enum csrs;
-//   for (uint32_t reg = 0; reg < uint32_t(CsrNumber::MAX_CSR_); ++reg) {
-//     CsrNumber num = static_cast<CsrNumber>(reg);
-//     const auto csr = hart_.csRegs().findCsr(num);
-//     // if (csr and csr->isImplemented())
-//     if (csr)  // to generate exception, tests will try with unimplemented csr
-//       csrs.enu(std::string(csr->getName()), uint32_t(num));
-//   }
+  // generate Enum for csr
+  Enum csrs;
+  for (uint32_t reg = 0; reg < uint32_t(CsrNumber::MAX_CSR_); ++reg) {
+    CsrNumber num = static_cast<CsrNumber>(reg);
+    const auto csr = hart_.csRegs().findCsr(num);
+    // if (csr and csr->isImplemented())
+    if (csr)  // to generate exception, tests will try with unimplemented csr
+      csrs.addEnumValue(std::string(csr->getName()), uint64_t(num));
+  }
 
-//   // generate enum for rounding mode
-//   Enum rms;
-//   magic_enum::enum_for_each<RoundingMode>([&rms] (auto val) {
-//       constexpr RoundingMode rm = val;
-//       if (rm != RoundingMode::Invalid1 and rm != RoundingMode::Invalid2)
-//         rms.enu(std::string(magic_enum::enum_name(rm)), unsigned(rm));
-//   });
+  // generate enum for rounding mode
+  Enum rms;
+  magic_enum::enum_for_each<RoundingMode>([&rms] (auto val) {
+      constexpr RoundingMode rm = val;
+      if (rm != RoundingMode::Invalid1 and rm != RoundingMode::Invalid2)
+        rms.addEnumValue(std::string(magic_enum::enum_name(rm)), uint64_t(rm));
+  });
 
-//   InstTable table;
-//   for (auto& entry : table.getInstVec()) {
+  InstTable table;
+  for (auto& entry : table.getInstVec()) {
 
-//     Inst inst;
-//     inst.id = uint64_t(entry.instId());
-//     inst.format = std::string(magic_enum::enum_name(entry.format()));
-//     inst.ext = (entry.isCompressed()) ? std::string(magic_enum::enum_name(RvExtension::C)) : std::string(magic_enum::enum_name(entry.extension()));
-//     for (unsigned i = 0; i < 4; i++) {
-//       Inst::Operand op;
-//       op.pOperand = Point(uint32_t(Point::Op0) + i);
-//       op.type = entry.ithOperandType(i);
-//       op.mode = entry.ithOperandMode(i);
+    Inst inst;
+    inst.setName(std::string(entry.name()));
+    inst.setId(uint64_t(entry.instId()));
+    inst.setFormat(std::string(magic_enum::enum_name(entry.format())));
+    inst.setExt((entry.isCompressed()) ? std::string(magic_enum::enum_name(RvExtension::C)) : std::string(magic_enum::enum_name(entry.extension())));
+    for (unsigned i = 0; i < 4; i++) {
+      Operand op;
+      op.setpOperand(Point(uint64_t(Point::Op0) + i));
+      op.setType(entry.ithOperandType(i));
+      op.setMode(entry.ithOperandMode(i));
 
-//       op.pValue = Point(uint32_t(Point::Op0Val) + i);
-//       op.value = Attribute(8*sizeof(URV));
+      op.setpValue(Point(uint64_t(Point::Op0Val) + i));
+      op.setValue(Attribute(8*sizeof(URV)));
 
-//       if (entry.ithOperandType(i) != OperandType::None) {
-//         std::bitset<32> bits;
-//         bits = entry.ithOperandMask(i);
+      if (entry.ithOperandType(i) != OperandType::None) {
+        std::bitset<32> bits;
+        bits = entry.ithOperandMask(i);
 
-//         if (not bits.count())
-//           continue;
+        if (not bits.count())
+          continue;
 
-//         if (entry.ithOperandType(i) == OperandType::CsReg)
-//           op.operand = csrs;
-//         else if (entry.ithOperandType(i) == OperandType::Imm) {
-//           op.operand = Attribute(0);
-//           op.value = Attribute(bits.count());
-//         }
-//         else
-//           op.operand = Attribute(bits.count());
+        if (entry.ithOperandType(i) == OperandType::CsReg)
+          op.setOperand(csrs);
+        else if (entry.ithOperandType(i) == OperandType::Imm) {
+          op.setOperand(Attribute(0));
+          op.setValue(Attribute(bits.count()));
+        }
+        else
+          op.setOperand(Attribute(bits.count()));
 
-//         inst.operands.push_back(op);
-//       }
-//     }
+        inst.addOperand(op);
+      }
+    }
 
-//     if (entry.hasRoundingMode())
-//       inst.operands.push_back({Point::Rm, rms, OperandType::Imm, OperandMode::None, Point::Undefined, Attribute()});
-//     if (entry.isBranch())
-//       inst.extra.push_back(std::make_pair<Point, std::variant<Attribute, Enum>>(Point::BrTaken, Attribute(1)));
-//     insts.emplace_back(entry.name(), inst);
-//   }
-//}
+    if (entry.hasRoundingMode())
+      inst.addOperand(Operand(Point::Rm, rms, Point::Undefined, Attribute(), OperandType::Imm, OperandMode::None));
+    if (entry.isBranch())
+      inst.addExtra(Point::BrTaken, Attribute(1));
+    insts.push_back(inst);
+  }
+}
 
 
 template <typename URV>

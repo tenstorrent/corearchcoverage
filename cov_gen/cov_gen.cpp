@@ -29,7 +29,7 @@ CovGen<URV>::CovGen(WdRiscv::Hart<URV>& hart,std::string filename)
     this->convertToEnumStrings();
     this->convertToAttributeStrings();
     this->convertToCsrStrings();
-    //this->convertToInstrStrings();
+    this->convertToInstrStrings();
 
 }
 
@@ -400,9 +400,16 @@ void CovGen<URV>::convertToCsrStrings() {
     }
 }
 
-// template <typename URV>
-// void CovGen<URV>::convertToInstrStrings() {
+template <typename URV>
+void CovGen<URV>::convertToInstrStrings() {
 
+    for(auto inst : instsMap) {
+        std::vector<std::string> instAsString = inst.toSvInst();
+        for(auto instAsString : instAsString) {
+            instStrings.push_back(instAsString + "\n");
+        }
+    }
+}
 //     std::vector<std::string> csr_instrs = IMAExtCategoryMap["CSR_INSTRS"];
 //     std::vector<Enum> uniqueEnums;
 //     std::string operandAttr;
@@ -657,7 +664,7 @@ void CovGen<URV>::convertToCsrStrings() {
 
 template <typename URV>
 void CovGen<URV>::extractArchInfo() {
-    arch_info.points(enumsMap, attsMap, fieldsMap, csrsMap);// instsMap, csrsMap);
+    arch_info.points(enumsMap, attsMap, fieldsMap, instsMap, csrsMap);// instsMap, csrsMap);
     //sort_vector_pairs<Enum>     (enumsMap);
     // sort_vector_pairs<Attribute>(attsMap);
     // sort_vector_pairs<Inst>     (instsMap);
@@ -722,7 +729,7 @@ void CovGen<URV>::printAttributes(std::ofstream& CpFile) {
     for(auto attributeString : attributeStrings) {
         CpFile << "\t" + attributeString + "\n";
     }
-    CpFile << "\t\n//}\n"; 
+    CpFile << "//}\n"; 
 }
 
 template <typename URV>
@@ -737,16 +744,16 @@ void CovGen<URV>::printCsrs(std::ofstream& CpFile) {
 
 }
 
-// template <typename URV>
-// void CovGen<URV>::printInstrs(std::ofstream& CpFile) {
-// 
-    // CpFile << "\t//Instr classes\n";
-    // CpFile << "\t//Instrs {\n";
-    // for(auto instString : instStrings) {
-        // CpFile << "\t" + instString + "\n";
-    // }
-    // CpFile << "//}\n";
-// }
+template <typename URV>
+void CovGen<URV>::printInstrs(std::ofstream& CpFile) {
+
+    CpFile << "\t//Instr classes\n";
+    CpFile << "\t//Instrs {\n";
+    for(auto instString : instStrings) {
+        CpFile << "\t" + instString + "\n";
+    }
+    CpFile << "//}\n";
+}
 
 template<typename URV>
 void CovGen<URV>::printFooter(std::ofstream& CpFile) {
@@ -775,8 +782,8 @@ void CovGen<URV>::generateCpPackage() {
     printCsrs(CpFile);
     CpFile << "\n";
 
-    // printInstrs(CpFile);
-    // CpFile << "\n";
+    printInstrs(CpFile);
+    CpFile << "\n";
 
     printFooter(CpFile);
 }

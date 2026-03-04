@@ -276,7 +276,7 @@ class Csr : public Fields {
             if(field.isAttribute()) {
                 if(field.getAttribute().getWidth() > 1) {
                     csrAsString += "\t\tlogic [" + std::to_string(field.getAttribute().getWidth() - 1) + ":0] " + getName() + "_" + field.getName() + ";";
-                } else {
+                } else {    
                     csrAsString += "\t\tlogic " + getName() + "_" + field.getName() + ";";
                 }
             } else if(field.isEnum()) {
@@ -284,7 +284,7 @@ class Csr : public Fields {
             }
             csrAsString += "\n";
         }
-        csrAsString += "endclass : " + getName() + "_csr;\n";
+        csrAsString += "\tendclass : " + getName() + "_csr\n";
         csrAsString += "\n";
         return csrAsString;
     }
@@ -308,27 +308,53 @@ public:
         , type_(type)
         , mode_(mode) {}
 
-    // Operand pair accessors
-    Point getOperandPoint() const { return pOperand_; }
-    void setOperandPoint(Point p) { pOperand_ = p; }
     
-    const std::variant<Attribute, Enum>& getOperand() const { return operand_; }
-    std::variant<Attribute, Enum>& getOperand() { return operand_; }
+    Point getpOperand() const {
+        return pOperand_;
+    }
+
+    void setpOperand(Point p) {
+        pOperand_ = p;
+    }
+
+    Point getpValue() const {
+        return pValue_;
+    }
+
+    void setpValue(Point p) {
+        pValue_ = p;
+    }
+
+    WdRiscv::OperandType getType() const {
+        return type_;
+    }
+
+    void setType(WdRiscv::OperandType type) {
+        type_ = type;
+    }
+
+    WdRiscv::OperandMode getMode() const {
+        return mode_;
+    }
+
+    void setMode(WdRiscv::OperandMode mode) {
+        mode_ = mode;
+    }
+
+    const std::variant<Attribute, Enum>& getOperand() const {
+        return operand_;
+    }
+
+    void setOperand(const std::variant<Attribute, Enum>& operand) {
+        operand_ = operand;
+    }
     
-    // Value pair accessors
-    Point getValuePoint() const { return pValue_; }
-    void setValuePoint(Point p) { pValue_ = p; }
-    
-    const std::variant<Attribute, Enum>& getValue() const { return value_; }
-    std::variant<Attribute, Enum>& getValue() { return value_; }
-    
-    // Type and mode accessors
-    WdRiscv::OperandType getType() const { return type_; }
-    void setType(WdRiscv::OperandType type) { type_ = type; }
-    
-    WdRiscv::OperandMode getMode() const { return mode_; }
-    void setMode(WdRiscv::OperandMode mode) { mode_ = mode; }
-    
+    const std::variant<Attribute, Enum>& getValue() const {
+        return value_;
+    }
+    void setValue(const Attribute& value) {
+        value_ = value;
+    }
     // Helper methods for operand variant
     bool isOperandAttribute() const {
         return std::holds_alternative<Attribute>(operand_);
@@ -379,7 +405,15 @@ public:
         return std::get<Enum>(value_);
     }
 
-private:
+    std::string toSvOperand() const {
+        std::string operandAsString = "";
+        if(isOperandAttribute()) {
+            operandAsString = getOperandAttribute().toSvAttribute();
+        } else if(isOperandEnum()) {
+            operandAsString = getOperandEnum().toSvEnum();
+        }
+        return operandAsString;
+    }
     // Operand pair: Point + variant<Attribute, Enum>
     Point pOperand_;
     std::variant<Attribute, Enum> operand_;
@@ -401,10 +435,15 @@ public:
     // Constructors
     Inst() = default;
     
-    Inst(uint64_t id, const std::string& format, const std::string& ext)
-        : id_(id)
+    Inst(std::string name, uint64_t id, const std::string& format, const std::string& ext)
+        : name_(name)
+        , id_(id)
         , format_(format)
         , ext_(ext) {}
+
+    // Name accessors
+    const std::string& getName() const { return name_; }
+    void setName(const std::string& name) { name_ = name; }
 
     // ID accessors
     uint64_t getId() const { return id_; }
@@ -504,7 +543,17 @@ public:
         }
     }
 
-private:
+    std::vector<std::string> toSvInst() const {
+        std::vector<std::string> instAsString;
+        instAsString.push_back("class " + getName() + "_inst;");
+        for(auto operand : operands_) {
+            instAsString.push_back(operand.toSvOperand());
+        }
+        instAsString.push_back("endclass : " + getName() + "_inst");
+        return instAsString;
+    }
+
+    std::string name_ = "";
     uint64_t id_ = 0;
     std::string format_ = "";
     std::string ext_ = "";
