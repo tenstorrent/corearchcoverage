@@ -35,8 +35,8 @@ Info<URV>::points(enumBins& enums, attBins& atts, fieldsBins& fields, instBins& 
   insts.clear();
   csrs.clear();
 
-  addInsts(atts, insts);
-  addCsrs(csrs);
+  addInsts(atts, enums, insts);
+  addCsrs(csrs, enums);
   addPrivilegeMode<Point::PrivilegeMode>(enums);
   addPrivilegeMode<Point::NextPrivilegeMode>(enums);
 
@@ -109,10 +109,74 @@ Info<URV>::points(enumBins& enums, attBins& atts, fieldsBins& fields, instBins& 
   addAtts(atts);
 }
 
+bool isCustomCsr(uint32_t num) { 
+  uint32_t umode_rw_range_start = 0x800;
+  uint32_t umode_rw_range_end = 0x8FF;
+  uint32_t smode_rw_range_start_1 = 0x5C0;
+  uint32_t smode_rw_range_end_1 = 0x5FF;
+  uint32_t smode_rw_range_start_2 = 0x9C0;
+  uint32_t smode_rw_range_end_2 = 0x9FF;
+  uint32_t hmode_rw_range_start_1 = 0x6C0;
+  uint32_t hmode_rw_range_end_1 = 0x6FF;
+  uint32_t hmode_rw_range_start_2 = 0xAC0;
+  uint32_t hmode_rw_range_end_2 = 0xAFF;
+  uint32_t mmode_rw_range_start = 0x7C0;
+  uint32_t mmode_rw_range_end = 0x7FF;
+  uint32_t mmode_rw_range_start_2 = 0xBC0;
+  uint32_t mmode_rw_range_end_2 = 0xBFF;
+  uint32_t umode_ro_range_start = 0xCC0;
+  uint32_t umode_ro_range_end = 0xCFF;
+  uint32_t smode_ro_range_start_1 = 0xDC0;
+  uint32_t smode_ro_range_end_1 = 0xDFF;
+  uint32_t smode_ro_range_start_2 = 0xFC0;
+  uint32_t smode_ro_range_end_2 = 0xFFF;
+  uint32_t hmode_ro_range_start_1 = 0xEC0;
+  uint32_t hmode_ro_range_end_1 = 0xEFF;
+  uint32_t hmode_ro_range_start_2 = 0xFC0;
+  uint32_t hmode_ro_range_end_2 = 0xFFF;
+
+  if (num >= umode_rw_range_start and num <= umode_rw_range_end) {
+    return true;
+  }
+  if (num >= smode_rw_range_start_1 and num <= smode_rw_range_end_1) {
+    return true;
+  }
+  if (num >= smode_rw_range_start_2 and num <= smode_rw_range_end_2) {
+    return true;
+  }
+  if (num >= hmode_rw_range_start_1 and num <= hmode_rw_range_end_1) {
+    return true;
+  }
+  if (num >= hmode_rw_range_start_2 and num <= hmode_rw_range_end_2) {
+    return true;
+  }
+  if (num >= mmode_rw_range_start and num <= mmode_rw_range_end) {
+    return true;
+  }
+  if (num >= mmode_rw_range_start_2 and num <= mmode_rw_range_end_2) {
+    return true;
+  }
+  if (num >= umode_ro_range_start and num <= umode_ro_range_end) {
+    return true;
+  }
+  if (num >= smode_ro_range_start_1 and num <= smode_ro_range_end_1) {
+    return true;
+  }
+  if (num >= smode_ro_range_start_2 and num <= smode_ro_range_end_2) {
+    return true;
+  }
+  if (num >= hmode_ro_range_start_1 and num <= hmode_ro_range_end_1) {
+    return true;
+  }
+  if (num >= hmode_ro_range_start_2 and num <= hmode_ro_range_end_2) {
+    return true;
+  }
+  return false;
+}
 
 template <typename URV>
 void
-Info<URV>::addInsts(attBins& atts, instBins& insts) const
+Info<URV>::addInsts(attBins& atts, enumBins& enums, instBins& insts) const
 {
   atts.emplace_back(Attribute(std::string(magic_enum::enum_name(Point::Inst)), 32));
 
@@ -121,10 +185,12 @@ Info<URV>::addInsts(attBins& atts, instBins& insts) const
   for (uint32_t reg = 0; reg < uint32_t(CsrNumber::MAX_CSR_); ++reg) {
     CsrNumber num = static_cast<CsrNumber>(reg);
     const auto csr = hart_.csRegs().findCsr(num);
-    // if (csr and csr->isImplemented())
-    if (csr)  // to generate exception, tests will try with unimplemented csr
-      csrs.addEnumValue(std::string(csr->getName()), uint64_t(num));
+    if (csr and not isCustomCsr(reg)) {
+      csrs.addEnumValue(std::string(csr->getName()), uint64_t(num));   
+    }
   }
+  csrs.setPrefix("csr_Op2");
+  enums.push_back(csrs);
 
   // generate enum for rounding mode
   Enum rms;
@@ -133,15 +199,30 @@ Info<URV>::addInsts(attBins& atts, instBins& insts) const
       if (rm != RoundingMode::Invalid1 and rm != RoundingMode::Invalid2)
         rms.addEnumValue(std::string(magic_enum::enum_name(rm)), uint64_t(rm));
   });
+  rms.setPrefix("fext_Rm");
+  enums.push_back(rms);
 
+  Enum instrEnum;
+  std::unordered_map<std::string, std::vector<std::pair<std::string, uint64_t>>> formatMap, ExtensionMap;
   InstTable table;
   for (auto& entry : table.getInstVec()) {
 
     Inst inst;
-    inst.setName(std::string(entry.name()));
+    auto instName = std::string(entry.name());
+    auto extension = (entry.isCompressed()) ? std::string(magic_enum::enum_name(RvExtension::C)) : std::string(magic_enum::enum_name(entry.extension()));
+
+    inst.setName(instName);
     inst.setId(uint64_t(entry.instId()));
     inst.setFormat(std::string(magic_enum::enum_name(entry.format())));
-    inst.setExt((entry.isCompressed()) ? std::string(magic_enum::enum_name(RvExtension::C)) : std::string(magic_enum::enum_name(entry.extension())));
+    inst.setExt(extension);
+    
+    // Create Instruction Enums 
+    instrEnum.addEnumValue(format_name(instName, '.', '_'), uint64_t(entry.instId()));
+
+    // Create Format and Extension Enums 
+    formatMap[std::string(magic_enum::enum_name(entry.format()))].push_back(std::make_pair(instName, uint64_t(entry.instId())));
+    ExtensionMap[extension].push_back(std::make_pair(instName, uint64_t(entry.instId())));
+    
     for (unsigned i = 0; i < 4; i++) {
       Operand op;
       op.setpOperand(Point(uint64_t(Point::Op0) + i));
@@ -177,17 +258,40 @@ Info<URV>::addInsts(attBins& atts, instBins& insts) const
       inst.addExtra(Point::BrTaken, Attribute(1));
     insts.push_back(inst);
   }
-}
 
+  for (auto& entry : formatMap) {
+    Enum formatEnum;
+    for (auto& inst : entry.second) {
+      formatEnum.addEnumValue(format_name(inst.first, '.', '_'), inst.second);
+    }
+    formatEnum.setPrefix(entry.first+"Format");
+    enums.push_back(formatEnum);
+  }
+
+  for (auto& entry : ExtensionMap) {
+    Enum extensionEnum;
+    for (auto& inst : entry.second) {
+      extensionEnum.addEnumValue(format_name(inst.first, '.', '_'), inst.second);
+    }
+    extensionEnum.setPrefix(entry.first+"Ext");
+    enums.push_back(extensionEnum);
+  }
+  instrEnum.setPrefix("instrEnum");
+  enums.push_back(instrEnum);
+}
 
 template <typename URV>
 void
-Info<URV>::addCsrs(csrBins& csrs) const
+Info<URV>::addCsrs(csrBins& csrs, enumBins& enums) const
 {
+  Enum csrEnum;
   for (uint64_t reg = 0; reg < uint64_t(CsrNumber::MAX_CSR_); ++reg) {
 
     const auto csr = hart_.csRegs().findCsr(static_cast<CsrNumber>(reg));
-    if (csr) {
+    if (csr and not isCustomCsr(reg)) {
+
+      csrEnum.addEnumValue(std::string(csr->getName()), uint64_t(reg));
+
       const auto fields = csr->fields();
       if (fields.size() > 0) { // defined fields?
         Csr pl;
@@ -195,14 +299,14 @@ Info<URV>::addCsrs(csrBins& csrs) const
         pl.setName(std::string(csr->getName()));
         for (const auto& field : fields) {
           // special enums for certain CSR fields
-          // if (csr->getNumber() == CsrNumber::SATP and field.field == "MODE") {
-          //   Enum e("SATP_MODE");
-          //   magic_enum::enum_for_each<VirtMem::Mode>([&e] (auto val) {
-          //     constexpr VirtMem::Mode mode = val;
-          //     e.addEnumValue(std::string(magic_enum::enum_name(mode)), uint64_t(mode));
-          //   });
-          //   pl.addField(Field(field.field, e));
-          // }
+          if (csr->getNumber() == CsrNumber::SATP and field.field == "MODE") {
+            Enum e("SATP_MODE");
+            magic_enum::enum_for_each<VirtMem::Mode>([&e] (auto val) {
+               constexpr VirtMem::Mode mode = val;
+               e.addEnumValue(std::string(magic_enum::enum_name(mode)), uint64_t(mode));
+             });
+             pl.addField(Field(field.field, e));
+          }
           // else if (csr->getNumber() == CsrNumber::VTYPE and field.field == "LMUL") {
           //   // Enum e;
           //   // magic_enum::enum_for_each<GroupMultiplier>([&e] (auto val) {
@@ -226,6 +330,8 @@ Info<URV>::addCsrs(csrBins& csrs) const
       }
     }
   }
+  csrEnum.setPrefix("csrEnum");
+  enums.push_back(csrEnum);
 }
 
 template <typename URV>

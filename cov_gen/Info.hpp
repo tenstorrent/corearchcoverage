@@ -2,8 +2,6 @@
 
 #include "common/Points.hpp"
 #include "common/types.hpp"
-// #include "Inst.hpp"
-// #include "Fields.hpp"
 #include "magic_enum/magic_enum.hpp"
 #include "trapEnums.hpp"
 #include "Hart.hpp"
@@ -60,9 +58,9 @@ namespace ArchCov
 
   protected:
 
-    void addInsts(attBins& atts, instBins& insts) const;
+    void addInsts(attBins& atts, enumBins& enums, instBins& insts) const;
 
-    void addCsrs(csrBins& csr) const;
+    void addCsrs(csrBins& csr, enumBins& enums) const;
     
     template <Point p>
     void addPrivilegeMode(enumBins& enums) const;

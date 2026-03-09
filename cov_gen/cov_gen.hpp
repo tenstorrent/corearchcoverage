@@ -12,41 +12,6 @@ using namespace ArchCov;
 
 #define stringify(name) #name
 
-class Bin {
-    public:
-
-        Bin() {
-           isArray = 0;
-           isSpecialBin = 0;
-           arrSize = "";
-        }
-
-        bool isArray;
-        bool isSpecialBin;
-
-        std::string arrSize;
-        std::string name;
-        std::string vals;
-        std::string content;
-
-};
-
-class CoverPoint {
-    public:
-        std::string name;
-        std::vector<Bin> bins;
-        bool isEnum;
-};
-
-class CoverGroup {
-    public:
-        std::string name;
-        std::vector<std::pair<std::string,std::string>> bitmasks;
-        std::string qualifier;
-        std::vector<std::string> inputs;
-        std::vector<CoverPoint>  cps;
-};
-
 template <typename URV>
 class CovGen {
     private :
@@ -85,18 +50,6 @@ class CovGen {
         void printCsrs(std::ofstream& CpFile);
 
         void printFooter(std::ofstream& CpFile);
-
-        //void gen_attribute(std::string attrName, Attribute attrVal, std::string& attrAsString);
-
-        //void gen_enum(std::string enumName, enum_val_t enumVal, std::string& enumAsString);
-
-        void create_bin(Bin bin, std::string& binAsString);
-
-        void create_coverpoint(CoverPoint cp, bool isCsr, std::string qualifier, std::string& cpAsString);
-
-        void create_covergroup(CoverGroup cg, bool isCsr, std::string& cgAsString);
-
-        void create_class(CoverGroup cg, bool isCsr, std::vector<std::string> operands, std::string& classAsString);
 
         void add_constructor(CoverGroup cg,std::string& instrFmtAsString);
 

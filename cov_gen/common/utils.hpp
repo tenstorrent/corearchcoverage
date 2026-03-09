@@ -33,6 +33,8 @@ inline std::string convert_set_to_string(std::set<uint64_t> binVals) {
     return ss.str();
 }
 
+
+
 inline std::string convert_vector_to_string(std::vector<std::string> binVals) {
     std::ostringstream ss;
     std::sort(binVals.begin(),binVals.end());
@@ -85,8 +87,14 @@ inline std::string trim(const std::string& str,
 //}
 
 template<typename T>
-inline void sort_vector_pairs(std::vector<std::pair<std::string,T>>& vecData) {
+inline void sort_vector_pairs(std::vector<T>& vecData) {
     std::sort(vecData.begin(), vecData.end(), [](auto &left, auto &right) {
-        return left.first < right.first;
+        return left < right;
     });
 }
+
+inline std::string format_name (std::string input, char replaceChar, char replaceWith) {
+    std::replace( input.begin(), input.end(), replaceChar, replaceWith); 
+    return input;
+}
+  

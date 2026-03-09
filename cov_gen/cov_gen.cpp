@@ -265,7 +265,6 @@ void CovGen<URV>::convertToEnumStrings()  {
     std::string enumAsString;
     for(auto enums : enumsMap) {
         enumAsString = "";
-        //gen_enum(enums.name, enums.enum_values, enumAsString);
         enumStrings.push_back(enums.toSvEnum());
     }
 }
@@ -404,10 +403,7 @@ template <typename URV>
 void CovGen<URV>::convertToInstrStrings() {
 
     for(auto inst : instsMap) {
-        std::vector<std::string> instAsString = inst.toSvInst();
-        for(auto instAsString : instAsString) {
-            instStrings.push_back(instAsString + "\n");
-        }
+            instStrings.push_back(inst.toSvInst());
     }
 }
 //     std::vector<std::string> csr_instrs = IMAExtCategoryMap["CSR_INSTRS"];
@@ -665,7 +661,7 @@ void CovGen<URV>::convertToInstrStrings() {
 template <typename URV>
 void CovGen<URV>::extractArchInfo() {
     arch_info.points(enumsMap, attsMap, fieldsMap, instsMap, csrsMap);// instsMap, csrsMap);
-    //sort_vector_pairs<Enum>     (enumsMap);
+    sort_vector_pairs<Enum>     (enumsMap);
     // sort_vector_pairs<Attribute>(attsMap);
     // sort_vector_pairs<Inst>     (instsMap);
     // sort_vector_pairs<Csr>      (csrsMap);
