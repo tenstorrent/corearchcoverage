@@ -7,8 +7,6 @@
 #include "cov_gen.hpp"
 #include "Hart.hpp"
 #include "regex"
-#include "vector.hpp"
-#include "csrs.hpp"
 #include "common/utils.hpp"
 #include "common/Operand.hpp"
 #include "common/Coverage.hpp"
@@ -19,8 +17,6 @@
 #include "common/Attribute.hpp"
 
 using namespace ArchCov;
-using namespace VectorCategories;
-using namespace CsrCategories;
 
 #define MAX_FIELD_WIDTH 5
 

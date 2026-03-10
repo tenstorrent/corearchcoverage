@@ -156,8 +156,8 @@ namespace ArchCov {
                 
                     if(field.isAttribute()) {
 
-                        csrFieldStrings.push_back(field.getAttribute().toSvAttribute());
-                        cg.inputs.push_back(field.getAttribute().toSvAttribute());
+                        csrFieldStrings.push_back(format_name(field.getAttribute().toSvAttribute(),';',' '));
+                        cg.inputs.push_back(format_name(field.getAttribute().toSvAttribute(),';',' '));
                     
                         if(field.getAttribute().getWidth() > 5) {
 
