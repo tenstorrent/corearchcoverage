@@ -9,7 +9,14 @@
 #include "regex"
 #include "vector.hpp"
 #include "csrs.hpp"
-#include "common/types.hpp"
+#include "common/utils.hpp"
+#include "common/Operand.hpp"
+#include "common/Coverage.hpp"
+#include "common/Inst.hpp"
+#include "common/Csr.hpp"
+#include "common/Fields.hpp"
+#include "common/Enum.hpp"
+#include "common/Attribute.hpp"
 
 using namespace ArchCov;
 using namespace VectorCategories;

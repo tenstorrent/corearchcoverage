@@ -1,5 +1,4 @@
 #pragma once
-#include "types.hpp"
 #include <string>
 #include <vector>
 #include <set>
@@ -8,6 +7,8 @@
 #include <sstream>
 #include <unordered_map>
 #include <bitset>
+#include <cstdint>
+
 
 inline std::string convert_to_lowercase(std::string data) {
     std::transform(data.begin(), data.end(), data.begin(),
@@ -61,30 +62,6 @@ inline std::string trim(const std::string& str,
 
     return str.substr(strBegin, strRange);
 }
-
-//int find_max_bit_width_for_enum (uint64_map_t input) {
-//
-//    auto pr = std::max_element (
-//        std::begin(input), std::end(input),
-//            [] (const pair_t & p1, const pair_t & p2) {
-//            return p1.second < p2.second;
-//            }
-//    );
-//
-//    uint64_t n = pr-> second;
-//
-//    n--;
-//    n |= n >> 1;   // Divide by 2^k for consecutive doublings of k up to 32,
-//    n |= n >> 2;   // and then or the results.
-//    n |= n >> 4;
-//    n |= n >> 8;
-//    n |= n >> 16;
-//    n |= n >> 32; 
-//    n++;
-//
-//    return (log2(n)-1);
-//
-//}
 
 template<typename T>
 inline void sort_vector_pairs(std::vector<T>& vecData) {

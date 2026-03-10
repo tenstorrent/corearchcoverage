@@ -3,10 +3,13 @@ CXX = /opt/rh/gcc-toolset-11/root/bin/g++
 CXXFLAGS = -Wall -Wextra -std=c++20 -O3 -DMAGIC_ENUM_RANGE_MAX=1024 -DMAGIC_ENUM_RANGE_MIN=-1024
 LDFLAGS =
 
+# Project root (run make from repo root; override with PROJECT_ROOT=/path if needed)
+PROJECT_ROOT ?= $(CURDIR)
+
 # Directories
 SRCDIR = $(PROJECT_ROOT)/cov_gen/src
 COMMON_DIR = $(PROJECT_ROOT)/cov_gen/common
-COV_GEN_DIR = $(PROJECT_ROOT)/cov_gen           
+COV_GEN_DIR = $(PROJECT_ROOT)/cov_gen
 
 WHISPER_DIR = $(PROJECT_ROOT)/whisper
 WHISPER_BUILD_DIR = $(WHISPER_DIR)/build-$(shell uname -s)
@@ -46,7 +49,7 @@ MAIN_SRC := ${SRCDIR}/main.cpp
 MAIN_OBJ := $(BUILD_DIR)/main.o
 
 # Source files in cov_gen directory
-COV_GEN_SRCS := cov_gen.cpp csrs.cpp vector.cpp Info.cpp
+COV_GEN_SRCS := cov_gen.cpp Info.cpp
 COV_GEN_OBJS := $(COV_GEN_SRCS:%.cpp=$(BUILD_DIR)/%.o)
 
 # Include paths
@@ -79,7 +82,7 @@ $(MAIN_OBJ): $(MAIN_SRC) | $(BUILD_DIR)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 # Compile cov_gen source files
-$(BUILD_DIR)/%.o: %.cpp | $(BUILD_DIR)
+$(BUILD_DIR)/%.o: $(SRCDIR)/%.cpp | $(BUILD_DIR)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 # Link the executable

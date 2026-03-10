@@ -1,9 +1,14 @@
 #pragma once
 
 #include "common/Points.hpp"
-#include "common/types.hpp"
+#include "common/Enum.hpp"
+#include "common/Attribute.hpp"
+#include "common/Fields.hpp"
+#include "common/Csr.hpp"
+#include "common/Inst.hpp"
+#include "common/Operand.hpp"
+#include "common/Coverage.hpp"
 #include "magic_enum/magic_enum.hpp"
-#include "trapEnums.hpp"
 #include "Hart.hpp"
 
 namespace ArchCov

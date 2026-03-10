@@ -3,6 +3,7 @@
 #include <string> 
 #include <map> 
 #include "Descriptor.hpp"
+#include "utils.hpp"
 #include <cstdint>
 
 namespace ArchCov {
