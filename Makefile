@@ -4,14 +4,15 @@ CXXFLAGS = -Wall -Wextra -std=c++20 -O3 -DMAGIC_ENUM_RANGE_MAX=1024 -DMAGIC_ENUM
 LDFLAGS =
 
 # Directories
-SRCDIR = .
-COMMON_DIR = ./common
+SRCDIR = $(PROJECT_ROOT)/cov_gen/src
+COMMON_DIR = $(PROJECT_ROOT)/cov_gen/common
+COV_GEN_DIR = $(PROJECT_ROOT)/cov_gen           
 
-WHISPER_DIR = ../whisper
+WHISPER_DIR = $(PROJECT_ROOT)/whisper
 WHISPER_BUILD_DIR = $(WHISPER_DIR)/build-$(shell uname -s)
 WHISPER_LIB = rvcore
 
-MAGIC_ENUM_DIR = ../magic_enum/include
+MAGIC_ENUM_DIR = $(PROJECT_ROOT)/magic_enum/include
 
 # Boost library configuration
 # BOOST_DIR can be set from command line: make BOOST_DIR=/path/to/boost
@@ -20,13 +21,13 @@ BOOST_INC  = $(BOOST_DIR)/include
 BOOST_LIB_DIR = $(BOOST_DIR)/lib
 BOOST_LIBS = boost_program_options
 
-SOFTFLOAT_DIR = ../whisper/third_party/softfloat/build/RISCV-GCC
+SOFTFLOAT_DIR = $(WHISPER_DIR)/third_party/softfloat/build/RISCV-GCC
 SOFTFLOAT_LIB = softfloat.a
 
-VIRTUAL_MEM_DIR = ../whisper/virtual_memory
+VIRTUAL_MEM_DIR = $(WHISPER_DIR)/virtual_memory
 VIRTUAL_MEM_LIB = libvirtual_memory.a
 
-PCI_DIR = ../whisper/pci
+PCI_DIR = $(WHISPER_DIR)/pci
 PCI_LIB = libpci.a
 
 # Third-party includes
@@ -41,7 +42,7 @@ BUILD_DIR := build
 TARGET := $(BUILD_DIR)/$(PROJECT)
 
 # Main source
-MAIN_SRC := main.cpp
+MAIN_SRC := ${SRCDIR}/main.cpp
 MAIN_OBJ := $(BUILD_DIR)/main.o
 
 # Source files in cov_gen directory
@@ -50,6 +51,7 @@ COV_GEN_OBJS := $(COV_GEN_SRCS:%.cpp=$(BUILD_DIR)/%.o)
 
 # Include paths
 INCLUDES = -I$(SRCDIR) \
+	   -I$(COV_GEN_DIR) \
 	   -I$(COMMON_DIR) \
 	   -I$(WHISPER_DIR) \
 	   -I$(MAGIC_ENUM_DIR) \
