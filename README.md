@@ -10,7 +10,6 @@
   - [Requirements](#requirements)
   - [Quick Start](#quick-start)
 - [Contributing](#contributing)
-- [License](#license)
 
 ---
 
@@ -79,5 +78,33 @@ make BOOST_DIR=<path_to_your_boost_libraries>
 ./cov_gen <path_to_whisper_configuration_json> cp_pkg.sv
 ```
 
+## Contributing
 
+For contributing to the project, refer to the [Contributing Section](.github/CONTRIBUTING.md) for information on setting up a developer environment.
+
+## Supported Coverpoints
+
+Following is a list of coverpoints supported by the cov-gen module for cp_pkg generation. 
+
+| Coverpoint     | Description                                                   | Datatype       |
+|----------------|---------------------------------------------------------------|----------------|
+| Inst           | 32-bit instruction encoding                                   | Attribute      |
+| CsrNum         | 12-bit CSR Address                                            | Attribute      |
+| CsrValue       | XLEN value of the CSR                                         | Attribute      | 
+| DebugMode      | Debug Mode. 0 for No Debug, 1 for Debug                       | Attribute      | 
+| Exception      | Type of exception                                             | Enum           |
+| Interrupt      | Type of Interrupt                                             | Enum           |
+| Op(0/1/2/3)    | Operand ID. For e.g Int Instructions have Op0 = rs1 etc       | Attribute      | 
+| Op(0/1/2/3)Val | Operand Value. For e,g Int Instructions have Op0Value = [rs1] | Attribute      |
+| VirtPc         | Virtual Address of the Program Counter of current instruction | Attribute      | 
+| NextVirtPc     | Virtual Address of the Program Counter of next instruction    | Attribute      |
+| PhysPC         | Physical Address corresponding to VirtPc                      | Attribute      | 
+| PrivilegeMode  | Privilege Mode of current instruction under execution         | Enum           | 
+| VirtualMode    | Hypervisor virtual mode. Set for VS/VU modes                  | Attribute      |
+| BrTaken        | If branch is taken or not                                     | Attribute      | 
+| HartIndex      | Hart ID of the current instruction being retired              | Attribute      |
+| Trigger        | SdTrigger status                                              | Attribute      | 
+| TriggerHitVec  | SdTrigger hit vector value                                    | Attribute      |
+| Rm             | Rounding Mode corresponding to fcsr.frm                       | Enum           |
+| CancelLrCause  | Cause for LR instruction cancellation                         | Enum           |
 
