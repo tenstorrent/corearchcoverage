@@ -204,9 +204,8 @@ namespace ArchCov {
                         CoverPoint cpBr;
                         cpBr.name = std::string(magic_enum::enum_name(info.first));
                         auto attVal = std::get<Attribute>(info.second);
-                        std::cout<<"attVal: "<<attVal.toSvAttribute()<<std::endl;
-                        operandStrings.push_back(attVal.toSvAttribute());
-                        cg.inputs.push_back(attVal.toSvAttribute());
+                        operandStrings.push_back("logic " + std::string(magic_enum::enum_name(info.first)));
+                        cg.inputs.push_back("logic " + std::string(magic_enum::enum_name(info.first)));
     
                         Bin bin = Bin();
                         bin.name = "valid";
@@ -283,14 +282,13 @@ namespace ArchCov {
     
                         //For an immediate value, create a coverpoint for the min/max values. 
                         if(typeName == "imm") {
-                            int valWidth = operand.getValueAttribute().getWidth();
     
                             cp.name = std::string(magic_enum::enum_name(operand.getpValue()));
-                            cg.inputs.push_back(operand.getValueAsString());
-                            operandStrings.push_back(operand.getValueAsString());
+                            cg.inputs.push_back(format_name(operand.getValueAsString(),';',' '));
+                            operandStrings.push_back(format_name(operand.getValueAsString(),';',' '));
     
                             Bin bin_max        =  Bin();
-                            bin_max.name       =  binName + "_max_val";
+                            bin_max.name       =  typeName + "_max_val";
                             bin_max.vals       =  "{'1}";
                             cp.bins.push_back(bin_max);
     
@@ -298,16 +296,6 @@ namespace ArchCov {
                             bin_min.name       =  typeName + "_min_val";
                             bin_min.vals       =  "{'0}";
                             cp.bins.push_back(bin_min);
-    
-                            int base = 1;
-                            for(int powof2=0; powof2<valWidth; powof2++) {
-                                Bin bin_each_bit_set          =  Bin();
-                                bin_each_bit_set.name         =  typeName + "_bit_" + std::to_string(powof2);
-                                bin_each_bit_set.isSpecialBin = 1;
-                                bin_each_bit_set.content      =  "\t\t\t\tbins " + bin_each_bit_set.name + " = { 'b" + std::bitset<12>(base).to_string() + "};\n";
-                                base = base * 2;
-                                cp.bins.push_back(bin_each_bit_set);
-                            }
     
                         } else {
                             
@@ -347,7 +335,7 @@ namespace ArchCov {
                
                         }
         
-                        if(ext_ == "F" || ext_ == "D" || ext_ == "Zfh") {
+                        if(std::find(fp_extensions.begin(), fp_extensions.end(), ext_) != fp_extensions.end()) {
                             enumDeclName = "fext_Rm_e fext_rm_var";
                         }
                         
@@ -367,6 +355,7 @@ namespace ArchCov {
             }
             public:
             std::vector<std::string> csr_instrs = {"csrrc","csrrci","csrrs","csrrsi","csrrw","csrrwi"};
+            std::vector<std::string> fp_extensions = {"F","D","Zfh","Zfa","Zvfbfwma","Zfbfmin","Zvfbfmin"};
             private:
             std::string name_ = "";
             uint64_t id_ = 0;

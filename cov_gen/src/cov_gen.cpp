@@ -280,12 +280,12 @@ void CovGen<URV>::convertToAttributeStrings() {
         attrAsString = var.toSvAttribute();
         attributeStrings.push_back(attrAsString);
     }
-    for (auto var: fieldsMap) {
-        std::vector<std::string> fieldsAsString = var.toSvFields();
-        for(auto fieldAsString : fieldsAsString) {
-            attributeStrings.push_back(fieldAsString);
-        }
-    }
+    //for (auto var: fieldsMap) {
+    //    std::vector<std::string> fieldsAsString = var.toSvFields();
+    //    for(auto fieldAsString : fieldsAsString) {
+    //        attributeStrings.push_back(fieldAsString);
+    //    }
+    //}
     std::sort(attributeStrings.begin(),attributeStrings.end());
 }
 

@@ -35,7 +35,6 @@ namespace ArchCov {
     
             void setpOperand(Point p) {
                 pOperand_ = p;
-                std::cout<<"DEBUG:  pOperand_ :" << std::string(magic_enum::enum_name(p)) << std::endl;
             }
     
             Point getpOperand() const {
@@ -89,7 +88,6 @@ namespace ArchCov {
             void setOperand(const std::variant<Attribute, Enum>& operand) {
                 operand_ = operand;
                 if (std::holds_alternative<Attribute>(operand)) {
-                    std::cout<<"DEBUG:  operand_ :" << std::get<Attribute>(operand).getWidth() << std::endl;
                 } 
             }
     
