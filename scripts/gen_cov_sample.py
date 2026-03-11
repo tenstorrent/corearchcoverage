@@ -173,12 +173,6 @@ class instrClass(InstrCsrBase):
         return sampleAsString
 
     def generate_global_inputs(self,global_inputs):
-        #if self.isValid:
-        #    for arg in self.get_args():
-        #        ops = arg.split(" ")
-        #        if ops[1] not in ["Op0","Op1","Op2","Op3","Op0Val","Op1Val","Op2Val","Op3Val"]:
-        #            arg = '\t'.join(ops) + ";"
-        #            global_inputs.add(arg)
         global_inputs.add(f'csr_Op2_e       csr_op2_var;')
         global_inputs.add(f'fext_Rm_e       fext_rm_var;')
         global_inputs.add(f'logic BrTaken;')

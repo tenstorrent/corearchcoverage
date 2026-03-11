@@ -96,6 +96,9 @@ $(TARGET): $(MAIN_OBJ) $(COV_GEN_OBJS)
 clean:
 	rm -rf $(BUILD_DIR)
 
+clean-packages:
+	rm -rf $(PROJECT_ROOT)/packages
+
 # Print variables for debugging
 print-vars:
 	@echo "CXX: $(CXX)"

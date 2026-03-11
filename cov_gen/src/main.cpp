@@ -1,4 +1,7 @@
 #include <iostream>
+#include <string>
+#include <cstdlib>
+#include <filesystem>
 #include "Hart.hpp"
 #include "HartConfig.hpp"
 #include "Core.hpp"
@@ -7,6 +10,32 @@
 #include "cov_gen.hpp"
 
 using namespace WdRiscv;
+namespace fs = std::filesystem;
+
+struct CmdLineArgs {
+  std::string whisper_config;
+};
+
+/** Simple command-line flag parser. Returns true on success. */
+static bool parseCommandLine(int argc, char* argv[], CmdLineArgs& out) {
+
+  for (int i = 1; i < argc; ++i) {
+    std::string arg = argv[i];
+    if (arg == "--whisper_config") {
+      if (i + 1 >= argc) {
+        std::cerr << "Missing value for --whisper_config\n";
+        return false;
+      }
+      out.whisper_config = argv[++i];
+    } 
+  }
+
+  if (out.whisper_config.empty()) {
+    std::cerr << "Required: --whisper_config <path>\n";
+    return false;
+  }
+  return true;
+}
 
 // dummy function
 void (*tracerExtension)(void*) = nullptr;
@@ -70,19 +99,17 @@ session(const HartConfig& config, const std::string& filename)
   return staticDump(*system.ithHart(0), filename);
 }
 
+
+
 int
 main(int argc, char* argv[])
 {
-  // Load configuration file.
-  if (argc < 3)
-    {
-      std::cerr << "Must include whisper configuration  as arguments\n";
-      return 1;
-    }
+  CmdLineArgs args;
+  if (not parseCommandLine(argc, argv, args))
+    return 1;
 
-  std::string configFile = argv[1];
   HartConfig config;
-  if (not config.loadConfigFile(configFile))
+  if (not config.loadConfigFile(args.whisper_config))
     return 1;
 
   unsigned regWidth;
@@ -92,14 +119,28 @@ main(int argc, char* argv[])
       return 1;
     }
 
+  fs::path packagesDir = fs::current_path() / "packages";
+  fs::path cpPkgPath = packagesDir / "cp_pkg.sv";
+  if (fs::exists(packagesDir))
+    {
+      std::cerr << "packages directory already exists. Run make clean_packages\n";
+      return 1;
+    }
+  if (not fs::create_directories(packagesDir))
+    {
+      std::cerr << "Failed to create directory: " << packagesDir.string() << '\n';
+      return 1;
+    }
+  std::string cpPkgFile = cpPkgPath.string();
+
   bool ok = true;
 
   try
     {
       if (regWidth == 32)
-	ok = session<uint32_t>(config, argv[2]);
+	ok = session<uint32_t>(config, cpPkgFile);
       else if (regWidth == 64)
-	ok = session<uint64_t>(config, argv[2]);
+	ok = session<uint64_t>(config, cpPkgFile);
       else
 	{
 	  std::cerr << "Invalid register width: " << regWidth;
@@ -112,5 +153,5 @@ main(int argc, char* argv[])
       std::cerr << e.what() << '\n';
       ok = false;
     }
-  return ok? 0 : 1;
+  return ok ? 0 : 1;
 }
