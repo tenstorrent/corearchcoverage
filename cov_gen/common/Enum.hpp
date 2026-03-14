@@ -52,12 +52,19 @@ namespace ArchCov {
     
         std::string toSvEnum(std::string enum_name="") const {
             std::string enumAsString = "typedef enum logic [63:0] {\n";
+            int i = 0;
             for(auto val : enumValues_) {
                 if(enum_name == "") {
-                    enumAsString += "\t\t" +  convert_to_uppercase(prefix_ + getName() + "_" + val.first) + " = 64'd" + std::to_string(val.second) + ",\n";
+                    enumAsString += "\t\t" +  convert_to_uppercase(prefix_ + getName() + "_" + val.first) + " = 64'd" + std::to_string(val.second) ;
                 } else {
-                    enumAsString += "\t\t" +  convert_to_uppercase(enum_name + "_" + val.first) + " = 64'd" + std::to_string(val.second) + ",\n";
+                    enumAsString += "\t\t" +  convert_to_uppercase(enum_name + "_" + val.first) + " = 64'd" + std::to_string(val.second) ;
                 }
+                if(i != static_cast<int>(enumValues_.size() - 1)) {
+                    enumAsString += ",\n";
+                } else {
+                    enumAsString += "\n";
+                }
+                i += 1;
             }
             if(enum_name == "") {
                 enumAsString += "\t} " + prefix_ + getName() + "_e;\n";

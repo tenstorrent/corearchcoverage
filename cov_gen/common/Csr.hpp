@@ -64,10 +64,15 @@ namespace ArchCov {
             maskFunctionAsString += "\t\t\tlogic [63:0] maskedVal;\n";
             maskFunctionAsString += "\t\t\tvalue = CsrVal;\n";
             for(auto bitmask : bitmasks) {
-                if (bitmask.first == "time")
-                    bitmask.first = "time_";
+                if(bitmask.first == "mode") {
+                   std::cout << "HERE : bitmask.first: " << bitmask.first << std::endl;
+                   std::cout << "HERE : bitmask.second: " << bitmask.second << std::endl;
+                }
                 std::string bitslice = find_bit_position(bitmask.second);
                 maskFunctionAsString += "\t\t\tmaskedVal =  CsrVal  & " + bitmask.second +  " ; \n";
+                if(bitmask.first == "time") {
+                    bitmask.first = "time_";
+                }
                 maskFunctionAsString += "\t\t\t" + bitmask.first + " = maskedVal " + bitslice + " ; \n";
             }
             maskFunctionAsString += "\t\tendfunction\n";
@@ -104,8 +109,6 @@ namespace ArchCov {
             cgAsString += "\t\t\toption.name = \"" + cg.name + "\";\n";
             for(auto cp: cg.cps) {
                 std::string cpAsString;
-                if (cp.name == "time")
-                    cp.name = "time_";
                 create_coverpoint(cp, cg.qualifier, cpAsString);
                 cgAsString += cpAsString;
             }
@@ -150,14 +153,25 @@ namespace ArchCov {
 
             for(auto field : formatted_fields) {
                 if(is_valid_field(field)) {
+                    
                     CoverPoint cp = CoverPoint();
-                    cp.name       = field.getName();
-                    cp.isEnum     = field.isEnum();
+                    if (field.getName() == "time") {
+                        cp.name       = "time_";
+                        cp.isEnum     = field.isEnum();
+                    } else {
+                        cp.name       = field.getName();
+                        cp.isEnum     = field.isEnum();
+                    } 
                 
                     if(field.isAttribute()) {
-
-                        csrFieldStrings.push_back(format_name(field.getAttribute().toSvAttribute(),';',' '));
-                        cg.inputs.push_back(format_name(field.getAttribute().toSvAttribute(),';',' '));
+                        
+                        if(field.getName() == "time") {
+                            csrFieldStrings.push_back(format_name(field.getAttribute().toSvAttribute("time_"),';',' '));
+                            cg.inputs.push_back(format_name(field.getAttribute().toSvAttribute("time_"),';',' '));
+                        } else {
+                            csrFieldStrings.push_back(format_name(field.getAttribute().toSvAttribute(field.getName()),';',' '));
+                            cg.inputs.push_back(format_name(field.getAttribute().toSvAttribute(field.getName()),';',' '));
+                        }
                     
                         if(field.getAttribute().getWidth() > 5) {
 

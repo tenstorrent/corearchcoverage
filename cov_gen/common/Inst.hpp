@@ -142,14 +142,18 @@ namespace ArchCov {
             }
     
             void create_coverpoint(CoverPoint& cp, std::string qualifier, std::string& cpAsString) const {
-                cpAsString = "\t\t\tcoverpoint " + cp.name + " iff (instrenum_var == " + qualifier + ")";
-                cpAsString += "\n\t\t\t{\n";
-                for(auto bin: cp.bins) {
-                    std::string binAsString;
-                    create_bin(bin, binAsString);
-                    cpAsString += binAsString;
-                    }
-                cpAsString += "\n\t\t\t}\n";
+                if(cp.isEnum) {
+                    cpAsString += "coverpoint " + cp.name + " iff (instrenum_var == " + qualifier + ");\n";
+                } else {
+                    cpAsString = "\t\t\tcoverpoint " + cp.name + " iff (instrenum_var == " + qualifier + ")";
+                    cpAsString += "\n\t\t\t{\n";
+                    for(auto bin: cp.bins) {
+                        std::string binAsString;
+                        create_bin(bin, binAsString);
+                        cpAsString += binAsString;
+                        }
+                    cpAsString += "\n\t\t\t}\n";
+                }
             }
     
             void create_covergroup(CoverGroup& cg, std::string& cgAsString) const {
@@ -329,21 +333,26 @@ namespace ArchCov {
                         Bin bin = Bin();
                         auto enumVal = std::get<Enum>(operand.getOperand());
                         std::string enumDeclName; 
-        
+                        std::string enumName;
+                        
                         if (std::find(csr_instrs.begin(), csr_instrs.end(), cg.name) != csr_instrs.end()) {
                             enumDeclName = "csr_Op2_e csr_op2_var";
-               
+                            enumName = "csr_op2_var";
                         }
         
                         if(std::find(fp_extensions.begin(), fp_extensions.end(), ext_) != fp_extensions.end()) {
                             enumDeclName = "fext_Rm_e fext_rm_var";
+                            enumName = "fext_rm_var";
                         }
                         
                         operandStrings.push_back(enumDeclName);
                         cg.inputs.push_back(enumDeclName);
-                        bin.name    = "valid";
+                        
+                        cp.name     = enumName; 
                         cp.isEnum   = 1;
-                        bin.content = "\t\t\t\tbins valid = [0:$];\n";
+                        bin.name    = "valid";
+                        bin.isSpecialBin = true;
+                        bin.content = "\t\t\t\tbins valid[] = {[0:$]};\n";
                         cp.bins.push_back(bin);
         
                     }

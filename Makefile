@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: © 2026 Tenstorrent AI ULC
+# SPDX-License-Identifier: Apache-2.0
+
 # Compiler and flags
 CXX = /opt/rh/gcc-toolset-11/root/bin/g++
 CXXFLAGS = -Wall -Wextra -std=c++20 -O3 -DMAGIC_ENUM_RANGE_MAX=1024 -DMAGIC_ENUM_RANGE_MIN=-1024
@@ -93,11 +96,14 @@ $(TARGET): $(MAIN_OBJ) $(COV_GEN_OBJS)
 # Clean
 #==============================================================================
 
-clean:
+clean-build:
 	rm -rf $(BUILD_DIR)
 
 clean-packages:
 	rm -rf $(PROJECT_ROOT)/packages
+
+clean_all: clean-build clean-packages
+
 
 # Print variables for debugging
 print-vars:
