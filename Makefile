@@ -89,8 +89,10 @@ $(BUILD_DIR)/%.o: $(SRCDIR)/%.cpp | $(BUILD_DIR)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 # Link the executable
+# -lgcc and -lstdc++ at the end satisfy half-float runtime (__truncsfhf2/__extendhfsf2) and
+# libstdc++ symbols (_M_replace_cold) referenced by static librvcore.a
 $(TARGET): $(MAIN_OBJ) $(COV_GEN_OBJS) 
-	$(CXX) $(CXXFLAGS) -Wl,-rpath=$(BOOST_LIB_DIR) -o $@ $^ $(LIBDIRS) $(LIBS) $(SOFTFLOAT_DIR)/$(SOFTFLOAT_LIB) $(VIRTUAL_MEM_DIR)/$(VIRTUAL_MEM_LIB) $(PCI_DIR)/$(PCI_LIB) 
+	$(CXX) $(CXXFLAGS) -Wl,-rpath=$(BOOST_LIB_DIR) -o $@ $^ $(LIBDIRS) $(LIBS) $(SOFTFLOAT_DIR)/$(SOFTFLOAT_LIB) $(VIRTUAL_MEM_DIR)/$(VIRTUAL_MEM_LIB) $(PCI_DIR)/$(PCI_LIB) -lgcc -lstdc++ 
 
 #==============================================================================
 # Clean

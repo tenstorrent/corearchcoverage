@@ -9,8 +9,8 @@ covergroup iext__cg with function sample();
 
     // Coverpoints for instructions: 1 bin for each instruction
     iext__general_cp_iext_instr:                 coverpoint instrenum_var{
-         bins iext_instrs[]                 = iext_arr;                       
-         ignore_bins ignore_instrs          = {INSTRENUM_DRET, INSTRENUM_EBREAK, INSTRENUM_MNRET};                       
+         bins iext_instrs[]                     = iext_arr;                       
+         ignore_bins ignore_instrs              = {INSTRENUM_DRET, INSTRENUM_EBREAK, INSTRENUM_MNRET};                       
     }
     iext__general_cp_arithmetic_instr:           coverpoint instrenum_var{bins arithmetic_instrs[]           = arithmetic_instrs_arr;          }
     iext__general_cp_load_instr:                 coverpoint instrenum_var{bins load_instrs[]                 = {INSTRENUM_LB,INSTRENUM_LBU,INSTRENUM_LD,INSTRENUM_LH,INSTRENUM_LHU,INSTRENUM_LW,INSTRENUM_LWU};}

@@ -1,6 +1,6 @@
  `ifndef COVERAGE_UNSUPPORTED
-  import cov_common::*;
-  import user_cov_common::*;
+ import cov_common::*;
+ import user_cov_common::*;
   `endif
 
  module arch_sample;

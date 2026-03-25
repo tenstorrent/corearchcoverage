@@ -12,7 +12,7 @@
 #include "Hart.hpp"
 #include "CsRegs.hpp"
 #include "InstEntry.hpp"
-#include "arch/sample/Sample.hpp"
+#include "Sample.hpp"
 
 using namespace std;
 using namespace WdRiscv;

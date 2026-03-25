@@ -340,7 +340,7 @@ covergroup dext__cg with function sample(csr_cov_sample i_csr);
         bins fmadd_fmsub_fnmsub_fnmadd[]={INSTRENUM_FMADD_D, INSTRENUM_FMSUB_D, INSTRENUM_FNMADD_D, INSTRENUM_FNMSUB_D} iff(rs1_val == rs2_val);
     }
 
-    ext__Conversion_move_fcvt: coverpoint instrenum_var{
+    dext__Conversion_move_fcvt: coverpoint instrenum_var{
         bins fcvt_diff_types_D[]={INSTRENUM_FCVT_L_D, INSTRENUM_FCVT_LU_D, INSTRENUM_FCVT_D_L,INSTRENUM_FCVT_D_LU,INSTRENUM_FCVT_D_W,INSTRENUM_FCVT_D_WU,INSTRENUM_FCVT_W_D,INSTRENUM_FCVT_WU_D};
     }
 

@@ -64,10 +64,6 @@ namespace ArchCov {
             maskFunctionAsString += "\t\t\tlogic [63:0] maskedVal;\n";
             maskFunctionAsString += "\t\t\tvalue = CsrVal;\n";
             for(auto bitmask : bitmasks) {
-                if(bitmask.first == "mode") {
-                   std::cout << "HERE : bitmask.first: " << bitmask.first << std::endl;
-                   std::cout << "HERE : bitmask.second: " << bitmask.second << std::endl;
-                }
                 std::string bitslice = find_bit_position(bitmask.second);
                 maskFunctionAsString += "\t\t\tmaskedVal =  CsrVal  & " + bitmask.second +  " ; \n";
                 if(bitmask.first == "time") {

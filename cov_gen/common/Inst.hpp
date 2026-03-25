@@ -312,9 +312,9 @@ namespace ArchCov {
                                 operandStrings.push_back(format_name(operand.getOperandAsString(),';',' '));
                                 int i = 0;
                                 std::vector<std::string> binRanges;
-                                if (operand.getValueAttribute().getWidth() == 3) {
+                                if (operand.getOperandAttribute().getWidth() == 3) {
                                     binRanges = {"0","[1:3]","[4:7]"};
-                                } else if (operand.getValueAttribute().getWidth() == 4) {
+                                } else if (operand.getOperandAttribute().getWidth() == 4) {
                                     binRanges = {"0","[1:3]","[4:7]","[8:15]"};
                                 } else {
                                     binRanges = {"0","[1:7]","[8:15]","[16:31]"};

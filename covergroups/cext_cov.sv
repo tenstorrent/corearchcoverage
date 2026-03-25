@@ -9,8 +9,6 @@ covergroup cext__cg with function sample(
     option.per_instance = 1;
     option.name = "cg_cext";
 
-    /* ---General--- */
-    //bin for each compressed instr
     cext__general_cp_cext_instr: coverpoint instrenum_var{
         bins cext_instrs[] = cext_arr;
         ignore_bins illegal_instrs = {INSTRENUM_C_FLW,INSTRENUM_C_FLWSP,INSTRENUM_C_FSW,INSTRENUM_C_FSWSP,INSTRENUM_C_JAL,     //RV32only

@@ -8,14 +8,16 @@ class arch_cov_sample;
   `ifndef COVERAGE_UNSUPPORTED
 
   //Map to maintain sampled coverpoints on a instruction boundary.
-  cp_table table;
-
+  cp_table            table;
   attr_cov_sample     attr_cov;
   csr_cov_sample      csr_cov;
   enum_cov_sample     enum_cov;
   instr_cov_sample    instr_cov;
   user_cov_sample     user_cov;
+  int whisper_step;
+  
   function new();
+    whisper_step = 1;
     table     = new();
     attr_cov  = new();
     csr_cov   = new();
@@ -25,7 +27,6 @@ class arch_cov_sample;
   endfunction
 
   function void sample_covergroups();
-
     instr_cov.sample_sv_instr(table);
     csr_cov.sample_sv_csr(table);
     attr_cov.sample(table);
@@ -33,15 +34,15 @@ class arch_cov_sample;
     user_cov.sample_sv_user(table);
   endfunction
   
-  int whisper_step = 1;
-
   function void sample_sv(input cp_pkt pkt);
 
+    int len;
     if($test$plusargs("debug"))
       $display("step %d rec cp and val %p",whisper_step,pkt);
 
     if(pkt.isLastPkt) begin
       table.insert_cp(pkt);
+      len = table.cp_q_len();
       sample_covergroups();
       table.clear_cp_q();
       whisper_step++;

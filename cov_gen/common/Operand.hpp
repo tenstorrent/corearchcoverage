@@ -90,6 +90,14 @@ namespace ArchCov {
                 if (std::holds_alternative<Attribute>(operand)) {
                 } 
             }
+
+            const Attribute& getOperandAttribute() const {
+                return std::get<Attribute>(operand_);
+            }
+
+            const Enum& getOperandEnum() const {
+                return std::get<Enum>(operand_);
+            }
     
             std::string getOperandAsString() const {
                 if(isOperandAttribute()) {
@@ -103,10 +111,18 @@ namespace ArchCov {
             const std::variant<Attribute, Enum>& getValue() const {
                 return value_;
             }
+
             void setValue(const Attribute& value) {
                 value_ = value;
             }
-    
+            const Attribute& getValueAttribute() const {
+                return std::get<Attribute>(value_);
+            }
+
+            const Enum& getValueEnum() const {
+                return std::get<Enum>(value_);
+            }
+
             std::string getValueAsString() const {
                 if(isValueAttribute()) {
                     return std::get<Attribute>(value_).toSvAttribute(getpValueAsString());
@@ -131,22 +147,6 @@ namespace ArchCov {
     
             bool isValueEnum() const {
                 return std::holds_alternative<Enum>(value_);
-            }
-    
-            Attribute& getValueAttribute() {
-                return std::get<Attribute>(value_);
-            }
-    
-            const Attribute& getValueAttribute() const {
-                return std::get<Attribute>(value_);
-            }
-    
-            Enum& getValueEnum() {
-                return std::get<Enum>(value_);
-            }
-    
-            const Enum& getValueEnum() const {
-                return std::get<Enum>(value_);
             }
     
             std::string toSvOperand() const {

@@ -112,8 +112,6 @@ Info<URV>::points(enumBins& enums, attBins& atts, fieldsBins& fields, instBins& 
   addInterrupt(enums);
   addException(enums);
   addCancelLrCause(enums);
-  //addPmas(fields);
-  //addPmps(fields);
   addAtts(atts);
 }
 
@@ -307,32 +305,7 @@ Info<URV>::addCsrs(csrBins& csrs, enumBins& enums) const
         pl.setName(std::string(csr->getName()));
         for (const auto& field : fields) {
           // special enums for certain CSR fields
-          if (csr->getNumber() == CsrNumber::SATP and field.field == "MODE") {
-            Enum e("SATP_MODE");
-            magic_enum::enum_for_each<VirtMem::Mode>([&e] (auto val) {
-               constexpr VirtMem::Mode mode = val;
-               e.addEnumValue(std::string(magic_enum::enum_name(mode)), uint64_t(mode));
-             });
-             pl.addField(Field(field.field, e));
-          }
-          // else if (csr->getNumber() == CsrNumber::VTYPE and field.field == "LMUL") {
-          //   // Enum e;
-          //   // magic_enum::enum_for_each<GroupMultiplier>([&e] (auto val) {
-          //   //   constexpr GroupMultiplier lmul = val;
-          //   //   e.enu(std::string(magic_enum::enum_name(lmul)), unsigned(lmul));
-          //   // });
-          //   // pl.field(ArchCov::Csr::Field{field.field, field.width, e});
-          // }
-          // else if (csr->getNumber() == CsrNumber::VTYPE and field.field == "SEW") {
-          //   // Enum e;
-          //   // magic_enum::enum_for_each<ElementWidth>([&e] (auto val) {
-          //   //   constexpr ElementWidth sew = val;
-          //   //   e.enu(std::string(magic_enum::enum_name(sew)), unsigned(sew));
-          //   // });
-          //   // pl.field(ArchCov::Csr::Field{field.field, field.width, e});
-          // }
-          // else
-            pl.addField(Field(field.field, field.width));
+          pl.addField(Field(field.field, field.width));
         }
         csrs.push_back(pl);
       }
@@ -551,86 +524,6 @@ Info<URV>::addAtts(attBins& atts) const
   atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::FPtwFaultLevel)), 64));
   atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::DPtwFaultLevel)), 64));
 }
-
-// template <typename URV>
-// void
-// Info<URV>::addPmas(fieldsBins& fields) const
-// {
-//   Pma p_(Pma::Attrib(~0U));// Placeholder for now
-//   Fields f;
-//   f.field({"attrib", 64, {}});
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::DPma)),              f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::FPma)),              f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::DPma_GStageLevel1)), f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::FPma_GStageLevel1)), f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::DPma_GStageLevel2)), f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::FPma_GStageLevel2)), f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::DPma_GStageLevel3)), f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::FPma_GStageLevel3)), f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::DPma_GStageLevel4)), f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::FPma_GStageLevel4)), f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::DPma_GStageLevel5)), f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::FPma_GStageLevel5)), f, RESOLVE::NONE);
-
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::FPmaPtw)),           f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::DPmaPtw)),           f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::FPmaCrossing)),      f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::DPmaCrossing)),      f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::FPmaRoot)),              f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::DPmaRoot)),              f, RESOLVE::NONE);
-
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::DPmaLeaf)),              f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::FPmaLeaf)),              f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::DPmaLeaf_GStageLevel1)), f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::FPmaLeaf_GStageLevel1)), f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::DPmaLeaf_GStageLevel2)), f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::FPmaLeaf_GStageLevel2)), f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::DPmaLeaf_GStageLevel3)), f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::FPmaLeaf_GStageLevel3)), f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::DPmaLeaf_GStageLevel4)), f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::FPmaLeaf_GStageLevel4)), f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::DPmaLeaf_GStageLevel5)), f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::FPmaLeaf_GStageLevel5)), f, RESOLVE::NONE);
-// }
-
-// template <typename URV>
-// void
-// Info<URV>::addPmps(fieldsBins& fields) const
-// {
-//   // Placeholder for now
-//   Fields f;
-//   f.field({"attrib", 64, {}});
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::DPmp)),              f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::FPmp)),              f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::DPmp_GStageLevel1)), f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::FPmp_GStageLevel1)), f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::DPmp_GStageLevel2)), f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::FPmp_GStageLevel2)), f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::DPmp_GStageLevel3)), f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::FPmp_GStageLevel3)), f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::DPmp_GStageLevel4)), f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::FPmp_GStageLevel4)), f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::DPmp_GStageLevel5)), f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::FPmp_GStageLevel5)), f, RESOLVE::NONE);
-
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::FPmpPtw)),           f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::DPmpPtw)),           f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::FPmpCrossing)),      f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::DPmpCrossing)),      f, RESOLVE::NONE);
-
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::DPmpLeaf)),              f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::FPmpLeaf)),              f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::DPmpLeaf_GStageLevel1)), f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::FPmpLeaf_GStageLevel1)), f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::DPmpLeaf_GStageLevel2)), f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::FPmpLeaf_GStageLevel2)), f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::DPmpLeaf_GStageLevel3)), f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::FPmpLeaf_GStageLevel3)), f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::DPmpLeaf_GStageLevel4)), f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::FPmpLeaf_GStageLevel4)), f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::DPmpLeaf_GStageLevel5)), f, RESOLVE::NONE);
-//   fields.emplace_back(std::string(magic_enum::enum_name(Point::FPmpLeaf_GStageLevel5)), f, RESOLVE::NONE);
-//}
 
 template class ArchCov::Info<uint32_t>;
 template class ArchCov::Info<uint64_t>;

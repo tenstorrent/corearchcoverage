@@ -54,41 +54,6 @@ class CovGen {
         void add_constructor(CoverGroup cg,std::string& instrFmtAsString);
 
     public :
-              std::map<std::string,std::vector<std::string>> IMAExtCategoryMap {
-        {"CSR_INSTRS", {"csrrc","csrrci","csrrs","csrrsi","csrrw","csrrwi"}},
-    
-        {"ARITHMETIC_INSTRS",{"add","addi","addiw","addw","and","andi","auipc","lui", 
-                              "or","ori","sll","slli","slliw","sllw","slt","slti","sltiu",
-                              "sltu","sra","srai","sraiw","sraw","srl","srli","srliw","srlw",
-                              "sub","subw","xor","xori"}},
-        {"MUL_INSTRS", {"mul", "mulh", "mulhsu", "mulw"}},
-        {"DIV_INSTRS", {"div", "divu", "divuw", "divw"}},
-        {"REM_INSTRS", {"rem", "remu", "remuw", "remw"}},
-
-        {"CONDITIONAL_BRANCH_INSTRS", {"beq","bge","bgeu","blt","bltu","bne"}},
-
-        {"DEBUG_INSTRS", {"dret","ebreak","wfi"}},
-    
-        {"SYSTEM_INSTRS", {"ecall","mret","sret"}},    
-
-        {"SYNCH_INSTRS", {"fence","fence_i","fence_tso"}},
-
-        {"ILLEGAL_INSTRS", {"illegal"}},
-    
-        {"UNCONDITIONAL_BRANCH_INSTRS", {"jal""jalr"}},
-    
-        {"LOAD_INSTRS",  {"lb","lbu","ld","lh","lhu","lw","lwu"}},
-
-        {"STORE_INSTRS", {"sb","sh","sw","sd"}},
-
-        {"AMO_INSTRS", {"amoswap_w","amoadd_w","amoxor_w",
-                        "amoand_w","amoor_w","amomin_w",
-                        "amomax_w","amominu_w","amomaxu_w",
-                        "amoswap_d","amoadd_d","amoxor_d",
-                        "amoand_d","amoor_d","amomin_d"}},
-
-        {"LR_SC_INSTRS", {"lr_w","sc_w","lr_d","sc_d"}}
-    };
 
         //CovGen constructor : Accepts a HART object to be used for ArchInfo and a filename for SV package.
         CovGen(WdRiscv::Hart<URV>& hart,std::string filename);

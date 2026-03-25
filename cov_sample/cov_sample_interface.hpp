@@ -1,6 +1,6 @@
 #include "cov_common.hpp"
 #include "magic_enum.hpp"
-#include "arch/sample/Sample.hpp"
+#include "Sample.hpp"
 #include "Points.hpp"
 
 using namespace std;
