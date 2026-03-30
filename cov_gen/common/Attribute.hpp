@@ -6,9 +6,7 @@
 #include "Descriptor.hpp"
 
 namespace ArchCov {
-    /**
-     * @brief Attribute descriptor with width
-     */
+
     class Attribute : public Descriptor {
         public:
             Attribute() : Descriptor(), width_(0) {}
@@ -21,10 +19,8 @@ namespace ArchCov {
                 : Descriptor()
                 , width_(width) {}
     
-            // Getters
             uint64_t getWidth() const { return width_; }
     
-            // Setters
             void setWidth(uint64_t width) { width_ = width; }
     
             std::string toSvAttribute(std::string attr_name="") const {

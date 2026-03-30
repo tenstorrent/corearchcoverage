@@ -13,13 +13,9 @@
 
 namespace ArchCov {
 
-    /**
-     * @brief Field descriptor that can contain either an Attribute or an Enum
-     */
     class Field : public Descriptor
     {
     public:
-        // Constructors
         Field() : Descriptor() {}
 
         Field(const std::string& name, const Attribute& attr)
@@ -34,7 +30,6 @@ namespace ArchCov {
             : Descriptor(name)
             , value_(Attribute(name, width)) {}
 
-        // Type checking
         bool isAttribute() const {
             return std::holds_alternative<Attribute>(value_);
         }
@@ -43,7 +38,6 @@ namespace ArchCov {
             return std::holds_alternative<Enum>(value_);
         }
 
-        // Accessors for Attribute
         Attribute& getAttribute() {
             return std::get<Attribute>(value_);
         }
@@ -52,7 +46,6 @@ namespace ArchCov {
             return std::get<Attribute>(value_);
         }
 
-        // Accessors for Enum
         Enum& getEnum() {
             return std::get<Enum>(value_);
         }
@@ -61,7 +54,6 @@ namespace ArchCov {
             return std::get<Enum>(value_);
         }
 
-        // Convenience methods
         uint64_t getWidth() const {
             if (isAttribute()) {
                 return getAttribute().getWidth();
@@ -77,7 +69,6 @@ namespace ArchCov {
             }
         }
 
-        // Get the underlying descriptor (for generic access)
         const std::variant<Attribute, Enum>& getValue() const {
             return value_;
         }

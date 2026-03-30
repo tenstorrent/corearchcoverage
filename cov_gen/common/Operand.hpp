@@ -17,9 +17,6 @@ namespace WdRiscv {
 }
 namespace ArchCov {
 
-      /**
-     * @brief Operand descriptor with two pairs: operand (Point + variant) and value (Point + variant)
-     */
     class Operand {
         public:
             // Constructors
@@ -133,7 +130,7 @@ namespace ArchCov {
                 }
                 return "";
             }
-            // Helper methods for operand variant
+            
             bool isOperandAttribute() const {
                 return std::holds_alternative<Attribute>(operand_);
             }
@@ -142,7 +139,6 @@ namespace ArchCov {
                 return std::holds_alternative<Enum>(operand_);
             }
     
-             // Helper methods for value variant
             bool isValueAttribute() const {
                 return std::holds_alternative<Attribute>(value_);
             }
@@ -160,15 +156,13 @@ namespace ArchCov {
                 }
                 return operandAsString;
             }
-            // Operand pair: Point + variant<Attribute, Enum>
+            
             Point pOperand_;
             std::variant<Attribute, Enum> operand_;
     
-            // Value pair: Point + variant<Attribute, Enum>
             Point pValue_;
             std::variant<Attribute, Enum> value_;
     
-            // Type and mode from WdRiscv namespace
             WdRiscv::OperandType type_;
             WdRiscv::OperandMode mode_;
     }; 

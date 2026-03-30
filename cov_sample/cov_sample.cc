@@ -169,7 +169,7 @@ bool launch(char* json_path, char* tracer_path, char* bootrom, char* program, lo
       hart.defineResetPc(0x10000);
     hart.reset();
     sampleResetState(hart, printResetState);
-    config.applyImsicConfig(sys); //doesn't matter if AIA is present or not
+    config.applyImsicConfig(sys); 
     hart.tracePmp(true);
     hart.tracePma(true);
     hart.setInstructionCountLimit(max_instr);
@@ -192,12 +192,11 @@ bool launch(char* json_path, char* tracer_path, char* bootrom, char* program, lo
     return false;
   }
 
-  // Run each hart in its own thread.
 
   std::vector<std::thread> threadVec;
 
   std::atomic<bool> result = true;
-  std::atomic<unsigned> finished = 0;  // Count of finished threads.
+  std::atomic<unsigned> finished = 0;  
 
   FILE* whisper_log = fopen("whisper.log", "w");
 

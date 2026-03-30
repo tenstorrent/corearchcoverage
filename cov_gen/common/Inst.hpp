@@ -15,12 +15,8 @@
 #include "Coverage.hpp"
 
 namespace ArchCov {
-        /**
-     * @brief Instruction descriptor with id, format, extension, operands, and extra points
-     */
      class Inst {
         public:
-            // Constructors
             Inst() = default;
     
             Inst(std::string name, uint64_t id, const std::string& format, const std::string& ext)
@@ -29,23 +25,18 @@ namespace ArchCov {
                 , format_(format)
                 , ext_(ext) {}
     
-            // Name accessors
             const std::string& getName() const { return name_; }
             void setName(const std::string& name) { name_ = name; }
     
-            // ID accessors
             uint64_t getId() const { return id_; }
             void setId(uint64_t id) { id_ = id; }
     
-            // Format accessors
             const std::string& getFormat() const { return format_; }
             void setFormat(const std::string& format) { format_ = format; }
     
-            // Extension accessors
             const std::string& getExt() const { return ext_; }
             void setExt(const std::string& ext) { ext_ = ext; }
     
-            // Operands accessors
             const std::vector<Operand>& getOperands() const { return operands_; }
             std::vector<Operand>& getOperands() { return operands_; }
     
@@ -61,7 +52,6 @@ namespace ArchCov {
                 return operands_.size();
             }
     
-            // Extra points accessors
             const std::vector<std::pair<Point, std::variant<Attribute, Enum>>>& getExtra() const {
                 return extra_;
             }
@@ -90,7 +80,6 @@ namespace ArchCov {
                 return extra_.size();
             }
     
-            // Helper methods for extra variant access
             bool isExtraAttribute(size_t index) const {
                 if (index >= extra_.size()) return false;
                 return std::holds_alternative<Attribute>(extra_[index].second);
@@ -119,7 +108,6 @@ namespace ArchCov {
     
             Point getExtraPoint(size_t index) const {
                 if (index >= extra_.size()) {
-                    // Return a default or throw - for now return first Point value
                     return Point::HartIndex;
                 }
                 return extra_[index].first;
@@ -259,7 +247,6 @@ namespace ArchCov {
     
                     if (operand.isOperandAttribute()) {
     
-                        //For an integer or FP register, create a coverpoint for the value ranges
                         if(typeName == "int" || typeName == "fp") {
                             CoverPoint cpVal = CoverPoint();
                             if( operand.getpValue() == ArchCov::Point::Op0Val ||
@@ -286,7 +273,6 @@ namespace ArchCov {
                             }
                         }
     
-                        //For an immediate value, create a coverpoint for the min/max values. 
                         if(typeName == "imm") {
     
                             cp.name = std::string(magic_enum::enum_name(operand.getpValue()));

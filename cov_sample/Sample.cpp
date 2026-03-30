@@ -28,7 +28,6 @@ sampleInst(TraceRecord<URV>* tr, arch_t& table)
   static const InstTable insts;
   auto entry = insts.getEntry(tr->instId());
 
-  //Sample all the operands of the instruction. 
   for (unsigned i = 0; i < 4; ++i)
   {
     if (entry.ithOperandMask(i) == 0)
@@ -86,7 +85,7 @@ sampleCsr(TraceRecord<URV>* tr, arch_t& table, std::vector<std::pair<URV, URV>>&
     table.addEntry(Point::CsrNum, pair.first & 0xfff);
     table.addEntry(Point::CsrValue, pair.second);
 
-    switch (pair.first)         // handle shadow csrs
+    switch (pair.first)         
     {
       case URV(CsrNumber::MIP):
         shadowCsrs.emplace_back(CsrNumber::SIP); break;
@@ -216,7 +215,7 @@ samplePmpData(TraceRecord<URV>* tr, arch_t& table,
 
 template <typename URV>
 static void
-samplePagingData(TraceRecord<URV>* /*tr*/,   // No longer used.
+samplePagingData(TraceRecord<URV>*,   
                 arch_t& table,
                 bool instr,
                 const VirtMem::Walk& walk,
@@ -225,11 +224,10 @@ samplePagingData(TraceRecord<URV>* /*tr*/,   // No longer used.
   if (not walk.complete())
     return;
 
-  // Process leaf PTE. 
   unsigned p = (instr)? unsigned(Point::FPTELeaf) : unsigned(Point::DPTELeaf);
   table.addEntry(Point(p), walk.pteValues().back());
 
-  int pageSize = walk.maxLevels() - walk.size();  // Double check.
+  int pageSize = walk.maxLevels() - walk.size();  
   if (pageSize >= 0) {
     table.addEntry(instr? Point::FPageSize : Point::DPageSize, pageSize);
     if (numPageTableWalks > 1) {
@@ -238,8 +236,8 @@ samplePagingData(TraceRecord<URV>* /*tr*/,   // No longer used.
     }
   }
 
-  if (walk.size() > 1) {   // We have a non-leaf pte.
-    auto pte_val = walk.ithPte(walk.size() - 2);  // PTE entry before leaf
+  if (walk.size() > 1) {   
+    auto pte_val = walk.ithPte(walk.size() - 2);  
     unsigned p = (instr)? unsigned(Point::FPTENonLeaf): unsigned(Point::DPTENonLeaf);
     table.addEntry(Point(p), pte_val);
   }
@@ -252,7 +250,7 @@ samplePagingData(TraceRecord<URV>* /*tr*/,   // No longer used.
 
 template <typename URV>
 static void
-samplePageTables(TraceRecord<URV>* tr, arch_t& table, VirtMem::Mode /*pagingMode*/, bool isInstr)
+samplePageTables(TraceRecord<URV>* tr, arch_t& table, VirtMem::Mode, bool isInstr)
 {
   const auto& walks = isInstr? tr->getFetchPageTableWalks() : tr->getDataPageTableWalks();
   unsigned numPageTableWalks = walks.size();
@@ -279,7 +277,7 @@ samplePmaData(TraceRecord<URV>* tr, arch_t& table,
     tr->peekCsReg(CsrNumber(index + entry.ix_), pmaCfgVal);
     if (entry.reason_ == PmaManager::AccessReason::Fetch)
     {
-      if ( entry.addr_ >= (physPc & ~(uint64_t(3))) && // whisper seems to have granularity 4
+      if ( entry.addr_ >= (physPc & ~(uint64_t(3))) && 
           (entry.addr_ < (physPc+instSize)))
       {
         if (!fPma)
@@ -376,9 +374,8 @@ static void fillPmp2Stage(std::vector<PmpManager::PmpTrace> pmps, uint64_t addr,
 template <typename URV>
 static void fillPma2Stage(std::vector<PmaManager::PmaTrace> pmas, uint64_t addr, uint64_t /*size*/, uint32_t point, uint64_t stage, uint64_t cpLen, arch_t& table, TraceRecord<URV>* tr)
 {
-  // if a particular address was accessed then we will have its PMA
   URV pmaCfgVal;
-  uint64_t mask =  0xfffffffffffff000; // PMAs have a granularity of 12k.
+  uint64_t mask =  0xfffffffffffff000; 
   for (auto& entry : pmas)
     if ((entry.addr_ & mask) == (addr & mask))
     {
@@ -398,15 +395,12 @@ sampleTwoStagePagingData(TraceRecord<URV>* tr,
                          const std::vector<VirtMem::Walk>& walks,
                          std::vector<PmaManager::PmaTrace>& pmas,
                          std::vector<PmpManager::PmpTrace>& pmps,
-                         bool instr, bool hostBareMode, bool guestBareMode, uint64_t ) //, physAddr)
+                         bool instr, bool hostBareMode, bool guestBareMode, uint64_t ) 
 {
   int point = 0;
   uint32_t cpLen = uint32_t(Point::FGPA_GStageLevel1) - uint32_t(Point::FGPA);
 
-  // Check for page crossing. If first walk type (one-stage or stage1 of two-stage), then
-  // we have a page cross. This does not work for vector data walks.
-  // First walk is always either one-stage or stage1 of two-stage.
-  size_t lastIx = 0;  // Index of last one-stage or last stage1 walk.
+  size_t lastIx = 0;  
   if (not walks.empty() and  (walks.front().isStage1() or walks.front().isOneStage()))
     {
       for (size_t ix = 0; ix < walks.size(); ++ix)
@@ -416,7 +410,6 @@ sampleTwoStagePagingData(TraceRecord<URV>* tr,
         table.addEntry(instr? Point::FPageCross : Point::DPageCross, true);
     }
 
-  // In case of a page crosser, we process the last walk (or walks for two-stage translation).
   for (size_t ix = lastIx; ix < walks.size(); ++ix)
     {
       const auto& walk = walks.at(ix);
@@ -426,7 +419,7 @@ sampleTwoStagePagingData(TraceRecord<URV>* tr,
             {
               uint64_t addr = walk.ithPteAddr(i);
               point = instr? uint32_t(Point::FGPA) : uint32_t(Point::DGPA);
-              auto offset = i * cpLen;  // Was gLevels * cpLen;
+              auto offset = i * cpLen;  
               table.addEntry(Point(point+offset), addr);
             }
           auto adUpdated = (unsigned(walk.aUpdated()) << 1) | unsigned(walk.dUpdated());
@@ -440,17 +433,16 @@ sampleTwoStagePagingData(TraceRecord<URV>* tr,
         }
       else if (walk.isStage2())
         {
-          // Should we do for every stage2 walk or for the last one?
 
           auto offset = walk.size() * cpLen;
 
-          if (walk.complete())    // Reached leaf: add leaf value.
+          if (walk.complete())    
             {
               auto leafVal = walk.pteValues().back();
               point = instr? uint32_t(Point::FPTELeaf) : uint32_t(Point::DPTELeaf);
               table.addEntry(Point(point+offset), leafVal);
             }
-          if (walk.size() > 1)     // If non-leaf visited, add a non-leaf from stage2 walk.
+          if (walk.size() > 1)    
             {
               auto pte = walk.pteValues().front();
               point = instr? uint32_t(Point::FPTENonLeaf) : uint32_t(Point::DPTENonLeaf);
@@ -479,7 +471,6 @@ sampleTwoStagePagingData(TraceRecord<URV>* tr,
         assert(0);
     }
 
-  // Gstage root hPte in the final G-stage walk
   if (not walks.empty() and walks.back().isStage2())
     {
       auto addr = walks.back().ithPteAddr(0);
@@ -488,7 +479,7 @@ sampleTwoStagePagingData(TraceRecord<URV>* tr,
 
   if (walks.size() > 1 and not guestBareMode)
     {
-      uint64_t vPageSize = walks.back().size();  // Number of levels in last G-stage walk.
+      uint64_t vPageSize = walks.back().size(); 
       table.addEntry(instr? Point::FVPageSize : Point::DVPageSize, vPageSize);
     }
 }
@@ -510,11 +501,11 @@ sampleTwoStagePagingData(TraceRecord<URV>* tr,
   int vaEntries = 0, vPageSize = 0, gPageSize;
   int hLevels = hostBareMode?  0 : HPTE(0).levels();
   int gLevels = guestBareMode? 0 : GPTE(0).levels();
-  gLevels++; // will be decremented before sampling
+  gLevels++; 
   uint32_t cpLen = uint32_t(Point::FGPA_GStageLevel1) - uint32_t(Point::FGPA);
   int lastGlevel = 0;
 
-  // check for page crossing
+  
   for (auto& walk : walkData)
     for (auto& entry : walk)
       if (entry.type_ == VirtMem::WalkEntry::GVA)
@@ -525,11 +516,6 @@ sampleTwoStagePagingData(TraceRecord<URV>* tr,
     table.addEntry(instr? Point::FPageCross : Point::DPageCross, true);
 
   uint64_t lastGpa = 0;
-  // for (auto& walk : walkData) {
-  //   std::cout << "Walk data starts" << std::endl;
-  //   for (auto& entry : walk)
-  //       std::cout << "type:" << entry.type_ << " addr: " << std::hex << entry.addr_ << " AD: " << entry.aUpdated_ << entry.dUpdated_ << " Stage 2?" << entry.stage2_ << std::dec << std::endl;
-  // }
   for (auto& walk : walkData) {
     uint64_t hPteNonLeafVal = 0;
     uint64_t hPteNonLeafPma = 0;
@@ -537,20 +523,19 @@ sampleTwoStagePagingData(TraceRecord<URV>* tr,
     for (auto& entry : walk) {
       if (entry.type_ == VirtMem::WalkEntry::GVA)
           vaEntries--;
-      if (vaEntries != 0) // only report for the last walk
+      if (vaEntries != 0) 
           break;
 
       if (entry.type_ == VirtMem::WalkEntry::GPA) {
-        gPageSize = 0; // reset G-stage page size
-        if (entry.addr_ != lastGpa) { // in the whisper walk, we get same GPA twice
+        gPageSize = 0; 
+        if (entry.addr_ != lastGpa) { 
           gLevels--;
-          if (gLevels < 0) break; // sanity
+          if (gLevels < 0) break; 
           lastGpa = entry.addr_;
-          // GPA
           point = instr? uint32_t(Point::FGPA) : uint32_t(Point::DGPA);
           auto offset = gLevels * cpLen;
           table.addEntry(Point(point+offset), entry.addr_);
-          hPteNonLeafVal = 0; // we have seen new GPA, null any previous G stage data
+          hPteNonLeafVal = 0; 
         }
 
       } else if ((entry.type_ == VirtMem::WalkEntry::PA) && !hostBareMode && (gLevels >= 0)) {
@@ -559,7 +544,6 @@ sampleTwoStagePagingData(TraceRecord<URV>* tr,
         tr->peekMemory(entry.addr_, hPteVal, true);
 
         if (gPageSize == 1 && gLevels == 0) {
-          // This is a gstage root hPte in the final G-stage walk
           fillPma2Stage(pmas, entry.addr_, 8, instr? uint32_t(Point::FPmaRoot) : uint32_t(Point::DPmaRoot), 0, 0, table, tr);
         }
 
@@ -568,14 +552,12 @@ sampleTwoStagePagingData(TraceRecord<URV>* tr,
           hPteNonLeafVal = hPteVal;
           hPteNonLeafPma = entry.addr_;
 
-        } else { // Leaf entry (end of G-stage walk)
+        } else { 
           auto offset = gLevels * cpLen;
-          //pte leaf
           point = instr? uint32_t(Point::FPTELeaf) : uint32_t(Point::DPTELeaf);
           table.addEntry(Point(point+offset), hPteVal);
 
           if (hPteNonLeafVal) {
-            //pte non-leaf
             hPteNonLeafPrinted = true;
             point = instr? uint32_t(Point::FPTENonLeaf) : uint32_t(Point::DPTENonLeaf);
             table.addEntry(Point(point+offset), hPteNonLeafVal);
@@ -583,22 +565,17 @@ sampleTwoStagePagingData(TraceRecord<URV>* tr,
 
           gPageSize = hLevels - gPageSize;
           if (gPageSize >= 0 && !hostBareMode) {
-            // G-side page size for every level
             point = instr? uint32_t(Point::FPageSize) : uint32_t(Point::DPageSize);
             table.addEntry(Point(point+offset), gPageSize);
             gPageSize = 0;
           }
-          // PMA & PMP for G-side
           fillPma2Stage(pmas, entry.addr_, 8, instr? uint32_t(Point::FPmaLeaf) : uint32_t(Point::DPmaLeaf), gLevels, cpLen, table, tr);
           fillPmp2Stage(pmps, entry.addr_, 8, instr? uint32_t(Point::FPmpLeaf) : uint32_t(Point::DPmpLeaf), gLevels, cpLen, table, tr);
         }
 
       } else if (entry.type_ == VirtMem::WalkEntry::RE && (gLevels >= 0)) {
-        // RE is the final leaf entry of either G stage or V stage
-        // This would come up twice in a single walk if AD bits are updated
         auto offset = gLevels * cpLen;
         if (gLevels == 0) {
-          // Final PA (Successful Page Walk)
           fillPma2Stage(pmas, entry.addr_, 8, instr? uint32_t(Point::FPma) : uint32_t(Point::DPma), gLevels, cpLen, table, tr);
           fillPmp2Stage(pmps, entry.addr_, 8, instr? uint32_t(Point::FPmp) : uint32_t(Point::DPmp), gLevels, cpLen, table, tr);
           break;
@@ -608,14 +585,12 @@ sampleTwoStagePagingData(TraceRecord<URV>* tr,
         point = instr? uint32_t(Point::FVPTE) : uint32_t(Point::DVPTE);
         table.addEntry(Point(point+offset), vPteVal);
 
-        // PMA & PMP for V-side
         fillPma2Stage(pmas, entry.addr_, 8, instr? uint32_t(Point::FPma) : uint32_t(Point::DPma), gLevels, cpLen, table, tr);
         fillPmp2Stage(pmps, entry.addr_, 8, instr? uint32_t(Point::FPmp) : uint32_t(Point::DPmp), gLevels, cpLen, table, tr);
 
-        //AD update
         auto ADUpdated = (unsigned(entry.aUpdated_)<<1) | unsigned(entry.dUpdated_);
         if (ADUpdated) {
-          if (entry.stage2_) { // G-stage
+          if (entry.stage2_) { 
             point = instr? uint32_t(Point::FPTELeafADUpdate) : uint32_t(Point::DPTELeafADUpdate);
             point += (gLevels * cpLen);
           } else {
@@ -627,13 +602,13 @@ sampleTwoStagePagingData(TraceRecord<URV>* tr,
         lastGlevel = gLevels;
 
         bool vPteLeaf = GPTE(vPteVal).leaf();
-        if (vPteLeaf) { //last level, next G-stage translation is final
+        if (vPteLeaf) { 
           if (!vPageSize) vPageSize = gLevels-1;
           gLevels = 1;
         }
       }
     }
-    // when G-stage non-leaf takes a page fault, we weren't printing the non-leaf entry
+    
     if (!hPteNonLeafPrinted && hPteNonLeafVal && (gLevels >= 0)) {
       point = instr? uint32_t(Point::FPTENonLeaf) : uint32_t(Point::DPTENonLeaf);
       table.addEntry(Point(point+(gLevels*cpLen)), hPteNonLeafVal);
@@ -643,7 +618,7 @@ sampleTwoStagePagingData(TraceRecord<URV>* tr,
       table.addEntry(instr? Point::FPtwFaultIsLeaf : Point::DPtwFaultIsLeaf, int(HPTE(pteVal).leaf()));
       table.addEntry(instr? Point::FPtwFaultLevel : Point::DPtwFaultLevel, gLevels);
     }
-  } // end walkData
+  } 
   if (!guestBareMode)
     table.addEntry(instr? Point::FVPageSize : Point::DVPageSize, vPageSize);
 }
@@ -673,15 +648,13 @@ template <typename URV>
 static void
 sampleImsicData(TraceRecord<URV>* tr, arch_t &table)
 {
-  using SVP = std::pair<URV, uint64_t>;  // select-value pair
+  using SVP = std::pair<URV, uint64_t>;  
   std::vector<SVP> mcvps, scvps;
   std::vector<std::vector<SVP>> gcvps;
 
   std::vector<unsigned int> mmsi, smsi;
   std::vector<std::vector<unsigned int>> gmsi;
-
-  //tr->getModifiedImsicCsrs(mcvps, mmsi, scvps, smsi, gcvps, gmsi);
-  //csr or we can send msi
+  
   tr->getImsicChanges(mcvps, scvps, gcvps, mmsi, smsi, gmsi);
 
   for (auto &pair : mcvps) {
@@ -740,29 +713,23 @@ void sample(TraceRecord<URV>* tr)
   step = step + 1;
   arch_t table;
 
-  //HartIndex
   table.addEntry(Point::HartIndex, unsigned(tr->hartIndex()));
 
-  // instruction
   sampleInst(tr, table);
 
-  // pc
   table.addEntry(Point::VirtPc,     tr->virtPc());
   table.addEntry(Point::PhysPc,     tr->physPc());
   table.addEntry(Point::NextVirtPc, tr->nextVirtPc());
 
-  // csrs
   std::vector<std::pair<URV, URV>> csrs;
   tr->getModifiedCsrs(csrs);
   sampleCsr(tr, table, csrs);
 
-  // privilege mode
   table.addEntry(Point::PrivilegeMode,     unsigned(tr->privMode()));
   table.addEntry(Point::NextPrivilegeMode, unsigned(tr->nextPrivMode()));
   table.addEntry(Point::DebugMode,         unsigned(tr->debugMode()));
   table.addEntry(Point::NextDebugMode,     unsigned(tr->nextDebugMode()));
 
-  // ld/st
   uint64_t virtLdStAddr, physLdStAddr = ~0 , lastStoreValue;
   uint64_t ldStSize = tr->lastLdStAddress(virtLdStAddr, physLdStAddr);
   bool ldStMisal;
@@ -776,7 +743,6 @@ void sample(TraceRecord<URV>* tr)
   if (tr->misalignedLdSt(ldStMisal))
     table.addEntry(Point::LdStMisal, ldStMisal);
 
-  // interrupts exceptions
   URV cause = 0;
   bool trap = tr->hasTrap(cause);
   if (trap)
@@ -789,7 +755,7 @@ void sample(TraceRecord<URV>* tr)
     } else {
       table.addEntry(Point::Exception, cause);
 
-      bool trigger_hit = false;     // also check for any trigger
+      bool trigger_hit = false;     
       uint64_t trigger_hit_vec = 0;
       URV csr_tdata1 = 0x7a1;
       auto iter = csrs.begin();
@@ -809,7 +775,6 @@ void sample(TraceRecord<URV>* tr)
     }
   }
 
-  // Attributes
   unsigned virtualMode = unsigned(tr->virtualMode());
   table.addEntry(Point::VirtualMode,            virtualMode);
   table.addEntry(Point::ValidLR,                unsigned(tr->hasLr()));
@@ -817,17 +782,15 @@ void sample(TraceRecord<URV>* tr)
   table.addEntry(Point::NumVectorPagesAccessed, unsigned(tr->numVecPagesAccessed()));
   table.addEntry(Point::NextVirtualMode,        unsigned(tr->nextVirtualMode()));
 
-  // IMSIC sampling
   sampleImsicData(tr, table);
 
-  // Page Sampling
   if (virtualMode)
   {
     VirtMem::Mode vsPagingMode, pageModeStage2;
     vsPagingMode = tr->vsMode();
     pageModeStage2 = tr->pageModeStage2();
-    sampleTwoStagePageTables(tr, table, vsPagingMode, pageModeStage2, /*instr?*/ true,  /* final physical address*/ tr->physPc());
-    sampleTwoStagePageTables(tr, table, vsPagingMode, pageModeStage2, /*instr?*/ false, /* final physical address*/ physLdStAddr);
+    sampleTwoStagePageTables(tr, table, vsPagingMode, pageModeStage2, true,  tr->physPc());
+    sampleTwoStagePageTables(tr, table, vsPagingMode, pageModeStage2, false, physLdStAddr);
   } 
   else
   {
@@ -838,9 +801,9 @@ void sample(TraceRecord<URV>* tr)
 
     const auto& walks = tr->getDataPageTableWalks();
     for (auto& walk : walks) if (walk.isTwoStage()) { twoStage = true; break; }
-    if (twoStage) // for hypervisor virtual-machine load and store instructions (hlv.b etc)
+    if (twoStage) 
     {
-      sampleTwoStagePageTables(tr, table, tr->vsMode(), tr->pageModeStage2(), /*instr?*/ false, /* final physical address*/ physLdStAddr);
+      sampleTwoStagePageTables(tr, table, tr->vsMode(), tr->pageModeStage2(), false, physLdStAddr);
     }
     else
     {

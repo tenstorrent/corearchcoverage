@@ -10,12 +10,8 @@
 
 namespace ArchCov {
     
-    // Type aliases
     using EnumValueMap = std::map<std::string, uint64_t>;
 
-    /**
-     * @brief Enumeration descriptor with name-value pairs
-     */
     class Enum : public Descriptor {
     public:
         Enum() : Descriptor(), enumValues_() {}
@@ -28,10 +24,8 @@ namespace ArchCov {
             : Descriptor(name)
             , enumValues_(enumValues) {}
     
-        // Getters
         const EnumValueMap& getEnumValues() const { return enumValues_; }
     
-        // Modifiers
         void addEnumValue(const std::string& name, uint64_t value) {
             enumValues_[name] = value;
         }
@@ -44,7 +38,6 @@ namespace ArchCov {
     
         size_t size() const { return enumValues_.size(); }
     
-        // Comparison operators (by enum name, alphabetical order)
         bool operator<(const Enum& other) const { return getName() < other.getName(); }
         bool operator<=(const Enum& other) const { return getName() <= other.getName(); }
         bool operator>(const Enum& other) const { return getName() > other.getName(); }

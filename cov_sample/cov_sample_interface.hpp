@@ -26,7 +26,6 @@ class covSampleInterface {
           pkt.cp  = entry.first;
           pkt.val = entry.second;
 
-          //Mark the last packet of the table to indicate instruction boundary
           if(i == (table.entries_.size()-1)) {
             pkt.isLastPkt = 1;
           } else {
