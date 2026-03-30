@@ -5,12 +5,12 @@
   - [Salient Features](#salient-features)
   - [Coverage Generation](#coverage-generation)
   - [Coverage Sampling](#coverage-sampling)
-  - [Supported Coverpoints](#supported-coverpoints)
 - [Getting Started](#getting-started)
   - [Requirements](#requirements)
   - [Quick Start](#quick-start)
+- [Supported Coverpoints](#supported-coverpoints)
+- [Current Limitations](#current-limitations)
 - [Contributing](#contributing)
-
 ---
 
 ## Overview
@@ -63,24 +63,53 @@ git clone https://github.com/tenstorrent/corearchcoverage.git
 ```
 git clone https://github.com/tenstorrent/corearchcoverage.git
 ```
-- Build Whisper:
+- Set Environment variables:
 ```
-cd whisper 
-make BOOST_DIR=<path_to_your_boost_libraries> SOFT_FLOAT=1 MEM_CALLBACKS=1 TRACE_READER=0 
+export PROJECT_ROOT = <path/to/your/top-of-tree/of/the/repository>
+export LD_LIBRARY_PATH = "<path/to/your/boost/installation>:$LD_LIBRARY_PATH"
 ```
-- Build cov-gen module
+- Currently, we have experimented the flow with VCS simulator. To enable the flow to run simulation, set the `VCS_ROOT` environment variable.
 ```
-cd cov_gen
-make BOOST_DIR=<path_to_your_boost_libraries>
+export VCS_ROOT = <path/to/your/vcs/installation>
 ```
-- Run the generated cov-gen module from the `build` directory
+- Use the run_coverage.py script
 ```
-./cov_gen <path_to_whisper_configuration_json> cp_pkg.sv
+python3 scripts/run_coverage.py --clean_and_build_all --boost_lib_path=<path/to/your/boost/installation> --cxx_path=<path/to/your/cpp/compiler> --whisper_config=<path/to/your/whisper/config/json> --test <path/to/test/binary>
 ```
+- The script has multiple options for building and running intermediate steps for the framework
+```
+python3 scripts/run_coverage.py --help
+usage: run_coverage.py [-h] [--boost_lib_path BOOST_LIB_PATH]
+                       [--cxx_path CXX_PATH] [--whisper_config WHISPER_CONFIG]
+                       [--cp_pkg_path CP_PKG_PATH] [--test TEST] [--clean_all]
+                       [--build_whisper_only] [--build_cov_gen_only]
+                       [--run_cov_gen_only] [--run_gen_cov_sample_only]
+                       [--run_sim_only] [--clean_and_build_all]
 
-## Contributing
+Build and run coverage flow for corearchcoverage.
 
-For contributing to the project, refer to the [Contributing Section](.github/CONTRIBUTING.md) for information on setting up a developer environment.
+optional arguments:
+  -h, --help            show this help message and exit
+  --boost_lib_path BOOST_LIB_PATH
+                        Boost install path
+  --cxx_path CXX_PATH   Path to the C++ compiler
+  --whisper_config WHISPER_CONFIG
+                        Path to the Whisper configuration file
+  --cp_pkg_path CP_PKG_PATH
+                        Path to the cp_pkg.sv file
+  --test TEST           Path to the test binary
+  --clean_all           Clean all build artifacts (default: false).
+  --build_whisper_only  Only build Whisper (default: false).
+  --build_cov_gen_only  Build cov_gen only (default: false).
+  --run_cov_gen_only    Only regenerate cp_pkg (default: false).
+  --run_gen_cov_sample_only
+                        Only generate autogen samples (default: false).
+  --run_sim_only        Only run coverage simulation with whisper (default:
+                        false). Currently, the script only supports vcs
+                        simulator.
+  --clean_and_build_all
+                        Build all components (default: false).
+```
 
 ## Supported Coverpoints
 
@@ -107,4 +136,15 @@ Following is a list of coverpoints supported by the cov-gen module for cp_pkg ge
 | TriggerHitVec  | SdTrigger hit vector value                                    | Attribute      |
 | Rm             | Rounding Mode corresponding to fcsr.frm                       | Enum           |
 | CancelLrCause  | Cause for LR instruction cancellation                         | Enum           |
+| VirtLdStAddr   | VirtLdStAddr is the virtual load/store address                | Attribute      |
+| PhysLdStAddr   | PhysLdStAddr is the physical load/store address               | Attribute      | 
+
+## Current Limitations
+
+- Adaptability to config files : Currently, the framework generates coverage information for all the available extensions and features irrespective of the whisper_config.json. Future versions are being developed to support selective coverage model enablement to allow environments that do not support or optionally support certain extensions.
+  
+## Contributing
+
+For contributing to the project, refer to the [Contributing Section](.github/CONTRIBUTING.md) for information on setting up a developer environment.
+
 
