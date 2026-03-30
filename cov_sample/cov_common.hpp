@@ -1,3 +1,5 @@
+//  SPDX-FileCopyrightText: © 2026 Tenstorrent AI ULC
+//  SPDX-License-Identifier: Apache-2.0
 #include <stdint.h>
 #pragma once
 namespace CovCommon { 

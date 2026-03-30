@@ -1,3 +1,5 @@
+//  SPDX-FileCopyrightText: © 2026 Tenstorrent AI ULC
+//  SPDX-License-Identifier: Apache-2.0
  `ifndef COVERAGE_UNSUPPORTED
  import cov_common::*;
  import user_cov_common::*;

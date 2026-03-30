@@ -1,3 +1,5 @@
+//  SPDX-FileCopyrightText: © 2026 Tenstorrent AI ULC
+//  SPDX-License-Identifier: Apache-2.0
 `ifndef COV_COMMON_SV
 `define COV_COMMON_SV
 `ifndef COVERAGE_UNSUPPORTED

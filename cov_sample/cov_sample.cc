@@ -1,5 +1,5 @@
-// This file is compiled as C++ and linked with stdlib
-// into the simulation executable.
+//  SPDX-FileCopyrightText: © 2026 Tenstorrent AI ULC
+//  SPDX-License-Identifier: Apache-2.0
 #include <vector>
 #include <thread>
 #include <atomic>
@@ -123,7 +123,6 @@ void sampleResetState(Hart<URV>& hart, int printResetState = 0) {
 
 template <typename URV>
 bool launch(char* json_path, char* tracer_path, char* bootrom, char* program, long long max_instr, int printResetState, int tlb_entries) {
-  // launch whisper instance
   WdRiscv::HartConfig config;
   if (not config.loadConfigFile(json_path))
     return false;
