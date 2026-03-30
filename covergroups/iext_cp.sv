@@ -481,7 +481,7 @@ covergroup iext__cg with function sample();
         bins rs1_minmax_sra[]     = {UMIN32, UMAX32, SMIN32, SMAX32} iff(instrenum_var == INSTRENUM_SRAW || instrenum_var == INSTRENUM_SRAIW);
     }
 
-    iext__dataset_cp_arithmetic_rs2_Uminmax_64bit: coverpoint rs2_val[31:0] iff(rd!=0){
+    iext__dataset_cp_arithmetic_rs2_Uminmax_64bit: coverpoint rs2_val iff(rd!=0){
         bins rs2_minmax_add[]     = {UMIN64, UMAX64} iff(instrenum_var == INSTRENUM_ADD);
         bins rs2_minmax_sub[]     = {UMIN64, UMAX64} iff(instrenum_var == INSTRENUM_SUB);
         bins rs2_minmax_slt[]     = {UMIN64, UMAX64} iff(instrenum_var == INSTRENUM_SLT || instrenum_var == INSTRENUM_SLTU );
@@ -535,7 +535,7 @@ covergroup iext__cg with function sample();
         bins sub_rs1_Smax  = {INSTRENUM_SUB} iff(rs1_val==SMAX64 && rs2_val[63]==0 && rs2_val[62:0]!=0);
         bins sub_rs2_Smin  = {INSTRENUM_SUB} iff(rs1_val[63]==0 && rs2_val==SMIN64);
     }
-    
+
     iext__dataset_cp_arithmetic_underflow: coverpoint instrenum_var iff(rd!=0){
         bins add_rs1_Smin   = {INSTRENUM_ADD}   iff(rs1_val==SMIN64 && rs2_val[63]==1);
         bins addw_rs1_Smin  = {INSTRENUM_ADDW}  iff(rs1_val[31:0]==SMIN32 && rs2_val[31]==1);

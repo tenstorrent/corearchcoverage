@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 # Compiler and flags
-CXX = /opt/rh/gcc-toolset-11/root/bin/g++
+CXX ?= c++20
 CXXFLAGS = -Wall -Wextra -std=c++20 -O3 -DMAGIC_ENUM_RANGE_MAX=1024 -DMAGIC_ENUM_RANGE_MIN=-1024
 LDFLAGS =
 
@@ -22,7 +22,7 @@ MAGIC_ENUM_DIR = $(PROJECT_ROOT)/magic_enum/include
 
 # Boost library configuration
 # BOOST_DIR can be set from command line: make BOOST_DIR=/path/to/boost
-BOOST_DIR  = /tools_vendor/FOSS/boost/1.78
+BOOST_DIR  = /wdc/apps/utilities/boost-1.67
 BOOST_INC  = $(BOOST_DIR)/include
 BOOST_LIB_DIR = $(BOOST_DIR)/lib
 BOOST_LIBS = boost_program_options
@@ -89,8 +89,6 @@ $(BUILD_DIR)/%.o: $(SRCDIR)/%.cpp | $(BUILD_DIR)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 # Link the executable
-# -lgcc and -lstdc++ at the end satisfy half-float runtime (__truncsfhf2/__extendhfsf2) and
-# libstdc++ symbols (_M_replace_cold) referenced by static librvcore.a
 $(TARGET): $(MAIN_OBJ) $(COV_GEN_OBJS) 
 	$(CXX) $(CXXFLAGS) -Wl,-rpath=$(BOOST_LIB_DIR) -o $@ $^ $(LIBDIRS) $(LIBS) $(SOFTFLOAT_DIR)/$(SOFTFLOAT_LIB) $(VIRTUAL_MEM_DIR)/$(VIRTUAL_MEM_LIB) $(PCI_DIR)/$(PCI_LIB) -lgcc -lstdc++ 
 
