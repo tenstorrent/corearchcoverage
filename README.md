@@ -61,7 +61,7 @@ git clone https://github.com/tenstorrent/corearchcoverage.git
 
 - Pull the submodules
 ```
-git clone https://github.com/tenstorrent/corearchcoverage.git
+git submodule update --init --recursive
 ```
 - Set Environment variables:
 ```
