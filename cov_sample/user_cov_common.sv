@@ -113,6 +113,33 @@ const bit[63:0] DEXT_SNAN_NEG      = 64'hfff0000000000001;
 const bit[63:0] DEXT_QNAN          = 64'h7ff8000000000000;
 const bit[63:0] DEXT_QNAN_NEG      = 64'hfff8000000000000;
 
+const bit[15:0] ZFHEXT_SN            = 16'h0400;
+const bit[15:0] ZFHEXT_SN_NEG        = 16'h8400;
+const bit[15:0] ZFHEXT_LN            = 16'h7bff;
+const bit[15:0] ZFHEXT_LN_NEG        = 16'hfbff;
+const bit[15:0] ZFHEXT_SSN           = 16'h0001;
+const bit[15:0] ZFHEXT_SSN_NEG       = 16'h8001;
+const bit[15:0] ZFHEXT_LSN           = 16'h03ff;
+const bit[15:0] ZFHEXT_LSN_NEG       = 16'h83ff;
+const bit[15:0] ZFHEXT_ONE           = 16'h3c00;
+const bit[15:0] ZFHEXT_ONE_NEG       = 16'hbc00;
+const bit[15:0] ZFHEXT_TWO           = 16'h4000;
+const bit[15:0] ZFHEXT_TWO_NEG       = 16'hc000;
+const bit[15:0] ZFHEXT_THREE         = 16'h4200;
+const bit[15:0] ZFHEXT_THREE_NEG     = 16'hc200;
+const bit[15:0] ZFHEXT_ONE_MINUS     = 16'h3bff;
+const bit[15:0] ZFHEXT_ONE_MINUS_NEG = 16'hbbff;
+const bit[15:0] ZFHEXT_ONE_PLUS      = 16'h3c01;
+const bit[15:0] ZFHEXT_ONE_PLUS_NEG  = 16'hbc01;
+const bit[15:0] ZFHEXT_ZERO          = 16'h0000;
+const bit[15:0] ZFHEXT_ZERO_NEG      = 16'h8000;
+const bit[15:0] ZFHEXT_INFINITY      = 16'h7c00;
+const bit[15:0] ZFHEXT_INFINITY_NEG  = 16'hfc00;
+const bit[15:0] ZFHEXT_SNAN          = 16'h7c01;
+const bit[15:0] ZFHEXT_SNAN_NEG      = 16'hfc01;
+const bit[15:0] ZFHEXT_QNAN          = 16'h7e00;
+const bit[15:0] ZFHEXT_QNAN_NEG      = 16'hfe00;
+
 endpackage
 `endif
 `endif

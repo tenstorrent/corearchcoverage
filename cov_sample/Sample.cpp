@@ -1,5 +1,3 @@
-// to be dynamically linked with whisper
-
 #include <cstring>
 #include <iostream>
 #include <fstream>

@@ -27,12 +27,12 @@ ${PROJECT_ROOT}/autogen_samples/instr_cov.sv
 
 # Include coverage files 
 ${PROJECT_ROOT}/covergroups/aext_cov.sv
-#${PROJECT_ROOT}/covergroups/cext_cov.sv
-#${PROJECT_ROOT}/covergroups/dext_cov.sv
-#${PROJECT_ROOT}/covergroups/fext_cov.sv
-#${PROJECT_ROOT}/covergroups/iext_cp.sv
-#${PROJECT_ROOT}/covergroups/mext_cp.sv
-#${PROJECT_ROOT}/covergroups/zfh_cov.sv
+${PROJECT_ROOT}/covergroups/cext_cov.sv
+${PROJECT_ROOT}/covergroups/dext_cov.sv
+${PROJECT_ROOT}/covergroups/fext_cov.sv
+${PROJECT_ROOT}/covergroups/iext_cp.sv
+${PROJECT_ROOT}/covergroups/mext_cp.sv
+${PROJECT_ROOT}/covergroups/zfh_cov.sv
 
 # Include user sampling files
 ${PROJECT_ROOT}/cov_sample/user_cov_sample.sv 

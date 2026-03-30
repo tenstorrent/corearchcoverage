@@ -11,22 +11,22 @@ class user_cov_sample;
     csr_cov_sample csr_cov_local ; 
     
     aext__cg        aext_cg_var;
-    //cext__cg        cext_cg_var;
-    //dext__cg        dext_cg_var ;
-    //fext__cg        fext_cg_var;
-    //iext__cg        iext_cg_var;
-    //mext__cg        mext_cg_var;
-    //zfhext__cg      zfhext_cg_var;
+    cext__cg        cext_cg_var;
+    dext__cg        dext_cg_var ;
+    fext__cg        fext_cg_var;
+    iext__cg        iext_cg_var;
+    mext__cg        mext_cg_var;
+    zfhext__cg      zfhext_cg_var;
 
     function new(csr_cov_sample csr_cov);
         csr_cov_local     = csr_cov;
         aext_cg_var       = new();
-        //mext_cg_var       = new();
-        //iext_cg_var       = new();
-        //fext_cg_var       = new();
-        //dext_cg_var       = new();
-        //zfhext_cg_var     = new();
-        //cext_cg_var       = new();
+        cext_cg_var       = new();
+        mext_cg_var       = new();
+        iext_cg_var       = new();
+        fext_cg_var       = new();
+        dext_cg_var       = new();
+        zfhext_cg_var     = new();
     endfunction
     
     function void sample_commmon(); 
@@ -67,13 +67,13 @@ class user_cov_sample;
     function void sample_sv_user(cp_table user_table);
         table = user_table;
         sample_commmon();
-        //mext_cg_var.sample();
-        //iext_cg_var.sample();
+        mext_cg_var.sample();
+        iext_cg_var.sample();
         aext_cg_var.sample(csr_cov_local);
-        //fext_cg_var.sample(csr_cov_local);
-        //dext_cg_var.sample(csr_cov_local);
-        //zfhext_cg_var.sample(csr_cov_local);
-        //cext_cg_var.sample(csr_cov_local);
+        fext_cg_var.sample(csr_cov_local);
+        dext_cg_var.sample(csr_cov_local);
+        zfhext_cg_var.sample(csr_cov_local);
+        cext_cg_var.sample(csr_cov_local);
         clear();
     endfunction
 endclass

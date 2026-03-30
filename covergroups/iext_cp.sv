@@ -7,72 +7,131 @@ covergroup iext__cg with function sample();
     option.per_instance = 1;
     option.name = "cg_iext";
 
-    // Coverpoints for instructions: 1 bin for each instruction
-    iext__general_cp_iext_instr:                 coverpoint instrenum_var{
-         bins iext_instrs[]                     = iext_arr;                       
-         ignore_bins ignore_instrs              = {INSTRENUM_DRET, INSTRENUM_EBREAK, INSTRENUM_MNRET};                       
-    }
-    iext__general_cp_arithmetic_instr:           coverpoint instrenum_var{bins arithmetic_instrs[]           = arithmetic_instrs_arr;          }
-    iext__general_cp_load_instr:                 coverpoint instrenum_var{bins load_instrs[]                 = {INSTRENUM_LB,INSTRENUM_LBU,INSTRENUM_LD,INSTRENUM_LH,INSTRENUM_LHU,INSTRENUM_LW,INSTRENUM_LWU};}
-    iext__general_cp_store_instr:                coverpoint instrenum_var{bins store_instrs[]                = {INSTRENUM_SB,INSTRENUM_SD,INSTRENUM_SH,INSTRENUM_SW};}
-    iext__general_cp_conditional_branch_instr:   coverpoint instrenum_var{bins conditional_branch_instrs[]   = conditional_branch_instrs_arr;  }
-    iext__general_cp_unconditional_branch_instr: coverpoint instrenum_var{bins unconditional_branch_instrs[] = unconditional_branch_instrs_arr;}
-    iext__general_cp_shift_instr:                coverpoint instrenum_var{bins shift_instrs[]                = shift_instrs_arr;               }
-    iext__general_cp_shift_w_instr:              coverpoint instrenum_var{bins shift_w_instrs[]              = shift_w_instrs_arr;             }
-    iext__general_cp_system_instr:               coverpoint instrenum_var{bins system_instrs[]               = system_instrs_arr;              }
-    iext__general_cp_uformat_instr:              coverpoint instrenum_var{bins uformat_instrs[]              = uformat_arr;                    }
-
-    // Coverpoints for instructions: 1 bin for all instructions
-    iext__general_cp_all_arithmetic_instr:           coverpoint instrenum_var{bins arithmetic_instrs[1]           = arithmetic_instrs_arr;          }
-    iext__general_cp_all_load_instr:                 coverpoint instrenum_var{bins load_instrs[1]                 = load_instrs_arr;                }
-    iext__general_cp_all_store_instr:                coverpoint instrenum_var{bins store_instrs[1]                = store_instrs_arr;               }
-    iext__general_cp_all_conditional_branch_instr:   coverpoint instrenum_var{bins conditional_branch_instrs[1]   = conditional_branch_instrs_arr;  }
-    iext__general_cp_all_unconditional_branch_instr: coverpoint instrenum_var{bins unconditional_branch_instrs[1] = unconditional_branch_instrs_arr;}
-    iext__general_cp_all_shift_instr:                coverpoint instrenum_var{bins shift_instrs[1]                = shift_instrs_arr;               }
-    iext__general_cp_all_shift_w_instr:              coverpoint instrenum_var{bins shift_w_instrs[1]              = shift_w_instrs_arr;             }
-
-    iext__general_cp_privilege_modes: coverpoint privilegemode_var{
-        bins priv_mode[] = {PRIVILEGEMODE_MACHINE, PRIVILEGEMODE_SUPERVISOR, PRIVILEGEMODE_USER};
+    iext__general_cp_iext_instr: coverpoint iext_var {                    
+        ignore_bins ignore_instrs = {IEXT_DRET, IEXT_EBREAK, IEXT_MNRET, IEXT_MRET};                       
     }
 
-    // Priviledge mode crosses with instructions
-    iext__general_cr_arithmetic_priv:           cross iext__general_cp_privilege_modes, iext__general_cp_all_arithmetic_instr;
-    iext__general_cr_conditional_branch_priv:   cross iext__general_cp_privilege_modes, iext__general_cp_all_conditional_branch_instr;
-    iext__general_cr_unconditional_branch_priv: cross iext__general_cp_privilege_modes, iext__general_cp_all_unconditional_branch_instr;
-    iext__general_cr_load_priv:                 cross iext__general_cp_privilege_modes, iext__general_cp_all_load_instr;
-    iext__general_cr_store_priv:                cross iext__general_cp_privilege_modes, iext__general_cp_all_store_instr;
-    iext__general_cr_system_instr_priv: coverpoint privilegemode_var{
-        bins ecall = {PRIVILEGEMODE_MACHINE, PRIVILEGEMODE_SUPERVISOR, PRIVILEGEMODE_USER} iff(instrenum_var == INSTRENUM_ECALL);
-        bins mret = {PRIVILEGEMODE_MACHINE} iff(instrenum_var == INSTRENUM_MRET);
-        bins sret = {PRIVILEGEMODE_SUPERVISOR} iff(instrenum_var == INSTRENUM_SRET);
+    iext__general_cp_arithmetic_instr: coverpoint instrenum_var {
+        bins arithmetic_instrs[]    =   {
+            INSTRENUM_ADD,
+            INSTRENUM_ADDI,
+            INSTRENUM_ADDIW,
+            INSTRENUM_ADDW,
+            INSTRENUM_AND,
+            INSTRENUM_ANDI,
+            INSTRENUM_AUIPC,
+            INSTRENUM_LUI,
+            INSTRENUM_OR,
+            INSTRENUM_ORI,
+            INSTRENUM_SLL,
+            INSTRENUM_SLLI,
+            INSTRENUM_SLLIW,
+            INSTRENUM_SLLW,
+            INSTRENUM_SLT,
+            INSTRENUM_SLTI,
+            INSTRENUM_SLTIU,
+            INSTRENUM_SLTU,
+            INSTRENUM_SRA,
+            INSTRENUM_SRAI,
+            INSTRENUM_SRAIW,
+            INSTRENUM_SRAW,
+            INSTRENUM_SRL,
+            INSTRENUM_SRLI,
+            INSTRENUM_SRLIW,
+            INSTRENUM_SRLW,
+            INSTRENUM_SUB,
+            INSTRENUM_SUBW,
+            INSTRENUM_XOR,
+            INSTRENUM_XORI
+        };          
+    }
+
+    iext__general_cp_load_instr: coverpoint instrenum_var{
+        bins load_instrs[]  =   {
+            INSTRENUM_LB,
+            INSTRENUM_LBU,
+            INSTRENUM_LD,
+            INSTRENUM_LH,
+            INSTRENUM_LHU,
+            INSTRENUM_LW,
+            INSTRENUM_LWU
+        };
+    }
+
+    iext__general_cp_store_instr: coverpoint instrenum_var{
+        bins store_instrs[] =   {
+            INSTRENUM_SB,
+            INSTRENUM_SD,
+            INSTRENUM_SH,
+            INSTRENUM_SW
+        };
+    }
+
+    iext__general_cp_conditional_branch_instr: coverpoint instrenum_var{
+        bins conditional_branch_instrs[]   =  {
+            INSTRENUM_BEQ,
+            INSTRENUM_BGE,
+            INSTRENUM_BGEU,
+            INSTRENUM_BLT,
+            INSTRENUM_BLTU,
+            INSTRENUM_BNE
+        };  
+    }
+
+    iext__general_cp_unconditional_branch_instr: coverpoint instrenum_var{
+        bins unconditional_branch_instrs[] = {
+            INSTRENUM_JAL,
+            INSTRENUM_JALR
+        };
+    }
+
+    iext__general_cp_shift_instr: coverpoint instrenum_var{
+        bins shift_instrs[] = {
+            INSTRENUM_SLLI,
+            INSTRENUM_SRLI,
+            INSTRENUM_SRAI
+        };    
+    }
+
+    iext__general_cp_shift_w_instr: coverpoint instrenum_var{
+        bins shift_w_instrs[] = {
+            INSTRENUM_SLLIW,
+            INSTRENUM_SRLIW,
+            INSTRENUM_SRAIW
+        };             
+    }
+
+    iext__general_cp_system_instr: coverpoint instrenum_var{
+        bins system_instrs[] = {
+            INSTRENUM_ECALL,
+            INSTRENUM_MRET,
+            INSTRENUM_SRET
+        };              
+    }
+
+    iext__general_cp_uformat_instr: coverpoint uformat_var;
+    
+    iext__general_cp_privilege_modes: coverpoint privilegemode_var {
+        bins vals[]     =   {
+                                PRIVILEGEMODE_MACHINE, 
+                                PRIVILEGEMODE_SUPERVISOR, 
+                                PRIVILEGEMODE_USER
+        };
     }
 
     iext__general_cp_special_instr: coverpoint instrenum_var{
-        bins special_instr[] = {INSTRENUM_ECALL, INSTRENUM_ILLEGAL};
+        bins special_instr[] = {INSTRENUM_ILLEGAL};
     }
+
     iext__general_cp_fence_instr: coverpoint instrenum_var{
         bins fence_instr[] = {INSTRENUM_FENCE, INSTRENUM_FENCE_I, INSTRENUM_FENCE_TSO};
     }
-    iext__general_cr_special_instr_priv: cross iext__general_cp_privilege_modes, iext__general_cp_special_instr;
-    iext__general_cr_fence_instr_priv:   cross iext__general_cp_privilege_modes, iext__general_cp_fence_instr;
 
-    // Intructions cross with rd=0
-    iext__general_cp_rd_x0: coverpoint rd iff(rs1 != 0 && rs2 != 0){
-        bins rd_x0 = {0};
-    }
-
-    // Covers most of the hint instructions as well
-    iext__general_cp_instr_rd_x0: coverpoint instrenum_var { 
-        bins instr = iext_arr;
-        ignore_bins rd_x0_ignore_instr = {INSTRENUM_SRET, INSTRENUM_MRET, INSTRENUM_WFI};
-        ignore_bins rd_x0_fence_instr = synch_instrs_arr;
-    }
-    iext__general_cr_iext_rd_x0:  cross iext__general_cp_instr_rd_x0, iext__general_cp_rd_x0;
-    
     iext__general_addi_hint_instruction: coverpoint Inst[6:0] iff(Inst[14:12]==0){
         bins hint_addi_instr1  = {7'b0010011} iff(Inst[11:7] == 0 && Inst[19:15] != 0);
         bins hint_addi_instr2  = {7'b0010011} iff(Inst[11:7] == 0 && Inst[31:20] != 0);
     }
+    
     iext__general_add_hint_instruction: coverpoint instrenum_var{
         bins hint_add_instr1   = {INSTRENUM_ADD} iff(rd==0 && (rs1 != 0));
         bins hint_add_instr2   = {INSTRENUM_ADD} iff(rd==0 && rs1 == 0 && (rs2 < 2 || rs2 > 5));
@@ -81,7 +140,7 @@ covergroup iext__cg with function sample();
         bins hint_add_instr5   = {INSTRENUM_ADD} iff(rd==0 && rs1 == 0 && rs2 == 4);
         bins hint_add_instr6   = {INSTRENUM_ADD} iff(rd==0 && rs1 == 0 && rs2 == 5);
     }
-    // fence hint instructions covered using instruction bytes.
+    
     iext__general_fence_hint_instruction: coverpoint Inst[6:0] iff(Inst[14:12]== 0){
         bins hint_fence_instr1 = {7'b0001111} iff(Inst[11:7]==0 && Inst[19:15] != 0 && Inst[31:28]==0 && (Inst[27:24]==0 || Inst[23:20]==0)); 
         bins hint_fence_instr2 = {7'b0001111} iff(Inst[11:7]!=0 && Inst[19:15] == 0 && Inst[31:28]==0 && (Inst[27:24]==0 || Inst[23:20]==0));
@@ -93,7 +152,6 @@ covergroup iext__cg with function sample();
     iext__general_addi_nop_instruction: coverpoint instrenum_var{
         bins NOP_instr = {INSTRENUM_ADDI} iff(rd==0 && rs1 == 0 && rs2_val == 0);
     }
-    iext__general_cr_nop_instr_priv: cross iext__general_cp_privilege_modes, iext__general_addi_nop_instruction;
 
     iext__general_ras_instruction: coverpoint instrenum_var{
         bins jal_push_ras      = {INSTRENUM_JAL}  iff(rd == 1 || rd == 5);
@@ -108,43 +166,57 @@ covergroup iext__cg with function sample();
         bins jal_imm_sign_0 = {INSTRENUM_JAL} iff (rs1_val[19] == 0);
         bins jal_imm_sign_1 = {INSTRENUM_JAL} iff (rs1_val[19] == 1);
     }
-    iext__general_cp_imm_12_signed_instr: coverpoint instrenum_var{
-        bins instr_imm_12[] = {INSTRENUM_JALR, INSTRENUM_ADDI, INSTRENUM_SLTI, INSTRENUM_XORI, INSTRENUM_ORI, INSTRENUM_ANDI, INSTRENUM_ADDIW};
+
+   iext__general_cp_imm_12_signed_instr: coverpoint instrenum_var{
+        bins instr_imm_12[] = {
+            INSTRENUM_JALR, 
+            INSTRENUM_ADDI, 
+            INSTRENUM_SLTI, 
+            INSTRENUM_XORI, 
+            INSTRENUM_ORI, 
+            INSTRENUM_ANDI, 
+            INSTRENUM_ADDIW
+        };
     }
+    
     iext__dataset_cp_imm_12_sign_bit: coverpoint rs2_val[11]{
         bins imm_12_sign[] = {0,1};
     }
 
-    iext__dataset_cr_store_imm_sign_bit:              cross iext__dataset_cp_imm_12_sign_bit, iext__general_cp_store_instr;
-    iext__dataset_cr_load_imm_sign_bit:               cross iext__dataset_cp_imm_12_sign_bit, iext__general_cp_load_instr;
-    iext__dataset_cr_conditional_branch_imm_sign_bit: cross iext__dataset_cp_imm_12_sign_bit, iext__general_cp_conditional_branch_instr;
-    iext__dataset_cr_instr_12_imm_sign_bit:           cross iext__dataset_cp_imm_12_sign_bit, iext__general_cp_imm_12_signed_instr;
-
     iext__dataset_cp_imm_5_Uminmax: coverpoint rs2_val[4:0] iff(rd!=0){
         bins imm_5_minmax[] = {UMIN5,UMAX5};
     }
+
     iext__dataset_cp_imm_6_Uminmax: coverpoint rs2_val[5:0] iff(rd!=0){
         bins imm_6_minmax[] = {UMIN6,UMAX6};
     }
+
     iext__dataset_cp_imm_12_Uminmax: coverpoint rs2_val[11:0] iff(rd!=0){
         bins imm_12_minmax[] = {UMIN12,UMAX12};
     }
-    iext__dataset_cp_imm_20_Uminmax: coverpoint rs1_val[19:0] iff(rd!=0){ // imm val store in rs1_val, upper immediate
+
+    iext__dataset_cp_imm_20_Uminmax: coverpoint rs1_val[19:0] iff(rd!=0){ 
         bins imm_19_minmax[] = {UMIN20,UMAX20}; 
     }
+
     iext__general_cp_imm_12_unsigned_instr: coverpoint instrenum_var{
-        bins instr_imm_12[] = {INSTRENUM_ADDI, INSTRENUM_SLTI, INSTRENUM_SLTIU, INSTRENUM_XORI, INSTRENUM_ORI, INSTRENUM_ANDI, INSTRENUM_ADDIW};
-    }
-    iext__general_cp_imm_20_unsigned_instr: coverpoint instrenum_var{
-        bins instr_imm_20[] = {INSTRENUM_LUI, INSTRENUM_AUIPC}; // covering only sminmax for JAL
+        bins instr_imm_12[] = {
+            INSTRENUM_ADDI, 
+            INSTRENUM_SLTI, 
+            INSTRENUM_SLTIU, 
+            INSTRENUM_XORI, 
+            INSTRENUM_ORI, 
+            INSTRENUM_ANDI, 
+            INSTRENUM_ADDIW
+        };
     }
 
-    iext__dataset_cr_store_12_imm_Uminmax:  cross iext__dataset_cp_imm_12_Uminmax, iext__general_cp_all_store_instr;
-    iext__dataset_cr_load_12_imm_Uminmax:   cross iext__dataset_cp_imm_12_Uminmax, iext__general_cp_all_load_instr;
-    iext__dataset_cr_instr_12_imm_Uminmax:  cross iext__dataset_cp_imm_12_Uminmax, iext__general_cp_imm_12_unsigned_instr;
-    iext__dataset_cr_instr_20_imm_Uminmax:  cross iext__dataset_cp_imm_20_Uminmax, iext__general_cp_imm_20_unsigned_instr;
-    iext__dataset_cr_shift_6_imm_Uminmax:   cross iext__dataset_cp_imm_6_Uminmax,  iext__general_cp_shift_instr; // can be covered in overflow cases
-    iext__dataset_cr_shift_w_5_imm_Uminmax: cross iext__dataset_cp_imm_5_Uminmax,  iext__general_cp_shift_w_instr;
+    iext__general_cp_imm_20_unsigned_instr: coverpoint instrenum_var{
+        bins instr_imm_20[] = {
+            INSTRENUM_LUI, 
+            INSTRENUM_AUIPC
+        }; 
+    }
 
     iext__dataset_cp_imm_12_Sminmax: coverpoint rs2_val[11:0] iff(rd!=0){
         bins imm_12_minmax_store[]   = {SMIN12, SMAX12} iff(instrenum_var == INSTRENUM_SB    || instrenum_var == INSTRENUM_SH  || instrenum_var == INSTRENUM_SH  || instrenum_var == INSTRENUM_SD );
@@ -153,6 +225,7 @@ covergroup iext__cg with function sample();
         bins imm_12_minmax_add[]     = {SMIN12, SMAX12} iff(instrenum_var == INSTRENUM_ADDIW || instrenum_var == INSTRENUM_ADDI);
         bins imm_12_minmax_slti[]    = {SMIN12, SMAX12} iff(instrenum_var == INSTRENUM_SLTI);
     }
+
     iext__dataset_cp_imm_12_Sminmax_branch: coverpoint rs2_val[11:0]{
         bins imm_12_minmax_branch[]  = {SMIN12, SMAX12 - 1} iff(instrenum_var == INSTRENUM_BEQ   || instrenum_var == INSTRENUM_BNE || instrenum_var == INSTRENUM_BLT || instrenum_var == INSTRENUM_BGE);
     }
@@ -161,30 +234,39 @@ covergroup iext__cg with function sample();
         bins imm_12_minmax_jalr[]    = {SMIN12, SMAX12} iff(instrenum_var == INSTRENUM_JALR);
     }
 
-    iext__dataset_cp_imm_20_Sminmax_j: coverpoint Inst{ // for JAL imm is stored in rs1_val
+    iext__dataset_cp_imm_20_Sminmax_j: coverpoint Inst{ 
         bins jal_min_imm_signed = {'h8000006f} iff(instrenum_var == INSTRENUM_JAL);
         bins jal_max_imm_signed = {'h7ffff06f} iff(instrenum_var == INSTRENUM_JAL);
     }
 
-    iext__dataset_cp_imm_reordering_jal: coverpoint instrenum_var{ // imm[20|10:1|11|19:12]
-        bins imm_reordering_jal1 = {INSTRENUM_JAL} iff(rs2_val[19]!=rs2_val[10]); // 20!=11
-        bins imm_reordering_jal2 = {INSTRENUM_JAL} iff(rs2_val[19]!=rs2_val[9]); // 20!=10
-        bins imm_reordering_jal3 = {INSTRENUM_JAL} iff(rs2_val[0] !=rs2_val[10]); // 1 !=11
-        bins imm_reordering_jal4 = {INSTRENUM_JAL} iff(rs2_val[10]!=rs2_val[18]); // 11!=19
-        bins imm_reordering_jal5 = {INSTRENUM_JAL} iff(rs2_val[11]!=rs2_val[19]); // 12!=20
+    iext__dataset_cp_imm_reordering_jal: coverpoint instrenum_var{ 
+        bins imm_reordering_jal1 = {INSTRENUM_JAL} iff(rs2_val[19]!=rs2_val[10]); 
+        bins imm_reordering_jal2 = {INSTRENUM_JAL} iff(rs2_val[19]!=rs2_val[9]); 
+        bins imm_reordering_jal3 = {INSTRENUM_JAL} iff(rs2_val[0] !=rs2_val[10]); 
+        bins imm_reordering_jal4 = {INSTRENUM_JAL} iff(rs2_val[10]!=rs2_val[18]); 
+        bins imm_reordering_jal5 = {INSTRENUM_JAL} iff(rs2_val[11]!=rs2_val[19]);
 
-    }
-    iext__dataset_cp_imm_reordering_conditional_branch: coverpoint instrenum_var{ //imm[12|10:5] imm[4:1|11]
-        bins imm_reordering_conditional_branch1 = conditional_branch_instrs_arr iff(rs2_val[11]!=rs2_val[9]); //12!=10
-        bins imm_reordering_conditional_branch2 = conditional_branch_instrs_arr iff(rs2_val[4] !=rs2_val[3] ); // 5!=4
-        bins imm_reordering_conditional_branch3 = conditional_branch_instrs_arr iff(rs2_val[0] !=rs2_val[10]); // 1!=11
-        bins imm_reordering_conditional_branch4 = conditional_branch_instrs_arr iff(rs2_val[10]!=rs2_val[11]); //11!=12
     }
 
     iext__dataset_cp_imm_reordering_store: coverpoint instrenum_var iff(rd!=0){
-        bins imm_reordering_store1 = store_instrs_arr iff(rs2_val[11]!=rs2_val[4]);
-        bins imm_reordering_store2 = store_instrs_arr iff(rs2_val[5] !=rs2_val[0]);
-        bins imm_reordering_store3 = store_instrs_arr iff(rs2_val[5] !=rs2_val[4]);
+        bins imm_reordering_store1 = {
+            INSTRENUM_SB,
+            INSTRENUM_SD,
+            INSTRENUM_SH,
+            INSTRENUM_SW
+        } iff(rs2_val[11]!=rs2_val[4]);
+        bins imm_reordering_store2 = {
+            INSTRENUM_SB,
+            INSTRENUM_SD,
+            INSTRENUM_SH,
+            INSTRENUM_SW
+        } iff(rs2_val[5]!=rs2_val[0]);
+        bins imm_reordering_store3 = {
+            INSTRENUM_SB,
+            INSTRENUM_SD,
+            INSTRENUM_SH,
+            INSTRENUM_SW
+        } iff(rs2_val[5]!=rs2_val[4]);
     }
 
     iext__dataset_cp_shift_instr_imm_reserved: coverpoint Inst[6:0]{
@@ -203,7 +285,6 @@ covergroup iext__cg with function sample();
         bins imm_unused_srlw = {INSTRENUM_SRLW} iff(rs2_val[63:5]!=0);
         bins imm_unused_sraw = {INSTRENUM_SLLW} iff(rs2_val[63:5]!=0);
     }
-
 
     iext__dataset_cp_fence_instr_fm_reserved: coverpoint Inst[6:0]{
         bins fence_fm_normal = {7'b000111} iff(Inst[31:28] == 7'b0000);
@@ -226,17 +307,85 @@ covergroup iext__cg with function sample();
         bins jal_imm_bit_1 = {INSTRENUM_JAL} iff(rs1_val[1] == 1);
         bins jalr_imm_bit_0 = {INSTRENUM_JALR} iff(rs2_val[0] == 1);
         bins jalr_imm_bit_1 = {INSTRENUM_JALR} iff(rs2_val[1] == 1);
-        bins branch_imm_bit_1[1] = conditional_branch_instrs_arr iff(rs2_val[1] == 1);
     }
 
+    iext__general_cr_arithmetic_priv:           cross iext__general_cp_privilege_modes, iext__general_cp_arithmetic_instr;
+    iext__general_cr_conditional_branch_priv:   cross iext__general_cp_privilege_modes, iext__general_cp_conditional_branch_instr;
+    iext__general_cr_unconditional_branch_priv: cross iext__general_cp_privilege_modes, iext__general_cp_unconditional_branch_instr;
+    iext__general_cr_load_priv:                 cross iext__general_cp_privilege_modes, iext__general_cp_load_instr;
+    iext__general_cr_store_priv:                cross iext__general_cp_privilege_modes, iext__general_cp_store_instr;
+    iext__general_cr_system_instr_priv:         cross iext__general_cp_privilege_modes, iext__general_cp_system_instr;  
+    iext__general_cr_special_instr_priv:        cross iext__general_cp_privilege_modes, iext__general_cp_special_instr;
+    iext__general_cr_fence_instr_priv:          cross iext__general_cp_privilege_modes, iext__general_cp_fence_instr;
+    iext__general_cr_nop_instr_priv:            cross iext__general_cp_privilege_modes, iext__general_addi_nop_instruction;
 
-    iext__dataset_cp_comparision_instr_rs1_equal_rs2:   coverpoint instrenum_var iff(rd!=0){ bins comparision_instrs[1] = comparision_instrs_arr iff(rs1_val[62:0] == rs2_val[62:0]);}
-    iext__dataset_cp_comparision_instr_rs1_greater_rs2: coverpoint instrenum_var iff(rd!=0){ bins comparision_instrs[1] = comparision_instrs_arr iff(rs1_val[62:0] > rs2_val[62:0] );}
-    iext__dataset_cp_comparision_instr_rs1_less_rs2:    coverpoint instrenum_var iff(rd!=0){ bins comparision_instrs[1] = comparision_instrs_arr iff(rs1_val[62:0] < rs2_val[62:0] );}
+    iext__dataset_cr_store_imm_sign_bit:              cross iext__dataset_cp_imm_12_sign_bit, iext__general_cp_store_instr;
+    iext__dataset_cr_load_imm_sign_bit:               cross iext__dataset_cp_imm_12_sign_bit, iext__general_cp_load_instr;
+    iext__dataset_cr_conditional_branch_imm_sign_bit: cross iext__dataset_cp_imm_12_sign_bit, iext__general_cp_conditional_branch_instr;
+    iext__dataset_cr_instr_12_imm_sign_bit:           cross iext__dataset_cp_imm_12_sign_bit, iext__general_cp_imm_12_signed_instr;
 
-    iext__dataset_cp_branch_instr_rs1_equal_rs2:   coverpoint instrenum_var{ bins conditional_branch_instrs[1] = conditional_branch_instrs_arr iff(rd_val[62:0] == rs1_val[62:0]);}
-    iext__dataset_cp_branch_instr_rs1_greater_rs2: coverpoint instrenum_var{ bins conditional_branch_instrs[1] = conditional_branch_instrs_arr iff(rd_val[62:0] > rs1_val[62:0] );}
-    iext__dataset_cp_branch_instr_rs1_less_rs2:    coverpoint instrenum_var{ bins conditional_branch_instrs[1] = conditional_branch_instrs_arr iff(rd_val[62:0] < rs1_val[62:0] );}
+    iext__dataset_cr_store_12_imm_Uminmax:  cross iext__dataset_cp_imm_12_Uminmax, iext__general_cp_store_instr;
+    iext__dataset_cr_load_12_imm_Uminmax:   cross iext__dataset_cp_imm_12_Uminmax, iext__general_cp_load_instr;
+    iext__dataset_cr_instr_12_imm_Uminmax:  cross iext__dataset_cp_imm_12_Uminmax, iext__general_cp_imm_12_unsigned_instr;
+    iext__dataset_cr_instr_20_imm_Uminmax:  cross iext__dataset_cp_imm_20_Uminmax, iext__general_cp_imm_20_unsigned_instr;
+    iext__dataset_cr_shift_6_imm_Uminmax:   cross iext__dataset_cp_imm_6_Uminmax,  iext__general_cp_shift_instr;
+    iext__dataset_cr_shift_w_5_imm_Uminmax: cross iext__dataset_cp_imm_5_Uminmax,  iext__general_cp_shift_w_instr;
+
+    iext__dataset_cp_comparision_instr_rs1_equal_rs2: coverpoint instrenum_var iff(rd!=0){
+        bins comparision_instrs[] = {
+            INSTRENUM_SLT,
+            INSTRENUM_SLTI,
+            INSTRENUM_SLTIU,
+            INSTRENUM_SLTU
+        } iff(rs1_val[62:0]==rs2_val[62:0]);
+    }
+    iext__dataset_cp_comparision_instr_rs1_greater_rs2: coverpoint instrenum_var iff(rd!=0){
+        bins comparision_instrs[] = {
+            INSTRENUM_SLT,
+            INSTRENUM_SLTI,
+            INSTRENUM_SLTIU,
+            INSTRENUM_SLTU
+        } iff(rs1_val[62:0]>rs2_val[62:0]);
+    }
+    iext__dataset_cp_comparision_instr_rs1_less_rs2: coverpoint instrenum_var iff(rd!=0){
+        bins comparision_instrs[] = {
+            INSTRENUM_SLT,
+            INSTRENUM_SLTI,
+            INSTRENUM_SLTIU,
+            INSTRENUM_SLTU
+        } iff(rs1_val[62:0]<rs2_val[62:0]);
+    }
+
+    iext__dataset_cp_branch_instr_rs1_equal_rs2: coverpoint instrenum_var{
+        bins conditional_branch_instrs[] = {
+            INSTRENUM_BEQ,
+            INSTRENUM_BGE,
+            INSTRENUM_BGEU,
+            INSTRENUM_BLT,
+            INSTRENUM_BLTU,
+            INSTRENUM_BNE
+        } iff(rd_val[62:0]==rs1_val[62:0]);
+    }
+    iext__dataset_cp_branch_instr_rs1_greater_rs2: coverpoint instrenum_var{
+        bins conditional_branch_instrs[] = {
+            INSTRENUM_BEQ,
+            INSTRENUM_BGE,
+            INSTRENUM_BGEU,
+            INSTRENUM_BLT,
+            INSTRENUM_BLTU,
+            INSTRENUM_BNE
+        } iff(rd_val[62:0]>rs1_val[62:0]);
+    }
+    iext__dataset_cp_branch_instr_rs1_less_rs2: coverpoint instrenum_var{
+        bins conditional_branch_instrs[] = {
+            INSTRENUM_BEQ,
+            INSTRENUM_BGE,
+            INSTRENUM_BGEU,
+            INSTRENUM_BLT,
+            INSTRENUM_BLTU,
+            INSTRENUM_BNE
+        } iff(rd_val[62:0]<rs1_val[62:0]);
+    }
 
     iext__dataset_cp_rd_sign_64bit:  coverpoint rd_val[63]  {bins rd_sign[] = {1,0};}
     iext__dataset_cp_rs1_sign_64bit: coverpoint rs1_val[63] {bins rs1_sign[] = {1,0};}
@@ -266,18 +415,18 @@ covergroup iext__cg with function sample();
         bins rs2_sign[] = {1,0} iff(instrenum_var == INSTRENUM_SD);
     }
 
-    iext__dataset_cr_branch_rs1_rs2_sign: cross iext__dataset_cp_rd_sign_64bit, iext__dataset_cp_rs1_sign_64bit, iext__general_cp_conditional_branch_instr; //separate bins for each? remove all
+    iext__dataset_cr_branch_rs1_rs2_sign: cross iext__dataset_cp_rd_sign_64bit, iext__dataset_cp_rs1_sign_64bit, iext__general_cp_conditional_branch_instr; 
 
     iext__dataset_cp_rs1_rs2_signed_instr: coverpoint instrenum_var iff(rd!=0){
         bins instrenum_var[] = {INSTRENUM_ADD, INSTRENUM_SUB, INSTRENUM_SLT, INSTRENUM_SRA};
     }
     iext__dataset_cp_rs1_rs2_signed_w_instr: coverpoint instrenum_var iff(rd!=0){
-        bins instrenum_var[] = {INSTRENUM_ADDW, INSTRENUM_SUBW}; //doesn't include shift instructions as they consider only rs1_val is unsigned
+        bins instrenum_var[] = {INSTRENUM_ADDW, INSTRENUM_SUBW};
     }
     iext__dataset_cp_rs1_signed_instr: coverpoint instrenum_var iff(rd!=0){
-        bins instrenum_var[] = {INSTRENUM_ADDI, INSTRENUM_SLTI, INSTRENUM_SLLI}; // doesn't include sltiu, (xori, ori, andi) rs1_val is unsigend, (srli, srai) rs1_val is unsigned.
+        bins instrenum_var[] = {INSTRENUM_ADDI, INSTRENUM_SLTI, INSTRENUM_SLLI};
     }
-    iext__dataset_cr_instr_rs1_rs2_sign:   cross iext__dataset_cp_rs1_sign_64bit, iext__dataset_cp_rs2_sign_64bit, iext__dataset_cp_rs1_rs2_signed_instr; //separate bins for each? remove all
+    iext__dataset_cr_instr_rs1_rs2_sign:   cross iext__dataset_cp_rs1_sign_64bit, iext__dataset_cp_rs2_sign_64bit, iext__dataset_cp_rs1_rs2_signed_instr;
     iext__dataset_cr_instr_w_rs1_rs2_sign: cross iext__dataset_cp_rs1_sign_32bit, iext__dataset_cp_rs2_sign_32bit, iext__dataset_cp_rs1_rs2_signed_w_instr;
     iext__dataset_cr_instr_w_rs1_sign:     cross iext__dataset_cp_rs1_sign_64bit, iext__dataset_cp_rs1_signed_instr;
     iext__dataset_cr_shift_rs1_rs2_sign:   cross iext__dataset_cp_rs1_sign_32bit, iext__dataset_cp_rs2_sign_5bit,  iext__general_cp_shift_w_instr;
@@ -294,15 +443,15 @@ covergroup iext__cg with function sample();
     iext__dataset_cp_store_rs2_minmax_64bit: coverpoint rd_val[63:0] iff(rd!=0){
         bins rs2_minmax[] = {UMIN64, UMAX64, SMIN64, SMAX64} iff(instrenum_var == INSTRENUM_SD);
     }
-    iext__dataset_cp_branch_rs1_Sminmax_64bit: coverpoint rd_val{ // rs1_val is stored in rd_val
+    iext__dataset_cp_branch_rs1_Sminmax_64bit: coverpoint rd_val{ 
         bins rs1_minmax[] = {SMIN64, SMAX64} iff(instrenum_var == INSTRENUM_BEQ || instrenum_var == INSTRENUM_BNE || instrenum_var == INSTRENUM_BLT || instrenum_var == INSTRENUM_BGE);
     }
 
-    iext__dataset_cp_branch_rs2_Sminmax_64bit: coverpoint rs1_val{ // rs2_val is stored in rs1_val
+    iext__dataset_cp_branch_rs2_Sminmax_64bit: coverpoint rs1_val{ 
         bins rs2_minmax[] = {SMIN64, SMAX64} iff(instrenum_var == INSTRENUM_BEQ || instrenum_var == INSTRENUM_BNE || instrenum_var == INSTRENUM_BLT || instrenum_var == INSTRENUM_BGE);
     }
-    iext__dataset_cr_branch_rs1_Uminmax: cross iext__dataset_cp_rs1_sign_64bit, iext__general_cp_all_conditional_branch_instr;
-    iext__dataset_cr_branch_rs2_Uminmax: cross iext__dataset_cp_rs2_sign_64bit, iext__general_cp_all_conditional_branch_instr;
+    iext__dataset_cr_branch_rs1_Uminmax: cross iext__dataset_cp_rs1_sign_64bit, iext__general_cp_conditional_branch_instr;
+    iext__dataset_cr_branch_rs2_Uminmax: cross iext__dataset_cp_rs2_sign_64bit, iext__general_cp_conditional_branch_instr;
 
     iext__dataset_cp_arithmetic_rs1_Uminmax_64bit: coverpoint rs1_val iff(rd!=0){
         bins rs1_minmax_add[]     = {UMIN64, UMAX64} iff(instrenum_var == INSTRENUM_ADD || instrenum_var == INSTRENUM_ADDI);
@@ -319,7 +468,7 @@ covergroup iext__cg with function sample();
         bins rs1_minmax_sub[]     = {SMIN64, SMAX64} iff(instrenum_var == INSTRENUM_SUB);
         bins rs1_minmax_slt[]     = {SMIN64, SMAX64} iff(instrenum_var == INSTRENUM_SLT || instrenum_var == INSTRENUM_SLTI);
         bins rs1_minmax_logical[] = {SMIN64, SMAX64} iff(instrenum_var == INSTRENUM_XOR || instrenum_var == INSTRENUM_OR || instrenum_var == INSTRENUM_AND || instrenum_var == INSTRENUM_XORI || instrenum_var == INSTRENUM_ORI || instrenum_var == INSTRENUM_ANDI);
-        bins rs1_minmax_sra[]     = {SMIN64, SMAX64} iff(instrenum_var == INSTRENUM_SRA || instrenum_var == INSTRENUM_SRAI); //rs1_val is unsigned in SRL, SLL
+        bins rs1_minmax_sra[]     = {SMIN64, SMAX64} iff(instrenum_var == INSTRENUM_SRA || instrenum_var == INSTRENUM_SRAI); 
     }
 
     iext__dataset_cp_arithmetic_rs1_minmax_32bit: coverpoint rs1_val[31:0] iff(rd!=0){
@@ -330,7 +479,6 @@ covergroup iext__cg with function sample();
         bins rs1_minmax_sra[]     = {UMIN32, UMAX32, SMIN32, SMAX32} iff(instrenum_var == INSTRENUM_SRAW || instrenum_var == INSTRENUM_SRAIW);
     }
 
-    // RS2 Minmax values
     iext__dataset_cp_arithmetic_rs2_Uminmax_64bit: coverpoint rs2_val[31:0] iff(rd!=0){
         bins rs2_minmax_add[]     = {UMIN64, UMAX64} iff(instrenum_var == INSTRENUM_ADD);
         bins rs2_minmax_sub[]     = {UMIN64, UMAX64} iff(instrenum_var == INSTRENUM_SUB);
@@ -385,6 +533,7 @@ covergroup iext__cg with function sample();
         bins sub_rs1_Smax  = {INSTRENUM_SUB} iff(rs1_val==SMAX64 && rs2_val[63]==0 && rs2_val[62:0]!=0);
         bins sub_rs2_Smin  = {INSTRENUM_SUB} iff(rs1_val[63]==0 && rs2_val==SMIN64);
     }
+    åå
     iext__dataset_cp_arithmetic_underflow: coverpoint instrenum_var iff(rd!=0){
         bins add_rs1_Smin   = {INSTRENUM_ADD}   iff(rs1_val==SMIN64 && rs2_val[63]==1);
         bins addw_rs1_Smin  = {INSTRENUM_ADDW}  iff(rs1_val[31:0]==SMIN32 && rs2_val[31]==1);
@@ -398,7 +547,7 @@ covergroup iext__cg with function sample();
 
         bins sub_rs1_Umin  = {INSTRENUM_SUB} iff(rs1_val==UMIN64 && rs2_val[63]==0);
         bins sub_rs2_Umax  = {INSTRENUM_SUB} iff(rs1_val[63]==0 && rs2_val==UMAX64);
-        bins sub_rs1_rs2   = {INSTRENUM_SUB} iff(rs1_val < rs2_val); //not required.
+        bins sub_rs1_rs2   = {INSTRENUM_SUB} iff(rs1_val < rs2_val);
         bins sub_rs1_Smin  = {INSTRENUM_SUB} iff(rs1_val==SMIN64 && rs2_val[63]==0);
         bins sub_rs2_Smax  = {INSTRENUM_SUB} iff(rs1_val[63]==1 && rs1_val[62:0]>1 && rs2_val==SMAX64);
     }
