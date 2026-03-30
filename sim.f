@@ -33,6 +33,8 @@ ${PROJECT_ROOT}/covergroups/fext_cov.sv
 ${PROJECT_ROOT}/covergroups/iext_cp.sv
 ${PROJECT_ROOT}/covergroups/mext_cp.sv
 ${PROJECT_ROOT}/covergroups/zfh_cov.sv
+${PROJECT_ROOT}/covergroups/sstc_cov.sv
+${PROJECT_ROOT}/covergroups/zicond_cov.sv
 
 # Include user sampling files
 ${PROJECT_ROOT}/cov_sample/user_cov_sample.sv 

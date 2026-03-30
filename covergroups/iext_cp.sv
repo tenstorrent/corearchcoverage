@@ -535,7 +535,7 @@ covergroup iext__cg with function sample();
         bins sub_rs1_Smax  = {INSTRENUM_SUB} iff(rs1_val==SMAX64 && rs2_val[63]==0 && rs2_val[62:0]!=0);
         bins sub_rs2_Smin  = {INSTRENUM_SUB} iff(rs1_val[63]==0 && rs2_val==SMIN64);
     }
-    åå
+    
     iext__dataset_cp_arithmetic_underflow: coverpoint instrenum_var iff(rd!=0){
         bins add_rs1_Smin   = {INSTRENUM_ADD}   iff(rs1_val==SMIN64 && rs2_val[63]==1);
         bins addw_rs1_Smin  = {INSTRENUM_ADDW}  iff(rs1_val[31:0]==SMIN32 && rs2_val[31]==1);

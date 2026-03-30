@@ -19,6 +19,8 @@ class user_cov_sample;
     iext__cg        iext_cg_var;
     mext__cg        mext_cg_var;
     zfhext__cg      zfhext_cg_var;
+    sstc__cg        sstc_cg_var;
+    zicond__cg      zicond_cg_var;
 
     function new(csr_cov_sample csr_cov);
         csr_cov_local     = csr_cov;
@@ -29,6 +31,8 @@ class user_cov_sample;
         fext_cg_var       = new();
         dext_cg_var       = new();
         zfhext_cg_var     = new();
+        sstc_cg_var       = new();
+        zicond_cg_var     = new();
     endfunction
     
     function void sample_commmon(); 
@@ -57,13 +61,21 @@ class user_cov_sample;
             $cast(reservation_valid_current, table.get_cp_val(POINT_VALIDLR));
         end
 
+        if(rs2 == CSRENUM_TIME && instrenum_var inside {INSTRENUM_CSRRW,
+                                                        INSTRENUM_CSRRWI,
+                                                        INSTRENUM_CSRRC,
+                                                        INSTRENUM_CSRRCI,
+                                                        INSTRENUM_CSRRS,
+                                                        INSTRENUM_CSRRSI}) begin
+            time_val = rs2_val;
+        end
+
+
     endfunction
 
-    function void clear(); // clear value to avoid again and again match
-        
+    function void clear(); 
         br_taken   = 1;
         match_excp = 0;
-        
     endfunction
     
     function void sample_sv_user(cp_table user_table);
@@ -76,6 +88,8 @@ class user_cov_sample;
         dext_cg_var.sample(csr_cov_local);
         zfhext_cg_var.sample(csr_cov_local);
         cext_cg_var.sample(csr_cov_local);
+        sstc_cg_var.sample(csr_cov_local);
+        zicond_cg_var.sample(csr_cov_local);
         clear();
     endfunction
 endclass

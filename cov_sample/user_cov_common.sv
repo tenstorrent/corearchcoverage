@@ -13,6 +13,8 @@ bit reservation_valid_current = 0;
 
 logic[63:0] rs1, rs2, rs3, rd;
 logic[63:0] rs1_val, rs2_val, rs3_val, rd_val;
+logic[63:0] time_val;
+bit         always_one = 1;
 logic[63:0] csr_val;
 bit         match_excp;
 
