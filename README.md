@@ -29,7 +29,7 @@ The framework consists of two main components:
 2. **Coverage Sampling** - Runtime sampling and recording of coverage data
 
 ### Coverage Generation
-The `cov_gen` module queries whisper, an open source ISS, and generates SystemVerilog package called **cp_pkg.sv**. 
+The `cov_gen` module queries whisper, an open source ISS (Instruction Set Simulator), and generates SystemVerilog package called **cp_pkg.sv**. 
 The information is represented as:
 - Enums
 - Attributes (Standalone variables)
@@ -50,7 +50,7 @@ Following are the dependencies for running the framework:
 - `Riscv GCC Toolchain` - [riscv-gnu-toolchain GitHub](https://github.com/riscv-collab/riscv-gnu-toolchain)
 - `whisper` - [whisper GitHub](https://github.com/tenstorrent/whisper)
   - Refer to **Requirements** section of whisper for more information.
-- `magic_enum` - [Magic Enum Github](https://github.com/Neargye/magic_enum)
+- `magic_enum` - [magic_enum GitHub](https://github.com/Neargye/magic_enum)
 
 
 ### Quick Start
@@ -65,12 +65,12 @@ git submodule update --init --recursive
 ```
 - Set Environment variables:
 ```
-export PROJECT_ROOT = <path/to/your/top-of-tree/of/the/repository>
-export LD_LIBRARY_PATH = "<path/to/your/boost/installation>:$LD_LIBRARY_PATH"
+export PROJECT_ROOT=<path/to/your/top-of-tree/of/the/repository>
+export LD_LIBRARY_PATH="<path/to/your/boost/installation>:$LD_LIBRARY_PATH"
 ```
 - Currently, we have experimented the flow with VCS simulator. To enable the flow to run simulation, set the `VCS_ROOT` environment variable.
 ```
-export VCS_ROOT = <path/to/your/vcs/installation>
+export VCS_ROOT=<path/to/your/vcs/installation>
 ```
 - Use the run_coverage.py script
 ```
@@ -123,8 +123,8 @@ Following is a list of coverpoints supported by the cov-gen module for cp_pkg ge
 | DebugMode      | Debug Mode. 0 for No Debug, 1 for Debug                       | Attribute      | 
 | Exception      | Type of exception                                             | Enum           |
 | Interrupt      | Type of Interrupt                                             | Enum           |
-| Op(0/1/2/3)    | Operand ID. For e.g Int Instructions have Op0 = rs1 etc       | Attribute      | 
-| Op(0/1/2/3)Val | Operand Value. For e,g Int Instructions have Op0Value = [rs1] | Attribute      |
+| Op(0/1/2/3)    | Operand ID. For e.g., Int Instructions have Op0 = rs1, etc.    | Attribute      | 
+| Op(0/1/2/3)Val | Operand Value. For e.g., Int Instructions have Op0Value = [rs1] | Attribute      |
 | VirtPc         | Virtual Address of the Program Counter of current instruction | Attribute      | 
 | NextVirtPc     | Virtual Address of the Program Counter of next instruction    | Attribute      |
 | PhysPC         | Physical Address corresponding to VirtPc                      | Attribute      | 
@@ -145,6 +145,14 @@ Following is a list of coverpoints supported by the cov-gen module for cp_pkg ge
   
 ## Contributing
 
-For contributing to the project, refer to the [Contributing Section](.github/CONTRIBUTING.md) for information on setting up a developer environment.
+For contributing to the project, refer to the [CONTRIBUTING.md](CONTRIBUTING.md) file for information on setting up a developer environment and contribution guidelines. Bug reports and feature requests should be submitted via [GitHub Issues](https://github.com/tenstorrent/corearchcoverage/issues). Pull requests are reviewed weekly.
+
+## License
+
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for the full license text.
+
+For additional clarification on how the Apache 2.0 license applies to this project, commercial use, patent grants, and hardware considerations, please refer to [LICENSE_understanding.txt](LICENSE_understanding.txt).
+
+All code files in this repository include SPDX license identifiers for automated license compliance tooling.
 
 
