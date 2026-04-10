@@ -1,0 +1,74 @@
+# Understanding the Apache 2.0 License for CoreArchCoverage
+
+This document provides clarification on how the Apache License 2.0 applies to the CoreArchCoverage project. It is intended to help users understand their rights and obligations when using, modifying, or distributing this software.
+
+## What is Apache 2.0?
+
+Apache License 2.0 is a permissive open source license that allows you to:
+- Use the software for any purpose (commercial or non-commercial)
+- Modify the software
+- Distribute original or modified versions
+- Sublicense the software
+
+## Key Points
+
+### You CAN:
+- **Use commercially**: You can use CoreArchCoverage in commercial products and services
+- **Modify**: You can modify the source code to suit your needs
+- **Distribute**: You can distribute original or modified versions
+- **Sublicense**: You can include it in projects under different licenses
+- **Use patents**: The license includes an express grant of patent rights from contributors
+
+### You MUST:
+- **Include the license**: Include a copy of the Apache 2.0 license with any distribution
+- **State changes**: Document any significant changes you make to the software
+- **Include notices**: Preserve all copyright, patent, trademark, and attribution notices
+- **Include NOTICE file**: If the software includes a NOTICE file, you must include it in your distributions
+
+### You CANNOT:
+- **Use trademarks**: The license does not grant permission to use Tenstorrent's trade names, trademarks, or product names (except as needed for describing the origin)
+- **Hold liable**: The software is provided "as-is" without warranties, and contributors are not liable for damages
+
+## Patent Grant
+
+The Apache 2.0 license includes an express patent license grant. This means contributors grant you a license to any patents they hold that are necessarily infringed by their contributions to the software.
+
+**Important**: This patent grant terminates if you initiate patent litigation claiming that the software constitutes patent infringement.
+
+## Commercial Use
+
+You are free to use CoreArchCoverage in commercial products and services. However:
+
+- Making, using, or selling **hardware** based on or compatible with Tenstorrent products may require separate licenses
+- The software license does not grant rights to Tenstorrent's patents beyond those necessarily infringed by the software itself
+- If you need to implement Tenstorrent architectures in hardware or IP, you may need additional licenses from Tenstorrent
+
+## Modifications and Derivatives
+
+When you modify the software:
+- You must include prominent notices stating that you changed files
+- You must retain all existing copyright, patent, trademark, and attribution notices
+- Your modifications can be released under Apache 2.0 or a compatible license
+- You should update the NOTICE file to document your modifications
+
+## Warranty Disclaimer
+
+The software is provided "AS IS", WITHOUT WARRANTY OF ANY KIND, express or implied. This includes but is not limited to warranties of merchantability, fitness for a particular purpose, and non-infringement.
+
+## Liability Limitation
+
+In no event shall any contributor be liable for any damages arising from the use or inability to use the software, even if advised of the possibility of such damages.
+
+## Questions?
+
+If you have questions about licensing CoreArchCoverage or need clarification on any of these points, please contact:
+- **ospo@tenstorrent.com** - For licensing questions
+
+## Additional Information
+
+For the complete legal text of the Apache License 2.0, see the LICENSE file in this repository or visit:
+http://www.apache.org/licenses/LICENSE-2.0
+
+---
+
+**Note**: This document is for informational purposes only and does not constitute legal advice. For legal questions, please consult with a qualified attorney.
