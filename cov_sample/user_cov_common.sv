@@ -11,12 +11,15 @@ bit br_taken;
 bit reservation_valid_prev = 0;
 bit reservation_valid_current = 0;
 
-logic[63:0] rs1, rs2, rs3, rd;
+logic[4:0]  rs1, rs2, rs3, rd;
 logic[63:0] rs1_val, rs2_val, rs3_val, rd_val;
 logic[63:0] time_val;
 bit         always_one = 1;
 logic[63:0] csr_val;
 bit         match_excp;
+bit         match_trigger; 
+bit         match_csr_r_instr;
+bit         match_csr_w_instr;
 
 const bit[63:0] UMIN64 = 64'h0000000000000000;
 const bit[63:0] UMAX64 = 64'hffffffffffffffff;

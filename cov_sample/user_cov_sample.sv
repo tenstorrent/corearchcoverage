@@ -37,10 +37,10 @@ class user_cov_sample;
     
     function void sample_commmon(); 
         
-        if(table.exists(POINT_OP0))    begin rd      = table.get_cp_val(POINT_OP0);    end
-        if(table.exists(POINT_OP1))    begin rs1     = table.get_cp_val(POINT_OP1);    end
-        if(table.exists(POINT_OP2))    begin rs2     = table.get_cp_val(POINT_OP2);    end
-        if(table.exists(POINT_OP3))    begin rs3     = table.get_cp_val(POINT_OP3);    end
+        if(table.exists(POINT_OP0))    begin rd      = Inst[11:7];   end
+        if(table.exists(POINT_OP1))    begin rs1     = Inst[19:15];  end
+        if(table.exists(POINT_OP2))    begin rs2     = Inst[24:20];  end
+        if(table.exists(POINT_OP3))    begin rs3     = Inst[31:27];  end
         if(table.exists(POINT_OP0VAL)) begin rd_val  = table.get_cp_val(POINT_OP0VAL); end
         if(table.exists(POINT_OP1VAL)) begin rs1_val = table.get_cp_val(POINT_OP1VAL); end
         if(table.exists(POINT_OP2VAL)) begin rs2_val = table.get_cp_val(POINT_OP2VAL); end
@@ -70,12 +70,17 @@ class user_cov_sample;
             time_val = rs2_val;
         end
 
+        if(table.exists(POINT_TRIGGER)) begin 
+            match_trigger = 1;
+            $cast(Trigger, table.get_cp_val(POINT_TRIGGER));
+        end 
 
     endfunction
 
     function void clear(); 
         br_taken   = 1;
         match_excp = 0;
+        match_trigger = 0;
     endfunction
     
     function void sample_sv_user(cp_table user_table);

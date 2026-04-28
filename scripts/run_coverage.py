@@ -112,7 +112,6 @@ def build_whisper(boost_lib_path: str, cxx_path: str) -> None:
         ) from e
 
 def build_cov_gen(boost_lib_path: str, cxx_path: str) -> None:
-    print(f"BUILDING COV_GEN")
     project_root = check_project_root()
 
     boost_dir = _boost_install_dir(boost_lib_path)
@@ -129,28 +128,22 @@ def build_cov_gen(boost_lib_path: str, cxx_path: str) -> None:
     
     try:
         subprocess.run(cmd, check=True)
-        print(f"✔ COV_GEN BUILD SUCCESSFUL!")
     except subprocess.CalledProcessError as e:
         raise RuntimeError(
             f"✘ COV_GEN BUILD FAILED: make exited with status {e.returncode}"
         ) from e
 
 def run_cov_gen(whisper_config: str) -> None:
-    print(f"RUNNING COV_GEN")
     project_root = check_project_root()
     cov_gen_dir = os.path.join(project_root, "build")
     subprocess.run([os.path.join(cov_gen_dir, "cov_gen"),"--whisper_config", whisper_config], check=True)
-    print(f"✔ COV_GEN RUN SUCCESSFUL! CP_PKG GENERATED")
 
 def generate_autogen_samples(cp_pkg_path: str) -> None:
-    print(f"GENERATING AUTOGEN SAMPLES")
     project_root = check_project_root()
     autogen_samples_dir = os.path.join(project_root, "autogen_samples")
     subprocess.run(["python3", os.path.join(project_root, "scripts", "gen_cov_sample.py"), "--cp_pkg", cp_pkg_path], check=True)
-    print(f"✔ AUTOGEN SAMPLES GENERATED")
 
 def run_simulation(boost_lib_path: str, cxx_path: str, whisper_config: str, test: str) -> None:
-    print(f"RUNNING SIMULATION")
     log_file = "compile.log"
     project_root = check_project_root()
     boost_dir = _boost_install_dir(boost_lib_path)
