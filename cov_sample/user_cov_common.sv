@@ -7,16 +7,152 @@ package user_cov_common;
 import cp_pkg::*;
 import cov_common::*;
 
+import "DPI-C" function void get_leaf_nonleaf_ptes(
+    input longint unsigned pte1,
+    input longint unsigned pte2,
+    input longint unsigned pte3,
+    input longint unsigned pte4,
+    input longint unsigned pte5,
+    input int start_level,
+    input int end_level,
+    output longint unsigned leaf_pte,
+    output longint unsigned nonleaf_pte
+);
+
 bit br_taken;
 bit reservation_valid_prev = 0;
 bit reservation_valid_current = 0;
 
-logic[63:0] rs1, rs2, rs3, rd;
+logic[4:0]  rs1, rs2, rs3, rd;
 logic[63:0] rs1_val, rs2_val, rs3_val, rd_val;
 logic[63:0] time_val;
 bit         always_one = 1;
 logic[63:0] csr_val;
+csrEnum_e   csr_accessed; 
 bit         match_excp;
+bit         match_trigger; 
+bit         match_csr_r_instr;
+bit         match_csr_w_instr;
+bit         match_instr_load;
+bit         match_instr_store;
+bit         match_aext;
+bit         match_mem_sync;
+bit         match_hext_mem_sync;
+bit         match_hext_ld_st;
+bit         match_zicbomext;
+bit         match_zicbozext;
+bit         match_fext;
+bit         match_dext;
+bit         match_vext;
+
+bit         in_excp_handler;
+bit         in_trigger_handler;
+bit         interrupt_taken;
+bit         in_intr_handler;
+
+logic[63:0] prev_mstatus_csr,cur_mstatus_csr;
+logic[63:0] prev_hstatus_csr, cur_hstatus_csr;
+logic[63:0] prev_vsstatus_csr, cur_vsstatus_csr;
+logic[63:0] prev_medeleg_csr, cur_medeleg_csr;
+logic[63:0] prev_hedeleg_csr, cur_hedeleg_csr;
+logic[63:0] prev_sstatus_csr, cur_sstatus_csr;
+logic[63:0] prev_satp_csr, cur_satp_csr;
+logic[63:0] prev_vsatp_csr, cur_vsatp_csr;
+logic[63:0] prev_hgatp_csr, cur_hgatp_csr;
+
+
+
+// Paging
+logic [63:0] FVPTELeaf;
+logic [63:0] DVPTELeaf;
+logic [63:0] FVPTENonLeaf;
+logic [63:0] DVPTENonLeaf;
+logic [2:0] FVPTE_LowestLevel;
+logic [2:0] DVPTE_LowestLevel;
+logic [2:0] DVPTE_HighestLevel;
+logic [2:0] FVPTE_HighestLevel;
+
+logic[1:0]  DPTE_LeafADUpdate_GStageLevel5;
+logic[1:0]  DPTE_LeafADUpdate_GStageLevel4;
+logic[1:0]  DPTE_LeafADUpdate_GStageLevel3;
+logic[1:0]  DPTE_LeafADUpdate_GStageLevel2;
+logic[1:0]  DPTE_LeafADUpdate_GStageLevel1;
+
+logic[1:0]  DVPTE_ADUpdate;
+logic[1:0]  FVPTE_ADUpdate;
+
+logic[1:0]  DVPTE_ADUpdate_Level5;
+logic[1:0]  DVPTE_ADUpdate_Level4;
+logic[1:0]  DVPTE_ADUpdate_Level3;
+logic[1:0]  DVPTE_ADUpdate_Level2;
+logic[1:0]  DVPTE_ADUpdate_Level1;
+logic[1:0]  FVPTE_ADUpdate_Level5;
+logic[1:0]  FVPTE_ADUpdate_Level4;
+logic[1:0]  FVPTE_ADUpdate_Level3;
+logic[1:0]  FVPTE_ADUpdate_Level2;
+logic[1:0]  FVPTE_ADUpdate_Level1;
+
+
+bit  FPTE_LeafA;
+bit  DPTE_LeafA;
+bit  FPTE_NonLeafA;
+bit  DPTE_NonLeafA;
+
+bit  FPTE_LeafD;
+bit  DPTE_LeafD;
+bit  FPTE_NonLeafD;
+bit  DPTE_NonLeafD;
+
+bit  DPTE_LeafG;
+bit  FPTE_LeafG;
+bit  FPTE_NonLeafG;
+bit  DPTE_NonLeafG;
+
+bit  DPTE_LeafNapot;
+bit  FPTE_LeafNapot;
+bit  FPTE_NonLeafNapot;
+bit  DPTE_NonLeafNapot;
+
+bit  FPTE_LeafR;
+bit  DPTE_LeafR;
+bit  FPTE_NonLeafR;
+bit  DPTE_NonLeafR;
+
+bit  FPTE_LeafU;
+bit  DPTE_LeafU;
+bit  FPTE_NonLeafU;
+bit  DPTE_NonLeafU;
+
+bit  FPTE_LeafV;
+bit  DPTE_LeafV;
+bit  FPTE_NonLeafV;
+bit  DPTE_NonLeafV;
+
+bit  FPTE_LeafW;
+bit  DPTE_LeafW;
+bit  FPTE_NonLeafW;
+bit  DPTE_NonLeafW;
+
+bit  FPTE_LeafX;
+bit  DPTE_LeafX;
+bit  FPTE_NonLeafX;
+bit  DPTE_NonLeafX;
+
+logic[1:0] FPTE_NonLeafRsw;
+logic[1:0] DPTE_NonLeafRsw;
+logic[1:0] FPTE_LeafRsw;
+logic[1:0] DPTE_LeafRsw;
+
+logic[43:0] DPTE_LeafPpn;
+logic[43:0] FPTE_LeafPpn;
+logic[6:0] FPTE_LeafRes;
+logic[6:0] DPTE_LeafRes;
+logic[6:0] DPTE_NonLeafRes;
+logic[6:0] FPTE_NonLeafRes;
+logic[1:0] FPTE_LeafPbmt;
+logic[1:0] DPTE_LeafPbmt;
+logic[1:0] FPTE_NonLeafPbmt;
+logic[1:0] DPTE_NonLeafPbmt;
 
 const bit[63:0] UMIN64 = 64'h0000000000000000;
 const bit[63:0] UMAX64 = 64'hffffffffffffffff;
@@ -143,6 +279,121 @@ const bit[15:0] ZFHEXT_SNAN          = 16'h7c01;
 const bit[15:0] ZFHEXT_SNAN_NEG      = 16'hfc01;
 const bit[15:0] ZFHEXT_QNAN          = 16'h7e00;
 const bit[15:0] ZFHEXT_QNAN_NEG      = 16'hfe00;
+
+parameter PTE_VALID = 0;
+parameter PTE_READ = 1;
+parameter PTE_WRITE= 2;
+parameter PTE_EXECUTE = 3;
+parameter PTE_USER = 4;
+parameter PTE_GLOBAL = 5;
+parameter PTE_ACCESSED = 6;
+parameter PTE_DIRTY = 7;
+parameter PTE_RSW_LO = 8;
+parameter PTE_RSW_HI = 9;
+parameter PTE_PPN0_LO = 10;
+parameter PTE_PPN0_HI = 18;
+parameter PTE_PPN1_LO = 19;
+parameter PTE_PPN1_HI = 27;
+parameter PTE_PPN2_LO = 28;
+parameter PTE_PPN2_HI = 36;
+parameter PTE_PPN3_LO = 37;
+parameter PTE_PPN3_HI = 45;
+parameter PTE_PPN4_LO = 46;
+parameter PTE_PPN4_HI = 53;
+parameter PTE_RES_LO = 54;
+parameter PTE_RES_HI = 60;
+parameter PTE_PBMT_LO = 61;
+parameter PTE_PBMT_HI = 62;
+parameter PTE_NAPOT = 63;
+
+localparam bit [6:0] OPCODE_SYSTEM = 7'b1110011;
+localparam bit [2:0] FUNCT3_PRIV   = 3'b000;  // ECALL, EBREAK, *RET, …
+localparam bit [2:0] FUNCT3_CSRRW  = 3'b001;
+localparam bit [2:0] FUNCT3_CSRRS  = 3'b010;
+localparam bit [2:0] FUNCT3_CSRRC  = 3'b011;
+localparam bit [2:0] FUNCT3_CSRRWI = 3'b101;
+localparam bit [2:0] FUNCT3_CSRRSI = 3'b110;
+localparam bit [2:0] FUNCT3_CSRRCI = 3'b111;
+
+function void get_pte_level_range(
+    input cp_table table,
+    input archInfoPoints_e level_points[5],
+    output logic [2:0] lowest_level,
+    output logic [2:0] highest_level
+);
+    bit found_any = 0;
+    
+    // Find lowest level (first existing level)
+    lowest_level = 0;  // Default if none found
+    for (int i = 0; i < 5; i++) begin
+        if (table.exists(level_points[i])) begin
+            lowest_level = i + 1;  // Convert to 1-based indexing
+            found_any = 1;
+            break;
+        end
+    end
+    
+    // Find highest level (last existing level)
+    highest_level = 0;  // Default if none found
+    if (found_any) begin
+        for (int i = 4; i >= 0; i--) begin
+            if (table.exists(level_points[i])) begin
+                highest_level = i + 1;  // Convert to 1-based indexing
+                break;
+            end
+        end
+    end
+endfunction
+
+
+function automatic void classify_csr_instruction(input logic [31:0] instr);
+
+    logic [6:0] opcode;
+    logic [2:0] funct3;
+    logic [4:0] rd;
+    logic [4:0] rs1_or_uimm;
+
+    match_csr_r_instr = 1'b0;
+    match_csr_w_instr = 1'b0;
+
+    opcode = instr[6:0];
+    if (opcode != OPCODE_SYSTEM)
+        return;
+
+    funct3 = instr[14:12];
+    if (funct3 == FUNCT3_PRIV)
+        return;
+
+    if (!(funct3 inside {FUNCT3_CSRRW, FUNCT3_CSRRS, FUNCT3_CSRRC,
+                        FUNCT3_CSRRWI, FUNCT3_CSRRSI, FUNCT3_CSRRCI}))
+        return;
+
+    rd                = instr[11:7];
+    rs1_or_uimm       = instr[19:15];
+
+    if (rd !=0 ) begin 
+        void'($cast(csr_accessed,rd));
+    end
+
+    if (funct3 inside {FUNCT3_CSRRW, FUNCT3_CSRRWI}) begin
+        if (rd == 0) begin 
+            match_csr_r_instr = 0;
+            match_csr_w_instr = 1;
+        end else begin 
+            match_csr_r_instr = 1;
+            match_csr_w_instr = 1;
+        end
+    end else begin 
+        if (rs1_or_uimm == 0) begin 
+            match_csr_r_instr = 1;
+            match_csr_w_instr = 0;
+        end else begin 
+            match_csr_r_instr = 1;
+            match_csr_w_instr = 1;
+        end 
+    end 
+
+endfunction
 
 endpackage
 `endif

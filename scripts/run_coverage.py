@@ -11,6 +11,33 @@ from typing import List, Optional
 
 _MAKE_JOBS = "10"
 
+def _c_compiler_path_for_vcs(cxx_path: str) -> str:
+    """Return a C compiler path for VCS ``-cc``.
+
+    VCS generated makefiles set ``VCS_CC=gcc`` and compile DPI stubs with
+    ``$(CC)``; ``-cpp`` / ``-ld`` do not replace that ``CC``. Passing ``-cc``
+    points the stub compile (which still receives ``-CFLAGS`` such as
+    ``-std=c++20``) at a sufficiently new *gcc* from the same toolchain as
+    ``cxx_path`` (e.g. toolset ``g++`` -> sibling ``gcc``).
+    """
+    cxx_abs = os.path.abspath(os.path.expanduser(cxx_path))
+    d, base = os.path.dirname(cxx_abs), os.path.basename(cxx_abs)
+    if base in ("g++", "c++"):
+        cc = os.path.join(d, "gcc")
+    elif base == "clang++":
+        cc = os.path.join(d, "clang")
+    elif base.endswith("g++") and len(base) > 3:
+        cc = os.path.join(d, base[:-3] + "gcc")
+    else:
+        cc = cxx_abs
+    if cc != cxx_abs and not os.path.isfile(cc):
+        raise RuntimeError(
+            f"Derived C compiler for VCS -cc not found: {cc} (from CXX {cxx_abs}). "
+            "Install the matching gcc next to g++, or extend _c_compiler_path_for_vcs."
+        )
+    return cc
+
+
 def _boost_install_dir(boost_lib_path: str) -> str:
     p = os.path.abspath(os.path.expanduser(boost_lib_path))
     base = os.path.basename(p.rstrip(os.sep))
@@ -85,7 +112,6 @@ def build_whisper(boost_lib_path: str, cxx_path: str) -> None:
         ) from e
 
 def build_cov_gen(boost_lib_path: str, cxx_path: str) -> None:
-    print(f"BUILDING COV_GEN")
     project_root = check_project_root()
 
     boost_dir = _boost_install_dir(boost_lib_path)
@@ -102,32 +128,27 @@ def build_cov_gen(boost_lib_path: str, cxx_path: str) -> None:
     
     try:
         subprocess.run(cmd, check=True)
-        print(f"✔ COV_GEN BUILD SUCCESSFUL!")
     except subprocess.CalledProcessError as e:
         raise RuntimeError(
             f"✘ COV_GEN BUILD FAILED: make exited with status {e.returncode}"
         ) from e
 
 def run_cov_gen(whisper_config: str) -> None:
-    print(f"RUNNING COV_GEN")
     project_root = check_project_root()
     cov_gen_dir = os.path.join(project_root, "build")
     subprocess.run([os.path.join(cov_gen_dir, "cov_gen"),"--whisper_config", whisper_config], check=True)
-    print(f"✔ COV_GEN RUN SUCCESSFUL! CP_PKG GENERATED")
 
 def generate_autogen_samples(cp_pkg_path: str) -> None:
-    print(f"GENERATING AUTOGEN SAMPLES")
     project_root = check_project_root()
     autogen_samples_dir = os.path.join(project_root, "autogen_samples")
     subprocess.run(["python3", os.path.join(project_root, "scripts", "gen_cov_sample.py"), "--cp_pkg", cp_pkg_path], check=True)
-    print(f"✔ AUTOGEN SAMPLES GENERATED")
 
 def run_simulation(boost_lib_path: str, cxx_path: str, whisper_config: str, test: str) -> None:
-    print(f"RUNNING SIMULATION")
     log_file = "compile.log"
     project_root = check_project_root()
     boost_dir = _boost_install_dir(boost_lib_path)
     cxx = os.path.abspath(cxx_path)
+    cc = _c_compiler_path_for_vcs(cxx_path)
     cflags_str = (
         f"-std=c++20 -O2 -Wall "
         f"-I{project_root}/cov_gen/common "
@@ -169,7 +190,9 @@ def run_simulation(boost_lib_path: str, cxx_path: str, whisper_config: str, test
         # Static libraries
         f"{project_root}/whisper/third_party/softfloat/build/RISCV-GCC/softfloat.a",
 
-        # Specify compiler and linker
+        # C compiler for generated make (DPI stubs use $(CC)); -cpp/-ld alone
+        # do not replace VCS_CC.
+        "-cc", cc,
         "-cpp", cxx,
         "-ld", cxx,
 
@@ -178,6 +201,7 @@ def run_simulation(boost_lib_path: str, cxx_path: str, whisper_config: str, test
     ]
     # --- Execute the Command (same as before) ---
     try:
+        print(f"Executing command: {' '.join(vcs_command)}")
         with open(log_file, "w") as f:
             result = subprocess.run(
                 vcs_command,

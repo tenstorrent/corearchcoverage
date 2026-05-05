@@ -35,6 +35,11 @@ ${PROJECT_ROOT}/covergroups/mext_cp.sv
 ${PROJECT_ROOT}/covergroups/zfh_cov.sv
 ${PROJECT_ROOT}/covergroups/sstc_cov.sv
 ${PROJECT_ROOT}/covergroups/zicond_cov.sv
+${PROJECT_ROOT}/covergroups/sdtrig_cov.sv
+${PROJECT_ROOT}/covergroups/paging_cov.sv
+${PROJECT_ROOT}/covergroups/hext_cov.sv
+${PROJECT_ROOT}/covergroups/sscofpmf_cov.sv
+${PROJECT_ROOT}/covergroups/zjpm_cov.sv
 
 # Include user sampling files
 ${PROJECT_ROOT}/cov_sample/user_cov_sample.sv 
@@ -46,6 +51,7 @@ ${PROJECT_ROOT}/cov_sample/cov_sample.sv
 # Include DPI files
 ${PROJECT_ROOT}/cov_sample/Sample.cpp
 ${PROJECT_ROOT}/cov_sample/cov_sample.cc
+$(PROJECT_ROOT)/cov_sample/user_cov_common.cpp
 
 # Coverage options 
 -cm_dir  ${PROJECT_ROOT}/coverage.vdb

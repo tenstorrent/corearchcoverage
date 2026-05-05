@@ -63,7 +63,8 @@ class CovGen {
         //Converts enum data collected from ArchInfo to equivalent SV declaration strings.
         void convertToEnumStrings();
 
-        //Converts non-enum data collected from ArchInfo to equivalent SV declaration strings.
+        //Converts non-enum data (attributes and PTE/field decompositions) collected
+        //from ArchInfo to equivalent SV declaration strings.
         void convertToAttributeStrings();
 
         //Generates SV declarations for all the coverpoints available.
