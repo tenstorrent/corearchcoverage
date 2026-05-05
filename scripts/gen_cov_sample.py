@@ -8,6 +8,11 @@ import argparse
 
 invalid = []
 
+# Names like POINT_FOO that were emitted to attr_cov.sv but have no matching
+# entry in archInfoPoints_e inside cp_pkg.sv. These are dropped to keep the
+# generated SV compilable. Populated by parse_cp_pkg().
+skipped_attr_points = []
+
 def generate_attrs_file(filename,fileContent):
     lines = []
     lines += generate_header(filename)
@@ -443,6 +448,14 @@ def parse_cp_pkg(cp_pkg_path):
     csrs = defaultdict(csrClass)
     instrs = defaultdict(instrClass)
 
+    # Set of POINT_* identifiers that actually exist in cp_pkg.sv (collected
+    # from the archInfoPoints_e typedef enum). Used to filter out attribute
+    # entries whose name has no matching POINT_* (e.g. PTE per-field
+    # decompositions like DPTELeaf_GStageLevel1_r have no POINT_* of their own;
+    # only the parent POINT_DPTELEAF_GSTAGELEVEL1 exists).
+    valid_points = set()
+    point_decl_re = re.compile(r'\b(POINT_\w+)\s*=\s*\d+')
+
     with open(cp_pkg_path) as cp_pkg:
         
         extractEnum = False
@@ -458,6 +471,9 @@ def parse_cp_pkg(cp_pkg_path):
         instr_content = []
         
         for line in cp_pkg:
+            for m in point_decl_re.findall(line):
+                valid_points.add(m)
+
             enum_section_start = re.findall(r'Enums {',line)
             attr_section_start = re.findall(r'Attributes {',line)
             csr_section_start  = re.findall(r'Csrs {',line)
@@ -509,7 +525,26 @@ def parse_cp_pkg(cp_pkg_path):
             elif extractInstr and line != "\n":
                 instr_content.append(line)
 
-    return enums, attrs, csrs, instrs
+    # Drop any attribute whose corresponding POINT_<NAME> is not declared in
+    # cp_pkg.sv's archInfoPoints_e. Without this filter, attr_cov.sv would
+    # reference identifiers like POINT_DPTELEAF_GSTAGELEVEL1_R that the SV
+    # compiler can't resolve.
+    filtered_attrs = defaultdict(svAttrClass)
+    for name, attr in attrs.items():
+        point_name = f'POINT_{name.upper()}'
+        if point_name in valid_points:
+            filtered_attrs[name] = attr
+        else:
+            skipped_attr_points.append(point_name)
+    if skipped_attr_points:
+        sys.stderr.write(
+            f"[gen_cov_sample] Skipping {len(skipped_attr_points)} attribute(s) "
+            f"with no matching POINT_* in archInfoPoints_e (e.g. PTE field "
+            f"decompositions). First few: "
+            f"{', '.join(sorted(skipped_attr_points)[:5])}\n"
+        )
+
+    return enums, filtered_attrs, csrs, instrs
         
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Script for generating sampling SV code')

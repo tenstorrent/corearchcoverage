@@ -48,13 +48,22 @@ void CovGen<URV>::convertToEnumStrings()  {
     }
 }
 
-// Converts entries of the attsMap collected from Whisper to SystemVerilog Strings.
+// Converts entries of the attsMap and fieldsMap collected from Whisper into
+// SystemVerilog declaration Strings. PTE field decompositions produced by
+// addPtes (e.g. FVPTE_Level1_ppn, DPTELeaf_v, ...) are emitted as plain
+// attribute-style "logic [W-1:0] NAME;" declarations alongside the regular
+// attributes so they all live in the same Attributes block of cp_pkg.sv.
 template <typename URV>
 void CovGen<URV>::convertToAttributeStrings() {
     std::string attrAsString = "";
     for(auto var: attsMap) {
         attrAsString = var.toSvAttribute();
         attributeStrings.push_back(attrAsString);
+    }
+    for(auto& fieldsEntry : fieldsMap) {
+        for(auto& fieldDecl : fieldsEntry.toSvFields()) {
+            attributeStrings.push_back(fieldDecl);
+        }
     }
     std::sort(attributeStrings.begin(),attributeStrings.end());
 }

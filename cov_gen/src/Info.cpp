@@ -517,6 +517,49 @@ Info<URV>::addAtts(attBins& atts) const
   atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::FGPA_GStageLevel3)), 64));
   atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::FGPA_GStageLevel4)), 64));
   atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::FGPA_GStageLevel5)), 64));
+
+  // Whole-PTE (64-bit) attributes for the V-stage PTE Points. These sit
+  // alongside the per-field decompositions emitted by addPtes (e.g. FVPTE_Level1_v,
+  // FVPTE_Level1_ppn, ...) so SV samplers can reference the full PTE word as
+  // well as its individual fields.
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::FVPTE)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::FVPTE_Level1)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::FVPTE_Level2)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::FVPTE_Level3)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::FVPTE_Level4)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::FVPTE_Level5)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::DVPTE)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::DVPTE_Level1)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::DVPTE_Level2)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::DVPTE_Level3)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::DVPTE_Level4)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::DVPTE_Level5)), 64));
+
+  // Whole-PTE (64-bit) attributes for selected G-stage leaf PTE Points
+  // (Levels 1, 2, 4). Levels 3 and 5 are intentionally not exposed here.
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::FPTELeaf_GStageLevel1)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::FPTELeaf_GStageLevel2)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::FPTELeaf_GStageLevel3)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::FPTELeaf_GStageLevel4)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::FPTELeaf_GStageLevel5)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::FPTENonLeaf_GStageLevel1)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::FPTENonLeaf_GStageLevel2)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::FPTENonLeaf_GStageLevel3)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::FPTENonLeaf_GStageLevel4)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::FPTENonLeaf_GStageLevel5)), 64));
+  
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::DPTENonLeaf_GStageLevel1)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::DPTENonLeaf_GStageLevel2)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::DPTENonLeaf_GStageLevel3)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::DPTENonLeaf_GStageLevel4)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::DPTENonLeaf_GStageLevel5)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::DPTELeaf_GStageLevel1)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::DPTELeaf_GStageLevel2)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::DPTELeaf_GStageLevel3)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::DPTELeaf_GStageLevel4)), 64));
+  atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::DPTELeaf_GStageLevel5)), 64));
+
+
   atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::Trigger)), 64));
   atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::TriggerHitVec)), 64));
   atts.push_back(Attribute(std::string(magic_enum::enum_name(Point::FPmaFault)), 64));
