@@ -27,22 +27,22 @@
 			"poke_mask" : "0x00000000002010a9"
 	    },
 		"mcounteren": {
-			"mcounteren-comment" : "FIXME: Hardwired to 2 to enable time csr access. Temporary until wfi/imsic is implemented",
+			"mcounteren-comment" : "Hardwired to 2 to enable time csr access",
 			"reset" : "0x2"
 		},
 
 		"scounteren": {
-			"scounteren-comment" : "Hardwired to 2 to enable time csr access. Temporary until wfi/imsic is implemented",
+			"scounteren-comment" : "Hardwired to 2 to enable time csr access",
 			"reset" : "0x2"
 		},
 
 		"hcounteren": {
-			"hcounteren-comment" : "Hardwired to 2 to enable time csr access. Temporary until wfi/imsic is implemented",
+			"hcounteren-comment" : "Hardwired to 2 to enable time csr access",
 			"reset" : "0x2"
 		},
 
 	    "mstatus" : {
-	        "mstatus-comment" : "FIXME : Hardwired to zero except for FS, VS, and SD.",
+	        "mstatus-comment" : "Hardwired to zero except for FS, VS, and SD.",
 	        "reset" : "0x200047804",
 	        "mask" : "0xffffffffffffffff"
 	    },
@@ -54,19 +54,19 @@
 	    },
 
 	    "stvec" : {
-	        "stvec-comment" : "FIXME : Hardwired to zero except for FS, VS, and SD.",
+	        "stvec-comment" : "Hardwired to zero except for FS, VS, and SD.",
 	        "reset" : "0x0",
 	        "mask" : "0xffffffffffffffff"
 	    },
 
 	    "medeleg" : {
-	        "medeleg-comment" : "FIXME : Hardwired to zero except for FS, VS, and SD.",
+	        "medeleg-comment" : "Hardwired to zero except for FS, VS, and SD.",
 	        "reset" : "0x0",
 	        "mask" : "0xffffffffffffffff"
 	    },
 
 	    "hedeleg" : {
-	        "medeleg-comment" : "FIXME : Hardwired to zero except for FS, VS, and SD.",
+	        "medeleg-comment" : "Hardwired to zero except for FS, VS, and SD.",
 	        "reset" : "0x0",
 	        "mask" : "0xfffffffffff0f1ff"
 	    },
