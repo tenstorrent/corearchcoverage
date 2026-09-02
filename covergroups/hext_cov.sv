@@ -26,15 +26,19 @@ covergroup hext__cg with function sample(
         option.weight = 0;
         bins vumode = {PRIVILEGEMODE_USER} iff (VirtualMode == 1);
     }
+
     hext__gen__cp__humode : coverpoint privilegemode_var {
         bins umode = {PRIVILEGEMODE_USER} iff (VirtualMode == 0);
     }
+
     hext__gen__cp__vsmode : coverpoint privilegemode_var{
         bins vsmode = {PRIVILEGEMODE_SUPERVISOR} iff (VirtualMode == 1);
     }
+
     hext__gen__cp__hsmode : coverpoint privilegemode_var{
         bins vsmode = {PRIVILEGEMODE_SUPERVISOR} iff (VirtualMode == 0);
     }
+    
     hext__gen__cp__mmode : coverpoint privilegemode_var{
         bins mmode = {PRIVILEGEMODE_MACHINE};
     }
@@ -59,26 +63,21 @@ covergroup hext__cg with function sample(
     }
 
     hext__traps__cp_excp_def : coverpoint exception_var iff (match_excp == 1){
-        bins ILLEGAL_EXCEPTION  = {EXCEPTION_ILLEGAL_INST};
-        
-        bins VIRT_INST_EXCP = {EXCEPTION_VIRT_INST};
-
-        bins PAGE_FLT_LOAD = {EXCEPTION_LOAD_PAGE_FAULT};
-        bins PAGE_FLT_STORE = {EXCEPTION_STORE_PAGE_FAULT};
-        bins PAGE_FLT_INSTR = {EXCEPTION_INST_PAGE_FAULT};
-
-        bins GUEST_PAGE_FLT_LOAD = {EXCEPTION_LOAD_GUEST_PAGE_FAULT};
-        bins GUEST_PAGE_FLT_STORE = {EXCEPTION_STORE_GUEST_PAGE_FAULT};
-        bins GUEST_PAGE_FLT_INSTR = {EXCEPTION_INST_GUEST_PAGE_FAULT};
-
-        bins ACC_FLT_LOAD = {EXCEPTION_LOAD_ACC_FAULT};
-        bins ACC_FLT_STORE = {EXCEPTION_STORE_ACC_FAULT};
-        bins ACC_FLT_INSTR = {EXCEPTION_INST_ACC_FAULT};
-
-        bins m_ecall    = {EXCEPTION_M_ENV_CALL};
-        bins s_ecall    = {EXCEPTION_S_ENV_CALL};
-        bins u_vu_ecall    = {EXCEPTION_U_ENV_CALL};
-        bins vs_ecall   = {EXCEPTION_VS_ENV_CALL};
+        bins illegal_exception      = {EXCEPTION_ILLEGAL_INST};
+        bins virt_inst_excp         = {EXCEPTION_VIRT_INST};
+        bins page_flt_load          = {EXCEPTION_LOAD_PAGE_FAULT};
+        bins page_flt_store         = {EXCEPTION_STORE_PAGE_FAULT};
+        bins page_flt_instr         = {EXCEPTION_INST_PAGE_FAULT};
+        bins guest_page_flt_load    = {EXCEPTION_LOAD_GUEST_PAGE_FAULT};
+        bins guest_page_flt_store   = {EXCEPTION_STORE_GUEST_PAGE_FAULT};
+        bins guest_page_flt_instr   = {EXCEPTION_INST_GUEST_PAGE_FAULT};
+        bins acc_flt_load           = {EXCEPTION_LOAD_ACC_FAULT};
+        bins acc_flt_store          = {EXCEPTION_STORE_ACC_FAULT};
+        bins acc_flt_instr          = {EXCEPTION_INST_ACC_FAULT};
+        bins m_ecall                = {EXCEPTION_M_ENV_CALL};
+        bins s_ecall                = {EXCEPTION_S_ENV_CALL};
+        bins u_vu_ecall             = {EXCEPTION_U_ENV_CALL};
+        bins vs_ecall               = {EXCEPTION_VS_ENV_CALL};
     }
 
     hext__excp_misaligned_faults : coverpoint exception_var iff (match_excp==1) {
@@ -86,68 +85,85 @@ covergroup hext__cg with function sample(
         bins st_addr_misaligned = {EXCEPTION_STORE_ACC_FAULT};
     }
     
-    hext__deleg__cp_medeleg_virt_intr : coverpoint prev_medeleg_csr[22] iff (exception_var == EXCEPTION_VIRT_INST) {
+    hext__deleg__cp_medeleg_virt_intr : coverpoint prev_medeleg_csr[VIRT_INSTR_EXCP] iff (exception_var == EXCEPTION_VIRT_INST) {
         bins non_delegation_mmode   = {0};
         bins delegation_hsmode      = {1};
     }
-    hext__deleg__cp_medeleg_illegal : coverpoint prev_medeleg_csr[2] iff (exception_var == EXCEPTION_ILLEGAL_INST) {
+    
+    hext__deleg__cp_medeleg_illegal : coverpoint prev_medeleg_csr[INSTR_ILLEGAL_EXCP] iff (exception_var == EXCEPTION_ILLEGAL_INST) {
         bins non_delegation_mmode   = {0};
         bins delegation_hsmode      = {1};
     }
-    hext__deleg__cp_medeleg_instr_page_fault : coverpoint prev_medeleg_csr[12] iff(exception_var == EXCEPTION_INST_PAGE_FAULT) {
+
+    hext__deleg__cp_medeleg_instr_page_fault : coverpoint prev_medeleg_csr[INSTR_PAGE_FAULT_EXCP] iff(exception_var == EXCEPTION_INST_PAGE_FAULT) {
         bins non_delegation_mmode   = {0};
         bins delegation_hsmode       = {1};
     }
-    hext__deleg__cp_medeleg_load_page_fault : coverpoint prev_medeleg_csr[13] iff(exception_var == EXCEPTION_LOAD_PAGE_FAULT) {
+
+    hext__deleg__cp_medeleg_load_page_fault : coverpoint prev_medeleg_csr[LOAD_PAGE_FAULT_EXCP] iff(exception_var == EXCEPTION_LOAD_PAGE_FAULT) {
         bins non_delegation_mmode   = {0};
         bins delegation_hsmode       = {1};
     }
-    hext__deleg__cp_medeleg_storeAMO_page_fault : coverpoint prev_medeleg_csr[15] iff(exception_var == EXCEPTION_STORE_PAGE_FAULT) {
+
+    hext__deleg__cp_medeleg_storeAMO_page_fault : coverpoint prev_medeleg_csr[STORE_PAGE_FAULT_EXCP] iff(exception_var == EXCEPTION_STORE_PAGE_FAULT) {
         bins non_delegation_mmode   = {0};
         bins delegation_hsmode       = {1};
     }
-    hext__deleg__cp_medeleg_instr_guest_page_fault : coverpoint prev_medeleg_csr[20] iff(exception_var == EXCEPTION_INST_GUEST_PAGE_FAULT) {
+
+    hext__deleg__cp_medeleg_instr_guest_page_fault : coverpoint prev_medeleg_csr[INSTR_GUEST_PAGE_FAULT_EXCP] iff(exception_var == EXCEPTION_INST_GUEST_PAGE_FAULT) {
         bins non_delegation_mmode   = {0};
         bins delegation_hsmode       = {1};
     }
-    hext__deleg__cp_medeleg_load_guest_page_fault : coverpoint prev_medeleg_csr[21] iff(exception_var == EXCEPTION_LOAD_GUEST_PAGE_FAULT) {
+
+    hext__deleg__cp_medeleg_load_guest_page_fault : coverpoint prev_medeleg_csr[LOAD_GUEST_PAGE_FAULT_EXCP] iff(exception_var == EXCEPTION_LOAD_GUEST_PAGE_FAULT) {
         bins non_delegation_mmode   = {0};
         bins delegation_hsmode       = {1};
     }
-    hext__deleg__cp_medeleg_storeAMO_guest_page_fault : coverpoint prev_medeleg_csr[23] iff(exception_var == EXCEPTION_STORE_GUEST_PAGE_FAULT) {
+
+    hext__deleg__cp_medeleg_storeAMO_guest_page_fault : coverpoint prev_medeleg_csr[STORE_GUEST_PAGE_FAULT_EXCP] iff(exception_var == EXCEPTION_STORE_GUEST_PAGE_FAULT) {
         bins non_delegation_mmode   = {0};
         bins delegation_hsmode       = {1};
     }
-    hext__deleg__cp_hedeleg_illegal : coverpoint prev_hedeleg_csr[2] iff (exception_var == EXCEPTION_ILLEGAL_INST)  {
+
+    hext__deleg__cp_hedeleg_illegal : coverpoint prev_hedeleg_csr[INSTR_ILLEGAL_EXCP] iff (exception_var == EXCEPTION_ILLEGAL_INST)  {
         bins non_delegation_hsmode   = {0};
         bins delegation_vsmode       = {1};
     }
-    hext__deleg__cp_hedeleg_instr_page_fault : coverpoint prev_hedeleg_csr[12] iff(exception_var == EXCEPTION_INST_PAGE_FAULT)  {
+    
+    hext__deleg__cp_hedeleg_instr_page_fault : coverpoint prev_hedeleg_csr[INSTR_PAGE_FAULT_EXCP] iff(exception_var == EXCEPTION_INST_PAGE_FAULT)  {
         bins non_delegation_hsmode   = {0};
         bins delegation_vsmode       = {1};
     }
-    hext__deleg__cp_hedeleg_load_page_fault : coverpoint prev_hedeleg_csr[13] iff(exception_var == EXCEPTION_LOAD_PAGE_FAULT) {
+
+    hext__deleg__cp_hedeleg_load_page_fault : coverpoint prev_hedeleg_csr[LOAD_PAGE_FAULT_EXCP] iff(exception_var == EXCEPTION_LOAD_PAGE_FAULT) {
         bins non_delegation_hsmode   = {0};
         bins delegation_vsmode       = {1};
     }
-    hext__deleg__cp_hedeleg_storeAMO_page_fault : coverpoint prev_hedeleg_csr[15] iff(exception_var == EXCEPTION_STORE_PAGE_FAULT) {
+
+    hext__deleg__cp_hedeleg_storeAMO_page_fault : coverpoint prev_hedeleg_csr[STORE_PAGE_FAULT_EXCP] iff(exception_var == EXCEPTION_STORE_PAGE_FAULT) {
         bins non_delegation_hsmode   = {0};
         bins delegation_vsmode       = {1};
     }
-    hext__deleg__cp_hedeleg_load_addr_misaligned_fault : coverpoint prev_hedeleg_csr[4] iff(exception_var == EXCEPTION_LOAD_ACC_FAULT) {
+
+    hext__deleg__cp_hedeleg_load_addr_misaligned_fault : coverpoint prev_hedeleg_csr[LOAD_ADDR_MISALIGNED] iff(exception_var == EXCEPTION_LOAD_ADDR_MISAL) {
         bins non_delegation_hsmode   = {0};
         bins delegation_vsmode       = {1};
     }
-    hext__deleg__cp_hedeleg_store_addr_misaligned_fault : coverpoint prev_hedeleg_csr[6] iff(exception_var == EXCEPTION_STORE_ACC_FAULT) {
+
+    hext__deleg__cp_hedeleg_store_addr_misaligned_fault : coverpoint prev_hedeleg_csr[STORE_ADDR_MISALIGNED] iff(exception_var == EXCEPTION_STORE_ADDR_MISAL) {
         bins non_delegation_hsmode   = {0};
         bins delegation_vsmode       = {1};
     }
 
     hext__deleg__cr_all_illegal : cross hext__deleg__cp_medeleg_illegal, hext__deleg__cp_hedeleg_illegal;
+
     hext__deleg__cr_all_instr_page_fault: cross hext__deleg__cp_medeleg_instr_page_fault, hext__deleg__cp_hedeleg_instr_page_fault;
+
     hext__deleg__cr_all_load_page_fault: cross hext__deleg__cp_medeleg_load_page_fault, hext__deleg__cp_hedeleg_load_page_fault;
+
     hext__deleg__cr_all_storeAMO_page_fault: cross hext__deleg__cp_medeleg_storeAMO_page_fault, hext__deleg__cp_hedeleg_storeAMO_page_fault;
 
+    // Cover the following mmode csrs with a csr read/write instruction
     hext__csr__cp_csr_mmode : coverpoint Inst[31:20] iff (match_csr_r_instr || match_csr_w_instr) {
         option.weight = 0;
         bins mstatus    = {12'd768};
@@ -160,6 +176,8 @@ covergroup hext__cg with function sample(
         bins mepc       = {12'd833};
         bins mscratch   = {12'd832};
     }
+
+    //Cover the following smode csrs with a csr read/write instruction
     hext__csr__cp_csr_smode : coverpoint Inst[31:20] iff (match_csr_r_instr || match_csr_w_instr) {
         option.weight = 0;
         bins sip        = {12'd324};
@@ -168,6 +186,8 @@ covergroup hext__cg with function sample(
         bins sepc       = {12'd321};
         bins sscratch   = {12'd320};
     }
+
+    //Cover the following hypervisor specific smode csrs with a csr read/write instruction
     hext__csr__cp_csr_hsmode : coverpoint Inst[31:20] iff (match_csr_r_instr || match_csr_w_instr){
         option.weight=0;
         bins hstatus    = {12'd1536};
@@ -175,6 +195,8 @@ covergroup hext__cg with function sample(
         bins hip        = {12'd1604};
         bins hie        = {12'd1540};
     }
+
+    //Cover the following vsmode csrs with a csr read/write instruction
     hext__csr__cp_csr_h_vsmode : coverpoint Inst[31:20] iff (match_csr_r_instr || match_csr_w_instr) {
         option.weight=0;
         bins vsstatus    = {12'd512};
@@ -184,55 +206,8 @@ covergroup hext__cg with function sample(
         bins vsip        = {12'd580};
         bins vsie        = {12'd516};
     }
-    hext__csr__cp_csr_umode :  coverpoint Inst[31:20] iff (match_csr_r_instr || match_csr_w_instr){
-        option.weight=0;
-        wildcard bins smode[] = {12'b??00????????};
-    }
-    hext__csr__cp_csr_op: coverpoint instrenum_var{
-        option.weight=0;
-        bins csr_op = {INSTRENUM_CSRRC, INSTRENUM_CSRRCI, INSTRENUM_CSRRS, INSTRENUM_CSRRSI, INSTRENUM_CSRRW, INSTRENUM_CSRRWI};
-    }
-
-    hext__virtinstr__cr_mcsr_priv_vsmode    : cross hext__csr__cp_csr_mmode,    hext__gen__cp__vsmode, hext__csr__cp_csr_op, hext__traps__cp_excp_def {
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.ILLEGAL_EXCEPTION);
-    }
     
-    hext__virtinstr__cr_mcsr_priv_vumode    : cross hext__csr__cp_csr_mmode,    hext__gen__cp__vumode, hext__csr__cp_csr_op, hext__traps__cp_excp_def {
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.ILLEGAL_EXCEPTION);
-    }
-
-    hext__virtinstr__cr_h_vscsr_priv_vsmode : cross hext__csr__cp_csr_h_vsmode, hext__gen__cp__vsmode, hext__csr__cp_csr_op, hext__traps__cp_excp_def {
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.VIRT_INST_EXCP); 
-    }
-
-    hext__virtinstr__cr_h_vscsr_priv_vumode : cross hext__csr__cp_csr_h_vsmode, hext__gen__cp__vumode, hext__csr__cp_csr_op, hext__traps__cp_excp_def {
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.VIRT_INST_EXCP);  
-    } 
-
-    hext__virtinstr__cr_hscsr_priv_vsmode   : cross hext__csr__cp_csr_hsmode,   hext__gen__cp__vsmode, hext__csr__cp_csr_op, hext__traps__cp_excp_def {
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.VIRT_INST_EXCP);   
-    }
-
-    hext__virtinstr__cr_hscsr_priv_vumode   : cross hext__csr__cp_csr_hsmode,   hext__gen__cp__vumode, hext__csr__cp_csr_op, hext__traps__cp_excp_def {
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.VIRT_INST_EXCP);   
-    }
-
-    hext__virtinstr__cr_scsr_priv_vumode    : cross hext__csr__cp_csr_smode,    hext__gen__cp__vumode, hext__csr__cp_csr_op, hext__traps__cp_excp_def {
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.VIRT_INST_EXCP);   
-    }
-
-    hext__legal__cr_hscsr_priv_hsmode   : cross hext__csr__cp_csr_hsmode,   hext__gen__cp__hsmode, hext__csr__cp_csr_op;
-    hext__legal__cr_hscsr_priv_mmode   : cross hext__csr__cp_csr_hsmode,   hext__gen__cp__mmode, hext__csr__cp_csr_op;
-
-    hext__illegal__cr_h_vscsrcsr_priv_umode : cross hext__csr__cp_csr_h_vsmode, hext__gen__cp__humode, hext__csr__cp_csr_op;
-    hext__illegal__cr_hcsr_priv_umode : cross hext__csr__cp_csr_hsmode, hext__gen__cp__humode, hext__csr__cp_csr_op;
-
-    hext__csr__cp_csr_h_vsmode_RO : coverpoint Inst[31:20] iff (match_csr_r_instr == 1 || match_csr_w_instr == 1) {
-        bins hgeip  = {12'he12};
-        bins vstopi = {12'heb0};
-    }
-
-    hext__csr__cp_csr_umode_RO : coverpoint Inst[31:20] iff (match_csr_r_instr == 1 || match_csr_w_instr == 1){
+    hext__csr__cp_csr_umode_RO : coverpoint Inst[31:20] iff (match_csr_r_instr || match_csr_w_instr){
         bins cycle        = {12'hc00};
         bins timecsr      = {12'hc01};
         bins instret      = {12'hc02};
@@ -240,22 +215,65 @@ covergroup hext__cg with function sample(
         bins hpmcounter4  = {12'hc04};
         bins hpmcounter5  = {12'hc05};
         bins hpmcounter6  = {12'hc06};
-        bins hpmcounter7  = {12'hc07};
+        bins hpmcounter7  = {12'hc07};  
         bins hpmcounter8  = {12'hc08};
     }
 
+
+    //Cover the following vsmode read only CSR  
+    hext__csr__cp_csr_h_vsmode_RO : coverpoint Inst[31:20] iff (match_csr_r_instr || match_csr_w_instr) {
+        bins hgeip  = {12'he12};
+        bins vstopi = {12'heb0};
+    }
+ 
+    //Accessing mmode csrs with csr read/write instructions in vsmode causes illegal instruction exception trap
+    hext__virtinstr__cr_mcsr_priv_vsmode    : cross hext__csr__cp_csr_mmode,  hext__gen__cp__vsmode, hext__traps__cp_excp_def {
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.illegal_exception);
+    }
+
+    //Accessing mmode csrs with csr read/write instructions in vumode causes illegal instruction exception trap 
+    hext__virtinstr__cr_mcsr_priv_vumode    : cross hext__csr__cp_csr_mmode, hext__gen__cp__vumode, hext__traps__cp_excp_def {
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.illegal_exception);
+    }
+
+    //Accessing vsmode csrs with csr read/write instructions in vsmode causes virtual instruction exception trap
+    hext__virtinstr__cr_h_vscsr_priv_vsmode : cross hext__csr__cp_csr_h_vsmode, hext__gen__cp__vsmode, hext__traps__cp_excp_def {
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.virt_inst_excp); 
+    }
+
+    //Accessing vsmode csrs with csr read/write instructions in vumode causes virtual instruction exception trap
+    hext__virtinstr__cr_h_vscsr_priv_vumode : cross hext__csr__cp_csr_h_vsmode, hext__gen__cp__vumode, hext__traps__cp_excp_def {
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.virt_inst_excp);  
+    } 
+
+    //Accessing hsmode csrs with csr read/write instructions in vsmode causes virtual instruction exception trap 
+    hext__virtinstr__cr_hscsr_priv_vsmode   : cross hext__csr__cp_csr_hsmode,   hext__gen__cp__vsmode, hext__traps__cp_excp_def {
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.virt_inst_excp);   
+    }
+
+    //Accessing hsmode csrs with csr read/write instructions in vumode causes virtual instruction exception trap
+    hext__virtinstr__cr_hscsr_priv_vumode   : cross hext__csr__cp_csr_hsmode,   hext__gen__cp__vumode, hext__traps__cp_excp_def {
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.virt_inst_excp);   
+    }
+
+    //Accessing smode csrs with csr read/write instructions in vumode causes virutal instruction exception trap
+    hext__virtinstr__cr_scsr_priv_vumode    : cross hext__csr__cp_csr_smode,    hext__gen__cp__vumode, hext__traps__cp_excp_def {
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.virt_inst_excp);   
+    }
+    
+    //Accessing CSRs with a read-only and write-only CSR access
     hext__csr__cp_csr_op_write: coverpoint instrenum_var {
         option.weight=0;
         bins csr_write_valid    = {INSTRENUM_CSRRC, INSTRENUM_CSRRCI, INSTRENUM_CSRRS, INSTRENUM_CSRRSI, INSTRENUM_CSRRW, INSTRENUM_CSRRWI} iff (rs1_val!=0);
         bins csr_write_negative = {INSTRENUM_CSRRC, INSTRENUM_CSRRCI, INSTRENUM_CSRRS, INSTRENUM_CSRRSI, INSTRENUM_CSRRW, INSTRENUM_CSRRWI} iff (rs1_val==0);
     }
 
-    hext__illegal__cr_RO_h_vs_csr_priv_mmode : cross hext__csr__cp_csr_h_vsmode_RO, hext__gen__cp__mmode, hext__csr__cp_csr_op_write; 
-    hext__illegal__cr_RO_h_vs_csr_priv_hsmode : cross hext__csr__cp_csr_h_vsmode_RO, hext__gen__cp__hsmode, hext__csr__cp_csr_op_write;
-    
-    hext__virtinstr__cr_RO_u_csr_priv_vsmode : cross hext__csr__cp_csr_umode_RO, hext__gen__cp__vsmode, hext__csr__cp_csr_op_write;
-    hext__virtinstr__cr_RO_u_csr_priv_vumode : cross hext__csr__cp_csr_umode_RO, hext__gen__cp__vumode, hext__csr__cp_csr_op_write;
+    hext__illegal__cr_RO_h_vs_csr_priv_mmode    : cross hext__csr__cp_csr_h_vsmode_RO, hext__gen__cp__mmode, hext__csr__cp_csr_op_write; 
+    hext__illegal__cr_RO_h_vs_csr_priv_hsmode   : cross hext__csr__cp_csr_h_vsmode_RO, hext__gen__cp__hsmode, hext__csr__cp_csr_op_write;     
+    hext__virtinstr__cr_RO_u_csr_priv_vsmode    : cross hext__csr__cp_csr_umode_RO, hext__gen__cp__vsmode, hext__csr__cp_csr_op_write;
+    hext__virtinstr__cr_RO_u_csr_priv_vumode    : cross hext__csr__cp_csr_umode_RO, hext__gen__cp__vumode, hext__csr__cp_csr_op_write;
 
+    //Cover transitions of privilege modes supported by hypervisor enabled core. 
     hext__traps__cr_env_calls : cross hext__traps__cp_excp_def, hext__gen__cp_curpriv, hext__gen__cp_nxtpriv {
         option.cross_auto_bin_max   = 0;
         bins ecall_vs_to_m   = binsof(hext__traps__cp_excp_def.vs_ecall) && binsof(hext__gen__cp_curpriv.vsmode) && 
@@ -324,64 +342,87 @@ covergroup hext__cg with function sample(
     }
 
     hext__traps__cp_virt_instr_excp_01 : coverpoint instrenum_var iff ((VirtualMode == 1)) {
-        bins sret_vs_mode_vtsr1     = {INSTRENUM_SRET} iff ((privilegemode_var == PRIVILEGEMODE_SUPERVISOR) 
-                                        && (prev_hstatus_csr[22] == 1));
-        bins sret_vu_mode           = {INSTRENUM_SRET} iff (privilegemode_var == PRIVILEGEMODE_USER);
-        bins wfi_vs_mode_vtw1       = {INSTRENUM_WFI}  iff ((privilegemode_var == PRIVILEGEMODE_SUPERVISOR) 
-                                        && (prev_hstatus_csr[21] == 1) && (prev_mstatus_csr[21] == 0));
-        bins wfi_vu_mode            = {INSTRENUM_WFI}  iff ((privilegemode_var == PRIVILEGEMODE_USER)
-                                        && (prev_mstatus_csr[21] == 0));
-        bins sfence_vs_mode_vtvm1[] = {INSTRENUM_SFENCE_INVAL_IR,INSTRENUM_SFENCE_VMA,INSTRENUM_SFENCE_W_INVAL} iff ((privilegemode_var == PRIVILEGEMODE_SUPERVISOR) 
-                                        && (prev_hstatus_csr[20] ==1));
-        bins sinval_vs_mode_vtvm1   = {INSTRENUM_SINVAL_VMA} iff ((privilegemode_var == PRIVILEGEMODE_SUPERVISOR) 
-                                        && (prev_hstatus_csr[20] ==1));
-        bins sfence_vu_mode[]       = {INSTRENUM_SFENCE_INVAL_IR, INSTRENUM_SFENCE_VMA,INSTRENUM_SFENCE_W_INVAL} iff (privilegemode_var == PRIVILEGEMODE_USER);
-        bins sinval_vu_mode         = {INSTRENUM_SINVAL_VMA} iff (privilegemode_var == PRIVILEGEMODE_USER);
-        bins hinval_vs_mode         = {INSTRENUM_HINVAL_VVMA} iff (privilegemode_var == PRIVILEGEMODE_SUPERVISOR);
-        bins hinval_vu_mode         = {INSTRENUM_HINVAL_VVMA} iff (privilegemode_var == PRIVILEGEMODE_USER);
+        bins sret_vs_mode_vtsr1     = {INSTRENUM_SRET} iff 
+                                        ((privilegemode_var == PRIVILEGEMODE_SUPERVISOR) && 
+                                        (prev_hstatus_csr[HSTATUS_VTSR] == 1));
+        
+        bins sret_vu_mode           = {INSTRENUM_SRET} iff 
+                                        (privilegemode_var == PRIVILEGEMODE_USER);
+
+        bins wfi_vs_mode_vtw1       = {INSTRENUM_WFI}  iff 
+                                        ((privilegemode_var == PRIVILEGEMODE_SUPERVISOR) && 
+                                        (prev_hstatus_csr[HSTATUS_VTW] == 1) && 
+                                        (prev_mstatus_csr[MSTATUS_TW] == 0));
+
+        bins wfi_vu_mode            = {INSTRENUM_WFI}  iff 
+                                        ((privilegemode_var == PRIVILEGEMODE_USER) && 
+                                        (prev_mstatus_csr[MSTATUS_TW] == 0));
+
+        bins sfence_vs_mode_vtvm1[] = {INSTRENUM_SFENCE_INVAL_IR,INSTRENUM_SFENCE_VMA,INSTRENUM_SFENCE_W_INVAL} iff 
+                                        ((privilegemode_var == PRIVILEGEMODE_SUPERVISOR) && 
+                                        (prev_hstatus_csr[HSTATUS_VTVM] == 1));
+
+        bins sinval_vs_mode_vtvm1   = {INSTRENUM_SINVAL_VMA} iff 
+                                        ((privilegemode_var == PRIVILEGEMODE_SUPERVISOR) && 
+                                        (prev_hstatus_csr[HSTATUS_VTVM] == 1));
+
+        bins sfence_vu_mode[]       = {INSTRENUM_SFENCE_INVAL_IR, INSTRENUM_SFENCE_VMA,INSTRENUM_SFENCE_W_INVAL} iff 
+                                        (privilegemode_var == PRIVILEGEMODE_USER);
+
+        bins sinval_vu_mode         = {INSTRENUM_SINVAL_VMA} iff 
+                                        (privilegemode_var == PRIVILEGEMODE_USER);
+
+        bins hinval_vs_mode         = {INSTRENUM_HINVAL_VVMA} iff 
+                                        (privilegemode_var == PRIVILEGEMODE_SUPERVISOR);
+        
+        bins hinval_vu_mode         = {INSTRENUM_HINVAL_VVMA} iff 
+                                        (privilegemode_var == PRIVILEGEMODE_USER);
     }
 
-    hext__traps__cr_virt_instr_excp_01 :cross hext__traps__cp_virt_instr_excp_01, hext__deleg__cp_medeleg_virt_intr;
-
-    hext__traps__cp_virt_instr_excp_02 : coverpoint Inst[31:20] iff ((VirtualMode == 1) && (privilegemode_var == PRIVILEGEMODE_SUPERVISOR)) {
-        bins satp = {12'h180} iff ((prev_hstatus_csr[20] == 1) && (match_csr_r_instr == 1 || match_csr_w_instr == 1));
+    hext__traps__cp_virt_instr_excp_02 : coverpoint Inst[31:20] iff ((VirtualMode == 1) && 
+                                                                    (privilegemode_var == PRIVILEGEMODE_SUPERVISOR)) {
+        bins satp = {12'h180} iff ((prev_hstatus_csr[HSTATUS_VTVM] == 1) &&
+                                    (match_csr_r_instr == 1 || match_csr_w_instr == 1));
     }
-
-    hext__traps__cr_virt_instr_excp_02 :cross hext__traps__cp_virt_instr_excp_02, hext__deleg__cp_medeleg_virt_intr;
-
+    
+    hext__traps__cr_virt_instr_excp_01 : cross hext__traps__cp_virt_instr_excp_01, hext__deleg__cp_medeleg_virt_intr;
+    hext__traps__cr_virt_instr_excp_02 : cross hext__traps__cp_virt_instr_excp_02, hext__deleg__cp_medeleg_virt_intr;
     hext__traps__cr_virt_instr_h_instr_vsmode : cross hext__gen__cp__vsmode,hext__gen__cp_hext_instr;
     hext__traps__cr_virt_instr_h_instr_vumode : cross hext__gen__cp__vumode,hext__gen__cp_hext_instr;
     
-    hext__traps__cp_counter_csr_access : coverpoint Inst[31:20] iff ((VirtualMode == 1) && (match_csr_r_instr == 1 || match_csr_w_instr == 1)) {
-        bins counter_csrs = {[12'hc00:12'hc1f]};
+    hext__traps__cp_counter_csr_access : coverpoint Inst[31:20] iff ((VirtualMode == 1) && 
+                                        (match_csr_r_instr == 1 || match_csr_w_instr == 1)) {
+        bins lower_word_counter_csrs = {[CSR_COUNTER_LO:CSR_COUNTER_HI]};
+        bins upper_word_counter_csrs = {[CSR_COUNTERH_LO:CSR_COUNTERH_HI]};
     }
 
-    hext__csr__cp_mcounteren_accessed_counter_bit : coverpoint i_csr_cov_sample.mcounteren_csr_inst.value[Inst[31:20] - 12'hc00] 
-        iff ((VirtualMode == 1) && (match_csr_r_instr == 1 || match_csr_w_instr == 1) && (Inst[31:20] >= 12'hc00) && (Inst[31:20] <= 12'hc1f)) {
+    hext__csr__cp_mcounteren_accessed_counter_bit : coverpoint mcounteren_access_bit 
+        iff ((VirtualMode == 1) && (counter_csr_access == 1)) {
         bins bit_enabled  = {1};
         bins bit_disabled = {0};
     }
     
-    hext__csr__cp_hcounteren_accessed_counter_bit : coverpoint i_csr_cov_sample.hcounteren_csr_inst.value[Inst[31:20] - 12'hc00] 
-        iff ((VirtualMode == 1) && (match_csr_r_instr == 1 || match_csr_w_instr == 1) && (Inst[31:20] >= 12'hc00) && (Inst[31:20] <= 12'hc1f)) {
+    hext__csr__cp_hcounteren_accessed_counter_bit : coverpoint hcounteren_access_bit 
+        iff ((VirtualMode == 1) && (counter_csr_access == 1)) {
         bins bit_enabled  = {1};
         bins bit_disabled = {0};
     }
     
-    hext__csr__cp_scounteren_accessed_counter_bit : coverpoint i_csr_cov_sample.scounteren_csr_inst.value[Inst[31:20] - 12'hc00] 
-        iff ((VirtualMode == 1) && (match_csr_r_instr == 1 || match_csr_w_instr == 1) && (Inst[31:20] >= 12'hc00) && (Inst[31:20] <= 12'hc1f)) {
+    hext__csr__cp_scounteren_accessed_counter_bit : coverpoint scounteren_access_bit 
+        iff ((VirtualMode == 1) && (counter_csr_access == 1)) {
         bins bit_enabled  = {1};
         bins bit_disabled = {0};
     }
 
-    hext__traps__cr_virt_instr_counter_vs_m1h0 : cross hext__traps__cp_counter_csr_access, hext__gen__cp__vsmode, 
+    hext__traps__cr_virt_instr_counter_vs_m1h0 : cross hext__traps__cp_counter_csr_access, 
+                                                        hext__gen__cp__vsmode, 
                                                        hext__csr__cp_mcounteren_accessed_counter_bit, hext__csr__cp_hcounteren_accessed_counter_bit, 
                                                        hext__traps__cp_excp_def {
         option.cross_auto_bin_max = 0;
         bins vs_counter_virt_instr = binsof(hext__gen__cp__vsmode.vsmode) &&
                                      binsof(hext__csr__cp_mcounteren_accessed_counter_bit.bit_enabled) &&
                                      binsof(hext__csr__cp_hcounteren_accessed_counter_bit.bit_disabled) &&
-                                     binsof(hext__traps__cp_excp_def.VIRT_INST_EXCP);
+                                     binsof(hext__traps__cp_excp_def.virt_inst_excp);
     }
 
     hext__traps__cr_virt_instr_counter_vu_m1h0s0 : cross hext__traps__cp_counter_csr_access, hext__gen__cp__vumode,
@@ -392,7 +433,7 @@ covergroup hext__cg with function sample(
                                            binsof(hext__csr__cp_mcounteren_accessed_counter_bit.bit_enabled) &&
                                            binsof(hext__csr__cp_hcounteren_accessed_counter_bit.bit_disabled) &&
                                            binsof(hext__csr__cp_scounteren_accessed_counter_bit.bit_disabled) &&
-                                           binsof(hext__traps__cp_excp_def.VIRT_INST_EXCP);
+                                           binsof(hext__traps__cp_excp_def.virt_inst_excp);
     }
 
     hext__traps__cr_virt_instr_counter_vu_m1h0s1 : cross hext__traps__cp_counter_csr_access, hext__gen__cp__vumode,
@@ -403,7 +444,7 @@ covergroup hext__cg with function sample(
                                            binsof(hext__csr__cp_mcounteren_accessed_counter_bit.bit_enabled) &&
                                            binsof(hext__csr__cp_hcounteren_accessed_counter_bit.bit_disabled) &&
                                            binsof(hext__csr__cp_scounteren_accessed_counter_bit.bit_enabled) &&
-                                           binsof(hext__traps__cp_excp_def.VIRT_INST_EXCP);
+                                           binsof(hext__traps__cp_excp_def.virt_inst_excp);
     }
 
     hext__traps__cr_virt_instr_counter_vu_m1h1s0 : cross hext__traps__cp_counter_csr_access, hext__gen__cp__vumode,
@@ -414,13 +455,13 @@ covergroup hext__cg with function sample(
                                            binsof(hext__csr__cp_mcounteren_accessed_counter_bit.bit_enabled) &&
                                            binsof(hext__csr__cp_hcounteren_accessed_counter_bit.bit_enabled) &&
                                            binsof(hext__csr__cp_scounteren_accessed_counter_bit.bit_disabled) &&
-                                           binsof(hext__traps__cp_excp_def.VIRT_INST_EXCP);
+                                           binsof(hext__traps__cp_excp_def.virt_inst_excp);
     }
     
     hext__traps__cp_high_half_csr_access : coverpoint Inst[31:20] iff ((VirtualMode == 1) && (match_csr_r_instr == 1 || match_csr_w_instr == 1)) {
         bins htimedeltah = {12'h615};  
         bins henvcfgh   = {12'h61a};   
-        bins high_half_counters = {[12'hc80:12'hc9f]}; 
+        bins high_half_counters = {[CSR_COUNTERH_LO:CSR_COUNTERH_HI]}; 
     }
     
     hext__traps__cr_illegal_high_half_csr_vs : cross hext__traps__cp_high_half_csr_access, hext__gen__cp__vsmode, 
@@ -429,15 +470,15 @@ covergroup hext__cg with function sample(
         option.cross_auto_bin_max = 0;
         bins vs_high_half_csr_illegal_no_deleg = binsof(hext__gen__cp__vsmode.vsmode) &&
                                                  binsof(hext__deleg__cp_medeleg_illegal.non_delegation_mmode) &&
-                                                 binsof(hext__traps__cp_excp_def.ILLEGAL_EXCEPTION);
+                                                 binsof(hext__traps__cp_excp_def.illegal_exception);
         bins vs_high_half_csr_illegal_m_deleg_only = binsof(hext__gen__cp__vsmode.vsmode) &&
                                                      binsof(hext__deleg__cp_medeleg_illegal.delegation_hsmode) &&
                                                      binsof(hext__deleg__cp_hedeleg_illegal.non_delegation_hsmode) &&
-                                                     binsof(hext__traps__cp_excp_def.ILLEGAL_EXCEPTION);
+                                                     binsof(hext__traps__cp_excp_def.illegal_exception);
         bins vs_high_half_csr_illegal_both_deleg = binsof(hext__gen__cp__vsmode.vsmode) &&
                                                    binsof(hext__deleg__cp_medeleg_illegal.delegation_hsmode) &&
                                                    binsof(hext__deleg__cp_hedeleg_illegal.delegation_vsmode) &&
-                                                   binsof(hext__traps__cp_excp_def.ILLEGAL_EXCEPTION);
+                                                   binsof(hext__traps__cp_excp_def.illegal_exception);
     }
 
     hext__traps__cr_illegal_high_half_csr_vu : cross hext__traps__cp_high_half_csr_access, hext__gen__cp__vumode, 
@@ -446,15 +487,15 @@ covergroup hext__cg with function sample(
         option.cross_auto_bin_max = 0;
         bins vu_high_half_csr_illegal_no_deleg = binsof(hext__gen__cp__vumode.vumode) &&
                                                  binsof(hext__deleg__cp_medeleg_illegal.non_delegation_mmode) &&
-                                                 binsof(hext__traps__cp_excp_def.ILLEGAL_EXCEPTION);
+                                                 binsof(hext__traps__cp_excp_def.illegal_exception);
         bins vu_high_half_csr_illegal_m_deleg_only = binsof(hext__gen__cp__vumode.vumode) &&
                                                      binsof(hext__deleg__cp_medeleg_illegal.delegation_hsmode) &&
                                                      binsof(hext__deleg__cp_hedeleg_illegal.non_delegation_hsmode) &&
-                                                     binsof(hext__traps__cp_excp_def.ILLEGAL_EXCEPTION);
+                                                     binsof(hext__traps__cp_excp_def.illegal_exception);
         bins vu_high_half_csr_illegal_both_deleg = binsof(hext__gen__cp__vumode.vumode) &&
                                                    binsof(hext__deleg__cp_medeleg_illegal.delegation_hsmode) &&
                                                    binsof(hext__deleg__cp_hedeleg_illegal.delegation_vsmode) &&
-                                                   binsof(hext__traps__cp_excp_def.ILLEGAL_EXCEPTION);
+                                                   binsof(hext__traps__cp_excp_def.illegal_exception);
     }
     
     hext__traps__cp_illegal_instr_excp_mret : coverpoint instrenum_var iff ((VirtualMode == 1)) {
@@ -463,7 +504,7 @@ covergroup hext__cg with function sample(
     }
     
     hext__traps__cr_illegal_instr_excp_mret :cross hext__traps__cp_illegal_instr_excp_mret, hext__deleg__cp_medeleg_illegal,hext__traps__cp_excp_def{
-        ignore_bins non_illegal = !binsof(hext__traps__cp_excp_def.ILLEGAL_EXCEPTION);
+        ignore_bins non_illegal = !binsof(hext__traps__cp_excp_def.illegal_exception);
     }
 
     hext__csr__cp_hstatus_hu_reset : coverpoint prev_hstatus_csr[9] {
@@ -1994,224 +2035,224 @@ covergroup hext__cg with function sample(
 
     hext__guestpagefault__cr_d_gstage_lvl1_pte_2m_align: cross hext__pagesize__cp_dside_gstagelevel1_paginglevel, hext__ptw__dpte_gstage_lvl1_leaf_ppn_2m_align, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins non_aligned    = binsof(hext__pagesize__cp_dside_gstagelevel1_paginglevel) intersect {DPAGESIZE_GSTAGELEVEL1_2M} &&
                              binsof(hext__ptw__dpte_gstage_lvl1_leaf_ppn_2m_align.non_aligned);
     }
 
     hext__guestpagefault__cr_d_gstage_lvl2_pte_2m_align: cross hext__pagesize__cp_dside_gstagelevel2_paginglevel, hext__ptw__dpte_gstage_lvl2_leaf_ppn_2m_align, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins non_aligned    = binsof(hext__pagesize__cp_dside_gstagelevel2_paginglevel) intersect {DPAGESIZE_GSTAGELEVEL2_2M} &&
                              binsof(hext__ptw__dpte_gstage_lvl2_leaf_ppn_2m_align.non_aligned);
     }
 
     hext__guestpagefault__cr_d_gstage_lvl3_pte_2m_align: cross hext__pagesize__cp_dside_gstagelevel3_paginglevel, hext__ptw__dpte_gstage_lvl3_leaf_ppn_2m_align, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins non_aligned    = binsof(hext__pagesize__cp_dside_gstagelevel3_paginglevel) intersect {DPAGESIZE_GSTAGELEVEL3_2M} &&
                              binsof(hext__ptw__dpte_gstage_lvl3_leaf_ppn_2m_align.non_aligned);
     }
 
     hext__guestpagefault__cr_d_gstage_lvl4_pte_2m_align: cross hext__pagesize__cp_dside_gstagelevel4_paginglevel, hext__ptw__dpte_gstage_lvl4_leaf_ppn_2m_align, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins non_aligned    = binsof(hext__pagesize__cp_dside_gstagelevel4_paginglevel) intersect {DPAGESIZE_GSTAGELEVEL4_2M} &&
                              binsof(hext__ptw__dpte_gstage_lvl4_leaf_ppn_2m_align.non_aligned);
     }
 
     hext__guestpagefault__cr_i_gstage_lvl1_pte_2m_align: cross hext__pagesize__cp_iside_gstagelevel1_paginglevel, hext__ptw__ipte_gstage_lvl1_leaf_ppn_2m_align, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_INSTR);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_instr);
         bins non_aligned    = binsof(hext__pagesize__cp_iside_gstagelevel1_paginglevel) intersect {FPAGESIZE_GSTAGELEVEL1_2M} &&
                              binsof(hext__ptw__ipte_gstage_lvl1_leaf_ppn_2m_align.non_aligned);
     }
 
     hext__guestpagefault__cr_i_gstage_lvl2_pte_2m_align: cross hext__pagesize__cp_iside_gstagelevel2_paginglevel, hext__ptw__ipte_gstage_lvl2_leaf_ppn_2m_align, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_INSTR);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_instr);
         bins non_aligned    = binsof(hext__pagesize__cp_iside_gstagelevel2_paginglevel) intersect {FPAGESIZE_GSTAGELEVEL2_2M} &&
                              binsof(hext__ptw__ipte_gstage_lvl2_leaf_ppn_2m_align.non_aligned);
     }
 
     hext__guestpagefault__cr_i_gstage_lvl3_pte_2m_align: cross hext__pagesize__cp_iside_gstagelevel3_paginglevel, hext__ptw__ipte_gstage_lvl3_leaf_ppn_2m_align, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_INSTR);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_instr);
         bins non_aligned    = binsof(hext__pagesize__cp_iside_gstagelevel3_paginglevel) intersect {FPAGESIZE_GSTAGELEVEL3_2M} &&
                              binsof(hext__ptw__ipte_gstage_lvl3_leaf_ppn_2m_align.non_aligned);
     }
 
     hext__guestpagefault__cr_i_gstage_lvl4_pte_2m_align: cross hext__pagesize__cp_iside_gstagelevel4_paginglevel, hext__ptw__ipte_gstage_lvl4_leaf_ppn_2m_align, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_INSTR);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_instr);
         bins non_aligned    = binsof(hext__pagesize__cp_iside_gstagelevel4_paginglevel) intersect {FPAGESIZE_GSTAGELEVEL4_2M} &&
                              binsof(hext__ptw__ipte_gstage_lvl4_leaf_ppn_2m_align.non_aligned);
     }
 
     hext__guestpagefault__cr_d_gstage_lvl1_pte_1g_align: cross hext__pagesize__cp_dside_gstagelevel1_paginglevel, hext__ptw__dpte_gstage_lvl1_leaf_ppn_1g_align, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins non_aligned    = binsof(hext__pagesize__cp_dside_gstagelevel1_paginglevel) intersect {DPAGESIZE_GSTAGELEVEL1_1G} &&
                              binsof(hext__ptw__dpte_gstage_lvl1_leaf_ppn_1g_align.non_aligned);
     }
 
     hext__guestpagefault__cr_d_gstage_lvl2_pte_1g_align: cross hext__pagesize__cp_dside_gstagelevel2_paginglevel, hext__ptw__dpte_gstage_lvl2_leaf_ppn_1g_align, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins non_aligned    = binsof(hext__pagesize__cp_dside_gstagelevel2_paginglevel) intersect {DPAGESIZE_GSTAGELEVEL2_1G} &&
                              binsof(hext__ptw__dpte_gstage_lvl2_leaf_ppn_1g_align.non_aligned);
     }
 
     hext__guestpagefault__cr_d_gstage_lvl3_pte_1g_align: cross hext__pagesize__cp_dside_gstagelevel3_paginglevel, hext__ptw__dpte_gstage_lvl3_leaf_ppn_1g_align, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins non_aligned    = binsof(hext__pagesize__cp_dside_gstagelevel3_paginglevel) intersect {DPAGESIZE_GSTAGELEVEL3_1G} &&
                              binsof(hext__ptw__dpte_gstage_lvl3_leaf_ppn_1g_align.non_aligned);
     }
 
     hext__guestpagefault__cr_d_gstage_lvl4_pte_1g_align: cross hext__pagesize__cp_dside_gstagelevel4_paginglevel, hext__ptw__dpte_gstage_lvl4_leaf_ppn_1g_align, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins non_aligned    = binsof(hext__pagesize__cp_dside_gstagelevel4_paginglevel) intersect {DPAGESIZE_GSTAGELEVEL4_1G} &&
                              binsof(hext__ptw__dpte_gstage_lvl4_leaf_ppn_1g_align.non_aligned);
     }
 
     hext__guestpagefault__cr_i_gstage_lvl1_pte_1g_align: cross hext__pagesize__cp_iside_gstagelevel1_paginglevel, hext__ptw__ipte_gstage_lvl1_leaf_ppn_1g_align, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_INSTR);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_instr);
         bins non_aligned    = binsof(hext__pagesize__cp_iside_gstagelevel1_paginglevel) intersect {FPAGESIZE_GSTAGELEVEL1_1G} &&
                              binsof(hext__ptw__ipte_gstage_lvl1_leaf_ppn_1g_align.non_aligned);
     }
 
     hext__guestpagefault__cr_i_gstage_lvl2_pte_1g_align: cross hext__pagesize__cp_iside_gstagelevel2_paginglevel, hext__ptw__ipte_gstage_lvl2_leaf_ppn_1g_align, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_INSTR);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_instr);
         bins non_aligned    = binsof(hext__pagesize__cp_iside_gstagelevel2_paginglevel) intersect {FPAGESIZE_GSTAGELEVEL2_1G} &&
                              binsof(hext__ptw__ipte_gstage_lvl2_leaf_ppn_1g_align.non_aligned);
     }
 
     hext__guestpagefault__cr_i_gstage_lvl3_pte_1g_align: cross hext__pagesize__cp_iside_gstagelevel3_paginglevel, hext__ptw__ipte_gstage_lvl3_leaf_ppn_1g_align, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_INSTR);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_instr);
         bins non_aligned    = binsof(hext__pagesize__cp_iside_gstagelevel3_paginglevel) intersect {FPAGESIZE_GSTAGELEVEL3_1G} &&
                              binsof(hext__ptw__ipte_gstage_lvl3_leaf_ppn_1g_align.non_aligned);
     }
 
     hext__guestpagefault__cr_i_gstage_lvl4_pte_1g_align: cross hext__pagesize__cp_iside_gstagelevel4_paginglevel, hext__ptw__ipte_gstage_lvl4_leaf_ppn_1g_align, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_INSTR);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_instr);
         bins non_aligned    = binsof(hext__pagesize__cp_iside_gstagelevel4_paginglevel) intersect {FPAGESIZE_GSTAGELEVEL4_1G} &&
                              binsof(hext__ptw__ipte_gstage_lvl4_leaf_ppn_1g_align.non_aligned);
     }
 
     hext__guestpagefault__cr_d_gstage_lvl1_pte_512g_align: cross hext__pagesize__cp_dside_gstagelevel1_paginglevel, hext__ptw__dpte_gstage_lvl1_leaf_ppn_512g_align, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins non_aligned    = binsof(hext__pagesize__cp_dside_gstagelevel1_paginglevel) intersect {DPAGESIZE_GSTAGELEVEL1_512G} &&
                              binsof(hext__ptw__dpte_gstage_lvl1_leaf_ppn_512g_align.non_aligned);
     }
 
     hext__guestpagefault__cr_d_gstage_lvl2_pte_512g_align: cross hext__pagesize__cp_dside_gstagelevel2_paginglevel, hext__ptw__dpte_gstage_lvl2_leaf_ppn_512g_align, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins non_aligned    = binsof(hext__pagesize__cp_dside_gstagelevel2_paginglevel) intersect {DPAGESIZE_GSTAGELEVEL2_512G} &&
                              binsof(hext__ptw__dpte_gstage_lvl2_leaf_ppn_512g_align.non_aligned);
     }
 
     hext__guestpagefault__cr_d_gstage_lvl3_pte_512g_align: cross hext__pagesize__cp_dside_gstagelevel3_paginglevel, hext__ptw__dpte_gstage_lvl3_leaf_ppn_512g_align, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins non_aligned    = binsof(hext__pagesize__cp_dside_gstagelevel3_paginglevel) intersect {DPAGESIZE_GSTAGELEVEL3_512G} &&
                              binsof(hext__ptw__dpte_gstage_lvl3_leaf_ppn_512g_align.non_aligned);
     }
 
     hext__guestpagefault__cr_d_gstage_lvl4_pte_512g_align: cross hext__pagesize__cp_dside_gstagelevel4_paginglevel, hext__ptw__dpte_gstage_lvl4_leaf_ppn_512g_align, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins non_aligned    = binsof(hext__pagesize__cp_dside_gstagelevel4_paginglevel) intersect {DPAGESIZE_GSTAGELEVEL4_512G} &&
                              binsof(hext__ptw__dpte_gstage_lvl4_leaf_ppn_512g_align.non_aligned);
     }
 
     hext__guestpagefault__cr_i_gstage_lvl1_pte_512g_align: cross hext__pagesize__cp_iside_gstagelevel1_paginglevel, hext__ptw__ipte_gstage_lvl1_leaf_ppn_512g_align, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_INSTR);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_instr);
         bins non_aligned    = binsof(hext__pagesize__cp_iside_gstagelevel1_paginglevel) intersect {FPAGESIZE_GSTAGELEVEL1_512G} &&
                              binsof(hext__ptw__ipte_gstage_lvl1_leaf_ppn_512g_align.non_aligned);
     }
 
     hext__guestpagefault__cr_i_gstage_lvl2_pte_512g_align: cross hext__pagesize__cp_iside_gstagelevel2_paginglevel, hext__ptw__ipte_gstage_lvl2_leaf_ppn_512g_align, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_INSTR);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_instr);
         bins non_aligned    = binsof(hext__pagesize__cp_iside_gstagelevel2_paginglevel) intersect {FPAGESIZE_GSTAGELEVEL2_512G} &&
                              binsof(hext__ptw__ipte_gstage_lvl2_leaf_ppn_512g_align.non_aligned);
     }
 
     hext__guestpagefault__cr_i_gstage_lvl3_pte_512g_align: cross hext__pagesize__cp_iside_gstagelevel3_paginglevel, hext__ptw__ipte_gstage_lvl3_leaf_ppn_512g_align, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_INSTR);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_instr);
         bins non_aligned    = binsof(hext__pagesize__cp_iside_gstagelevel3_paginglevel) intersect {FPAGESIZE_GSTAGELEVEL3_512G} &&
                              binsof(hext__ptw__ipte_gstage_lvl3_leaf_ppn_512g_align.non_aligned);
     }
 
     hext__guestpagefault__cr_i_gstage_lvl4_pte_512g_align: cross hext__pagesize__cp_iside_gstagelevel4_paginglevel, hext__ptw__ipte_gstage_lvl4_leaf_ppn_512g_align, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_INSTR);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_instr);
         bins non_aligned    = binsof(hext__pagesize__cp_iside_gstagelevel4_paginglevel) intersect {FPAGESIZE_GSTAGELEVEL4_512G} &&
                              binsof(hext__ptw__ipte_gstage_lvl4_leaf_ppn_512g_align.non_aligned);
     }
 
     hext__guestpagefault__cr_d_gstage_lvl1_pte_256t_align: cross hext__pagesize__cp_dside_gstagelevel1_paginglevel, hext__ptw__dpte_gstage_lvl1_leaf_ppn_256t_align, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins non_aligned    = binsof(hext__pagesize__cp_dside_gstagelevel1_paginglevel) intersect {DPAGESIZE_GSTAGELEVEL1_256T} &&
                              binsof(hext__ptw__dpte_gstage_lvl1_leaf_ppn_256t_align.non_aligned);
     }
 
     hext__guestpagefault__cr_d_gstage_lvl2_pte_256t_align: cross hext__pagesize__cp_dside_gstagelevel2_paginglevel, hext__ptw__dpte_gstage_lvl2_leaf_ppn_256t_align, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins non_aligned    = binsof(hext__pagesize__cp_dside_gstagelevel2_paginglevel) intersect {DPAGESIZE_GSTAGELEVEL2_256T} &&
                              binsof(hext__ptw__dpte_gstage_lvl2_leaf_ppn_256t_align.non_aligned);
     }
 
     hext__guestpagefault__cr_d_gstage_lvl3_pte_256t_align: cross hext__pagesize__cp_dside_gstagelevel3_paginglevel, hext__ptw__dpte_gstage_lvl3_leaf_ppn_256t_align, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins non_aligned    = binsof(hext__pagesize__cp_dside_gstagelevel3_paginglevel) intersect {DPAGESIZE_GSTAGELEVEL3_256T} &&
                              binsof(hext__ptw__dpte_gstage_lvl3_leaf_ppn_256t_align.non_aligned);
     }
 
     hext__guestpagefault__cr_d_gstage_lvl4_pte_256t_align: cross hext__pagesize__cp_dside_gstagelevel4_paginglevel, hext__ptw__dpte_gstage_lvl4_leaf_ppn_256t_align, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins non_aligned    = binsof(hext__pagesize__cp_dside_gstagelevel4_paginglevel) intersect {DPAGESIZE_GSTAGELEVEL4_256T} &&
                              binsof(hext__ptw__dpte_gstage_lvl4_leaf_ppn_256t_align.non_aligned);
     }
 
     hext__guestpagefault__cr_i_gstage_lvl1_pte_256t_align: cross hext__pagesize__cp_iside_gstagelevel1_paginglevel, hext__ptw__ipte_gstage_lvl1_leaf_ppn_256t_align, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_INSTR);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_instr);
         bins non_aligned    = binsof(hext__pagesize__cp_iside_gstagelevel1_paginglevel) intersect {FPAGESIZE_GSTAGELEVEL1_256T} &&
                              binsof(hext__ptw__ipte_gstage_lvl1_leaf_ppn_256t_align.non_aligned);
     }
 
     hext__guestpagefault__cr_i_gstage_lvl2_pte_256t_align: cross hext__pagesize__cp_iside_gstagelevel2_paginglevel, hext__ptw__ipte_gstage_lvl2_leaf_ppn_256t_align, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_INSTR);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_instr);
         bins non_aligned    = binsof(hext__pagesize__cp_iside_gstagelevel2_paginglevel) intersect {FPAGESIZE_GSTAGELEVEL2_256T} &&
                              binsof(hext__ptw__ipte_gstage_lvl2_leaf_ppn_256t_align.non_aligned);
     }
 
     hext__guestpagefault__cr_i_gstage_lvl3_pte_256t_align: cross hext__pagesize__cp_iside_gstagelevel3_paginglevel, hext__ptw__ipte_gstage_lvl3_leaf_ppn_256t_align, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_INSTR);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_instr);
         bins non_aligned    = binsof(hext__pagesize__cp_iside_gstagelevel3_paginglevel) intersect {FPAGESIZE_GSTAGELEVEL3_256T} &&
                              binsof(hext__ptw__ipte_gstage_lvl3_leaf_ppn_256t_align.non_aligned);
     }
 
     hext__guestpagefault__cr_i_gstage_lvl4_pte_256t_align: cross hext__pagesize__cp_iside_gstagelevel4_paginglevel, hext__ptw__ipte_gstage_lvl4_leaf_ppn_256t_align, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_INSTR);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_instr);
         bins non_aligned    = binsof(hext__pagesize__cp_iside_gstagelevel4_paginglevel) intersect {FPAGESIZE_GSTAGELEVEL4_256T} &&
                              binsof(hext__ptw__ipte_gstage_lvl4_leaf_ppn_256t_align.non_aligned);
     }
@@ -2460,47 +2501,47 @@ covergroup hext__cg with function sample(
 
     hext__guestpagefault__cr_iside_zeroextbits_sv39: cross hext__ptw__cp_iside_guest_phy_bitsel_zeroextbits_sv39, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 1;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_INSTR);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_instr);
     }
 
     hext__guestpagefault__cr_iside_zeroextbits_sv48: cross hext__ptw__cp_iside_guest_phy_bitsel_zeroextbits_sv48, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 1;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_INSTR);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_instr);
     }
 
     hext__guestpagefault__cr_iside_zeroextbits_sv57: cross hext__ptw__cp_iside_guest_phy_bitsel_zeroextbits_sv57, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 1;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_INSTR);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_instr);
     }
 
     hext__accessfault__cr_iside_zeroextbits_baremode: cross hext__ptw__cp_iside_guest_phy_bitsel_zeroextbits_baremode, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 1;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.ACC_FLT_INSTR);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.acc_flt_instr);
     }
 
     hext__guestpagefault__cr_dside_zeroextbits_sv39: cross hext__ptw__cp_dside_guest_phy_bitsel_zeroextbits_sv39, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 0;
-        bins dside_sv39_zeroext_guestpagefault = binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) || binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        bins dside_sv39_zeroext_guestpagefault = binsof(hext__traps__cp_excp_def.guest_page_flt_load) || binsof(hext__traps__cp_excp_def.guest_page_flt_store);
     }
 
     hext__guestpagefault__cr_dside_zeroextbits_sv48: cross hext__ptw__cp_dside_guest_phy_bitsel_zeroextbits_sv48, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 0;
-        bins dside_sv48_zeroext_guestpagefault = binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) || binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        bins dside_sv48_zeroext_guestpagefault = binsof(hext__traps__cp_excp_def.guest_page_flt_load) || binsof(hext__traps__cp_excp_def.guest_page_flt_store);
     }
 
     hext__guestpagefault__cr_dside_zeroextbits_sv57: cross hext__ptw__cp_dside_guest_phy_bitsel_zeroextbits_sv57, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 0;
-        bins dside_sv57_zeroext_guestpagefault = binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) || binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        bins dside_sv57_zeroext_guestpagefault = binsof(hext__traps__cp_excp_def.guest_page_flt_load) || binsof(hext__traps__cp_excp_def.guest_page_flt_store);
     }
 
     hext__accessfault__cr_dside_zeroextbits_baremode: cross hext__ptw__cp_dside_guest_phy_bitsel_zeroextbits_baremode, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 0;
-        bins dside_bare_zeroext_accessfault = binsof(hext__traps__cp_excp_def.ACC_FLT_LOAD) || binsof(hext__traps__cp_excp_def.ACC_FLT_STORE);
+        bins dside_bare_zeroext_accessfault = binsof(hext__traps__cp_excp_def.acc_flt_load) || binsof(hext__traps__cp_excp_def.acc_flt_store);
     }
 
     hext__traps__cr_instruction_pagefault_basic: cross hext__ptw__cp_iside_leaf_ptw_valid, hext__ptw__cp_iside_leaf_ptw_access, hext__ptw__cp_iside_leaf_ptw_exec, hext__traps__cp_excp_def iff (VirtualMode == 1) {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.PAGE_FLT_INSTR);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.page_flt_instr);
         bins i_leaf_pagefault_without_access            = binsof(hext__ptw__cp_iside_leaf_ptw_valid) intersect {1} &&
                                                           binsof(hext__ptw__cp_iside_leaf_ptw_access) intersect {0};
         bins i_leaf_pagefault_without_execute           = binsof(hext__ptw__cp_iside_leaf_ptw_valid) intersect {1} &&
@@ -2510,7 +2551,7 @@ covergroup hext__cg with function sample(
     hext__traps__cr_instruction_pagefault_priv: cross hext__ptw__cp_iside_leaf_ptw_valid, hext__ptw__cp_iside_leaf_ptw_exec, 
                                                        hext__ptw__cp_iside_leaf_ptw_user, hext__gen__cp_curpriv, hext__traps__cp_excp_def iff (VirtualMode == 1) {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.PAGE_FLT_INSTR);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.page_flt_instr);
         bins i_virtualsupervisoraccess_with_pte_u_one   = binsof(hext__ptw__cp_iside_leaf_ptw_valid) intersect {1} &&
                                                         binsof(hext__ptw__cp_iside_leaf_ptw_exec) intersect {1} &&
                                                         binsof(hext__ptw__cp_iside_leaf_ptw_user) intersect {1} &&
@@ -2523,35 +2564,35 @@ covergroup hext__cg with function sample(
 
     hext__traps__cr_instruction_pagefault_leaf_res: cross hext__ptw__cp_iside_leaf_ptw_valid, hext__ptw__cp_iside_leaf_res, hext__traps__cp_excp_def iff (VirtualMode == 1) {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.PAGE_FLT_INSTR);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.page_flt_instr);
         bins i_pagefault_due_to_leaf_res_60_54          = binsof(hext__ptw__cp_iside_leaf_ptw_valid) intersect {1} &&
                                                         binsof(hext__ptw__cp_iside_leaf_res.res_i_leaf_nonzero);
     }
 
     hext__traps__cr_instruction_pagefault_nonleaf_res: cross hext__ptw__cp_iside_nonleaf_ptw_valid, hext__ptw__cp_iside_nonleaf_res, hext__traps__cp_excp_def iff (VirtualMode == 1) {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.PAGE_FLT_INSTR);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.page_flt_instr);
         bins i_pagefault_due_to_nonleaf_res_60_54       = binsof(hext__ptw__cp_iside_nonleaf_ptw_valid) intersect {1} &&
                                                         binsof(hext__ptw__cp_iside_nonleaf_res.res_i_nonleaf_nonzero);
     }
 
     hext__traps__cr_instruction_pagefault_leaf_pbmt: cross hext__ptw__cp_iside_leaf_ptw_valid, hext__ptw__cp_iside_leaf_pbmt, hext__traps__cp_excp_def iff (VirtualMode == 1) {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.PAGE_FLT_INSTR);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.page_flt_instr);
         bins i_pagefault_due_to_leaf_pbmt               = binsof(hext__ptw__cp_iside_leaf_ptw_valid) intersect {1} && 
                                                         binsof(hext__ptw__cp_iside_leaf_pbmt.pbmt_i_leaf_reserved);
     }
 
     hext__traps__cr_instruction_pagefault_nonleaf_pbmt: cross hext__ptw__cp_iside_nonleaf_ptw_valid, hext__ptw__cp_iside_nonleaf_pbmt, hext__traps__cp_excp_def iff (VirtualMode == 1) {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.PAGE_FLT_INSTR);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.page_flt_instr);
         bins i_pagefault_due_to_nonleaf_pbmt            = binsof(hext__ptw__cp_iside_nonleaf_ptw_valid) intersect {1} && 
                                                         binsof(hext__ptw__cp_iside_nonleaf_pbmt.pbmt_i_nonleaf_reserved);
     }
 
     hext__traps__cr_instruction_guestpagefault_lvl1_access: cross hext__ptw__cp_iside_gstage_lvl1_leaf_ptw_valid, hext__ptw__cp_iside_gstage_lvl1_leaf_ptw_access, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_INSTR);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_instr);
         bins i_leaf_guestpagefault_without_access       = binsof(hext__ptw__cp_iside_gstage_lvl1_leaf_ptw_valid) intersect {1} &&
                                                         binsof(hext__ptw__cp_iside_gstage_lvl1_leaf_ptw_access) intersect {0};
     }
@@ -2559,7 +2600,7 @@ covergroup hext__cg with function sample(
     hext__traps__cr_instruction_guestpagefault_lvl1_user: cross hext__ptw__cp_iside_gstage_lvl1_leaf_ptw_valid, hext__ptw__cp_iside_gstage_lvl1_leaf_ptw_exec, 
                                                               hext__ptw__cp_iside_gstage_lvl1_leaf_ptw_user, hext__gen__cp_curpriv, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_INSTR);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_instr);
         bins i_virtualsupervisoraccess_with_pte_u_zero  = binsof(hext__ptw__cp_iside_gstage_lvl1_leaf_ptw_valid) intersect {1} &&
                                                         binsof(hext__ptw__cp_iside_gstage_lvl1_leaf_ptw_exec) intersect {1} &&
                                                         binsof(hext__ptw__cp_iside_gstage_lvl1_leaf_ptw_user) intersect {0} &&
@@ -2572,14 +2613,14 @@ covergroup hext__cg with function sample(
 
     hext__traps__cr_instruction_guestpagefault_lvl1_leaf_pbmt: cross hext__ptw__cp_iside_gstage_lvl1_leaf_ptw_valid, hext__ptw__cp_iside_gstage_lvl1_leaf_pbmt, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_INSTR);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_instr);
         bins i_guestpagefault_due_to_leaf_pbmt          = binsof(hext__ptw__cp_iside_gstage_lvl1_leaf_ptw_valid) intersect {1} && 
                                                         binsof(hext__ptw__cp_iside_gstage_lvl1_leaf_pbmt.pbmt_i_leaf_reserved);
     }
 
     hext__traps__cr_instruction_guestpagefault_lvl2_access: cross hext__ptw__cp_iside_gstage_lvl2_leaf_ptw_valid, hext__ptw__cp_iside_gstage_lvl2_leaf_ptw_access, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_INSTR);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_instr);
         bins i_leaf_guestpagefault_without_access       = binsof(hext__ptw__cp_iside_gstage_lvl2_leaf_ptw_valid) intersect {1} &&
                                                         binsof(hext__ptw__cp_iside_gstage_lvl2_leaf_ptw_access) intersect {0};
     }
@@ -2587,7 +2628,7 @@ covergroup hext__cg with function sample(
     hext__traps__cr_instruction_guestpagefault_lvl2_user: cross hext__ptw__cp_iside_gstage_lvl2_leaf_ptw_valid, hext__ptw__cp_iside_gstage_lvl2_leaf_ptw_exec, 
                                                               hext__ptw__cp_iside_gstage_lvl2_leaf_ptw_user, hext__gen__cp_curpriv, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_INSTR);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_instr);
         bins i_virtualsupervisoraccess_with_pte_u_zero  = binsof(hext__ptw__cp_iside_gstage_lvl2_leaf_ptw_valid) intersect {1} &&
                                                         binsof(hext__ptw__cp_iside_gstage_lvl2_leaf_ptw_exec) intersect {1} &&
                                                         binsof(hext__ptw__cp_iside_gstage_lvl2_leaf_ptw_user) intersect {0} &&
@@ -2600,14 +2641,14 @@ covergroup hext__cg with function sample(
 
     hext__traps__cr_instruction_guestpagefault_lvl2_leaf_pbmt: cross hext__ptw__cp_iside_gstage_lvl2_leaf_ptw_valid, hext__ptw__cp_iside_gstage_lvl2_leaf_pbmt, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_INSTR);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_instr);
         bins i_guestpagefault_due_to_leaf_pbmt          = binsof(hext__ptw__cp_iside_gstage_lvl2_leaf_ptw_valid) intersect {1} && 
                                                         binsof(hext__ptw__cp_iside_gstage_lvl2_leaf_pbmt.pbmt_i_leaf_reserved);
     }
 
     hext__traps__cr_instruction_guestpagefault_lvl3_access: cross hext__ptw__cp_iside_gstage_lvl3_leaf_ptw_valid, hext__ptw__cp_iside_gstage_lvl3_leaf_ptw_access, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_INSTR);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_instr);
         bins i_leaf_guestpagefault_without_access       = binsof(hext__ptw__cp_iside_gstage_lvl3_leaf_ptw_valid) intersect {1} &&
                                                         binsof(hext__ptw__cp_iside_gstage_lvl3_leaf_ptw_access) intersect {0};
     }
@@ -2615,7 +2656,7 @@ covergroup hext__cg with function sample(
     hext__traps__cr_instruction_guestpagefault_lvl3_user: cross hext__ptw__cp_iside_gstage_lvl3_leaf_ptw_valid, hext__ptw__cp_iside_gstage_lvl3_leaf_ptw_exec, 
                                                               hext__ptw__cp_iside_gstage_lvl3_leaf_ptw_user, hext__gen__cp_curpriv, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_INSTR);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_instr);
         bins i_virtualsupervisoraccess_with_pte_u_zero  = binsof(hext__ptw__cp_iside_gstage_lvl3_leaf_ptw_valid) intersect {1} &&
                                                         binsof(hext__ptw__cp_iside_gstage_lvl3_leaf_ptw_exec) intersect {1} &&
                                                         binsof(hext__ptw__cp_iside_gstage_lvl3_leaf_ptw_user) intersect {0} &&
@@ -2629,7 +2670,7 @@ covergroup hext__cg with function sample(
     hext__traps__cr_instruction_guestpagefault_lvl3_leaf_pbmt: cross hext__ptw__cp_iside_gstage_lvl3_leaf_ptw_valid, hext__ptw__cp_iside_gstage_lvl3_leaf_pbmt, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_INSTR);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_instr);
         bins i_guestpagefault_due_to_leaf_pbmt          = binsof(hext__ptw__cp_iside_gstage_lvl3_leaf_ptw_valid) intersect {1} && 
                                                         binsof(hext__ptw__cp_iside_gstage_lvl3_leaf_pbmt.pbmt_i_leaf_reserved);
     }
@@ -2637,7 +2678,7 @@ covergroup hext__cg with function sample(
     hext__traps__cr_instruction_guestpagefault_lvl4_access: cross hext__ptw__cp_iside_gstage_lvl4_leaf_ptw_valid, hext__ptw__cp_iside_gstage_lvl4_leaf_ptw_access, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_INSTR);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_instr);
         bins i_leaf_guestpagefault_without_access       = binsof(hext__ptw__cp_iside_gstage_lvl4_leaf_ptw_valid) intersect {1} &&
                                                         binsof(hext__ptw__cp_iside_gstage_lvl4_leaf_ptw_access) intersect {0};
     }
@@ -2646,7 +2687,7 @@ covergroup hext__cg with function sample(
                                                               hext__ptw__cp_iside_gstage_lvl4_leaf_ptw_user, hext__gen__cp_curpriv, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_INSTR);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_instr);
         // Guest-stage always treats privilege as U-mode, so U=0 pages cause faults in both VS and VU modes
         bins i_virtualsupervisoraccess_with_pte_u_zero  = binsof(hext__ptw__cp_iside_gstage_lvl4_leaf_ptw_valid) intersect {1} &&
                                                         binsof(hext__ptw__cp_iside_gstage_lvl4_leaf_ptw_exec) intersect {1} &&
@@ -2661,7 +2702,7 @@ covergroup hext__cg with function sample(
     hext__traps__cr_instruction_guestpagefault_lvl4_leaf_pbmt: cross hext__ptw__cp_iside_gstage_lvl4_leaf_ptw_valid, hext__ptw__cp_iside_gstage_lvl4_leaf_pbmt, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_INSTR);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_instr);
         bins i_guestpagefault_due_to_leaf_pbmt          = binsof(hext__ptw__cp_iside_gstage_lvl4_leaf_ptw_valid) intersect {1} && 
                                                         binsof(hext__ptw__cp_iside_gstage_lvl4_leaf_pbmt.pbmt_i_leaf_reserved);
     }
@@ -2669,7 +2710,7 @@ covergroup hext__cg with function sample(
     hext__traps__cr_instruction_guestpagefault_lvl5_access: cross hext__ptw__cp_iside_gstage_lvl5_leaf_ptw_valid, hext__ptw__cp_iside_gstage_lvl5_leaf_ptw_access, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_INSTR);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_instr);
         bins i_leaf_guestpagefault_without_access       = binsof(hext__ptw__cp_iside_gstage_lvl5_leaf_ptw_valid) intersect {1} && 
                                                         binsof(hext__ptw__cp_iside_gstage_lvl5_leaf_ptw_access) intersect {0};
     }
@@ -2678,7 +2719,7 @@ covergroup hext__cg with function sample(
                                                               hext__ptw__cp_iside_gstage_lvl5_leaf_ptw_user, hext__gen__cp_curpriv, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_INSTR);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_instr);
         bins i_virtualsupervisoraccess_with_pte_u_zero  = binsof(hext__ptw__cp_iside_gstage_lvl5_leaf_ptw_valid) intersect {1} &&
                                                         binsof(hext__ptw__cp_iside_gstage_lvl5_leaf_ptw_exec) intersect {1} &&
                                                         binsof(hext__ptw__cp_iside_gstage_lvl5_leaf_ptw_user) intersect {0} &&
@@ -2692,14 +2733,14 @@ covergroup hext__cg with function sample(
     hext__traps__cr_instruction_guestpagefault_lvl5_leaf_pbmt: cross hext__ptw__cp_iside_gstage_lvl5_leaf_ptw_valid, hext__ptw__cp_iside_gstage_lvl5_leaf_pbmt, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_INSTR);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_instr);
         bins i_guestpagefault_due_to_leaf_pbmt          = binsof(hext__ptw__cp_iside_gstage_lvl5_leaf_ptw_valid) intersect {1} && 
                                                         binsof(hext__ptw__cp_iside_gstage_lvl5_leaf_pbmt.pbmt_i_leaf_reserved);
     }
 
     hext__traps__cr_data_pagefault_store: cross hext__ptw__cp_dside_leaf_ptw_valid, hext__accesstype__cp_instr_2_lvl, hext__ptw__cp_dside_leaf_ptw_write, hext__traps__cp_excp_def iff (VirtualMode == 1) {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.page_flt_load) && !binsof(hext__traps__cp_excp_def.page_flt_store);
         bins d_leaf_pagefault_store_with_pte_w_zero         = binsof(hext__ptw__cp_dside_leaf_ptw_valid) intersect {1} &&
                                                             binsof(hext__accesstype__cp_instr_2_lvl.stores) &&
                                                             binsof(hext__ptw__cp_dside_leaf_ptw_write) intersect {0};                                                      
@@ -2715,7 +2756,7 @@ covergroup hext__cg with function sample(
                                               hext__ptw__cp_dside_leaf_ptw_read, hext__ptw__cp_dside_leaf_ptw_write, 
                                               hext__ptw__cp_dside_leaf_ptw_exec, hext__csr__cp_vsstatus_mxr, hext__csr__cp_sstatus_mxr, hext__traps__cp_excp_def iff (VirtualMode == 1) {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.page_flt_load) && !binsof(hext__traps__cp_excp_def.page_flt_store);
         bins d_leaf_pagefault_load_with_pte_r_zero_wr_zero  = binsof(hext__ptw__cp_dside_leaf_ptw_valid) intersect {1} &&
                                                             binsof(hext__accesstype__cp_instr_2_lvl.loads) &&
                                                             binsof(hext__ptw__cp_dside_leaf_ptw_read) intersect {0} && 
@@ -2736,7 +2777,7 @@ covergroup hext__cg with function sample(
                                                  hext__ptw__cp_dside_leaf_ptw_write, hext__ptw__cp_dside_leaf_ptw_read, 
                                                  hext__ptw__cp_dside_leaf_ptw_exec, hext__csr__cp_vsstatus_mxr, hext__csr__cp_sstatus_mxr, hext__traps__cp_excp_def {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.page_flt_load) && !binsof(hext__traps__cp_excp_def.page_flt_store);
         bins d_leaf_pagefault_h_store_with_pte_w_zero       = binsof(hext__ptw__cp_dside_leaf_ptw_valid) intersect {1} &&
                                                             binsof(hext__accesstype__cp_h_instr_2_lvl.h_stores) &&
                                                             binsof(hext__ptw__cp_dside_leaf_ptw_write) intersect {0} ; 
@@ -2756,7 +2797,7 @@ covergroup hext__cg with function sample(
     hext__traps__cr_data_pagefault_access: cross hext__ptw__cp_dside_leaf_ptw_valid, hext__accesstype__cp_instr_2_lvl, 
                                                   hext__ptw__cp_dside_leaf_ptw_read, hext__ptw__cp_dside_leaf_ptw_access, hext__traps__cp_excp_def iff (VirtualMode == 1) {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.page_flt_load) && !binsof(hext__traps__cp_excp_def.page_flt_store);
         bins d_pagefault_load_with_access_bit_zero          = binsof(hext__ptw__cp_dside_leaf_ptw_valid) intersect {1} &&
                                                             binsof(hext__accesstype__cp_instr_2_lvl.loads) &&
                                                             binsof(hext__ptw__cp_dside_leaf_ptw_read) intersect {1} &&
@@ -2768,7 +2809,7 @@ covergroup hext__cg with function sample(
                                                     hext__ptw__cp_dside_leaf_ptw_access, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.page_flt_load) && !binsof(hext__traps__cp_excp_def.page_flt_store);
         bins d_pagefault_h_load_with_access_bit_zero        = binsof(hext__ptw__cp_dside_leaf_ptw_valid) intersect {1} &&
                                                             binsof(hext__accesstype__cp_h_instr_2_lvl.h_loads) &&
                                                             binsof(hext__ptw__cp_dside_leaf_ptw_read) intersect {1} &&
@@ -2783,7 +2824,7 @@ covergroup hext__cg with function sample(
                                                   hext__ptw__cp_dside_leaf_ptw_write, hext__ptw__cp_dside_leaf_ptw_dirty, hext__traps__cp_excp_def iff (VirtualMode == 1)
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.page_flt_load) && !binsof(hext__traps__cp_excp_def.page_flt_store);
         bins d_pagefault_store_with_dirty_bit_zero          = binsof(hext__ptw__cp_dside_leaf_ptw_valid) intersect {1} &&
                                                             binsof(hext__accesstype__cp_instr_2_lvl.stores) &&
                                                             binsof(hext__ptw__cp_dside_leaf_ptw_write) intersect {1} &&
@@ -2794,7 +2835,7 @@ covergroup hext__cg with function sample(
                                                      hext__ptw__cp_dside_leaf_ptw_write, hext__ptw__cp_dside_leaf_ptw_dirty, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.page_flt_load) && !binsof(hext__traps__cp_excp_def.page_flt_store);
         bins d_pagefault_h_store_with_dirty_bit_zero        = binsof(hext__ptw__cp_dside_leaf_ptw_valid) intersect {1} &&
                                                             binsof(hext__accesstype__cp_h_instr_2_lvl.h_stores) &&
                                                             binsof(hext__ptw__cp_dside_leaf_ptw_write) intersect {1} &&
@@ -2805,7 +2846,7 @@ covergroup hext__cg with function sample(
                                                 hext__privilege__cp_dside_eff_privilege_mode, hext__csr__cp_vsstatus_sum, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.page_flt_load) && !binsof(hext__traps__cp_excp_def.page_flt_store);
         bins d_pagefault_in_v_user_mode_with_pte_u_bit_zero = binsof(hext__ptw__cp_dside_leaf_ptw_valid) intersect {1} &&
                                                             binsof(hext__ptw__cp_dside_leaf_ptw_user) intersect {0} &&
                                                             binsof(hext__privilege__cp_dside_eff_privilege_mode.effective_priv_virtual_user);
@@ -2824,7 +2865,7 @@ covergroup hext__cg with function sample(
     hext__traps__cr_data_pagefault_leaf_pbmt: cross hext__ptw__cp_dside_leaf_ptw_valid, hext__ptw__cp_dside_leaf_pbmt, hext__traps__cp_excp_def iff (VirtualMode == 1)
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.page_flt_load) && !binsof(hext__traps__cp_excp_def.page_flt_store);
         bins d_pagefault_due_to_leaf_pbmt                   = binsof(hext__ptw__cp_dside_leaf_ptw_valid) intersect {1} && 
                                                             binsof(hext__ptw__cp_dside_leaf_pbmt.pbmt_d_leaf_reserved);
     }
@@ -2832,7 +2873,7 @@ covergroup hext__cg with function sample(
     hext__traps__cr_data_pagefault_nonleaf_pbmt: cross hext__ptw__cp_dside_nonleaf_ptw_valid, hext__ptw__cp_dside_nonleaf_pbmt, hext__traps__cp_excp_def iff (VirtualMode == 1)
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.page_flt_load) && !binsof(hext__traps__cp_excp_def.page_flt_store);
         bins d_pagefault_due_to_nonleaf_pbmt                = binsof(hext__ptw__cp_dside_nonleaf_ptw_valid) intersect {1} && 
                                                             binsof(hext__ptw__cp_dside_nonleaf_pbmt.pbmt_d_nonleaf_reserved);
     }
@@ -2840,7 +2881,7 @@ covergroup hext__cg with function sample(
     hext__traps__cr_data_pagefault_leaf_res: cross hext__ptw__cp_dside_leaf_ptw_valid, hext__ptw__cp_dside_leaf_res, hext__traps__cp_excp_def iff (VirtualMode == 1)
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.page_flt_load) && !binsof(hext__traps__cp_excp_def.page_flt_store);
         bins d_pagefault_due_to_leaf_res_60_54              = binsof(hext__ptw__cp_dside_leaf_ptw_valid) intersect {1} &&
                                                             binsof(hext__ptw__cp_dside_leaf_res.res_d_leaf_nonzero);
     }
@@ -2848,7 +2889,7 @@ covergroup hext__cg with function sample(
     hext__traps__cr_data_pagefault_nonleaf_res: cross hext__ptw__cp_dside_nonleaf_ptw_valid, hext__ptw__cp_dside_nonleaf_res, hext__traps__cp_excp_def iff (VirtualMode == 1)
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.page_flt_load) && !binsof(hext__traps__cp_excp_def.page_flt_store);
         bins d_pagefault_due_to_nonleaf_res_60_54           = binsof(hext__ptw__cp_dside_nonleaf_ptw_valid) intersect {1} &&
                                                             binsof(hext__ptw__cp_dside_nonleaf_res.res_d_nonleaf_nonzero);
     }
@@ -2857,7 +2898,7 @@ covergroup hext__cg with function sample(
                                                        hext__ptw__cp_dside_nonleaf_ptw_dirty, hext__ptw__cp_dside_nonleaf_ptw_user, hext__traps__cp_excp_def iff (VirtualMode == 1)
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.page_flt_load) && !binsof(hext__traps__cp_excp_def.page_flt_store);
         bins d_pagefault_nonleaf_without_DAU                = binsof(hext__ptw__cp_dside_nonleaf_ptw_valid) intersect {1} && 
                                                             (binsof(hext__ptw__cp_dside_nonleaf_ptw_access) intersect {1} || 
                                                             binsof(hext__ptw__cp_dside_nonleaf_ptw_dirty) intersect {1} || 
@@ -2867,7 +2908,7 @@ covergroup hext__cg with function sample(
     hext__traps__cr_data_guestpagefault_lvl1_read: cross hext__ptw__cp_dside_gstage_lvl1_leaf_ptw_valid, hext__ptw__cp_dside_gstage_lvl1_leaf_ptw_read, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins d_leaf_guestpagefault_with_pte_r_zero = binsof(hext__ptw__cp_dside_gstage_lvl1_leaf_ptw_valid) intersect {1} &&
                                                      binsof(hext__ptw__cp_dside_gstage_lvl1_leaf_ptw_read) intersect {0};
     }
@@ -2876,7 +2917,7 @@ covergroup hext__cg with function sample(
                                                             hext__ptw__cp_dside_gstage_lvl1_leaf_ptw_read, hext__ptw__cp_dside_gstage_lvl1_leaf_ptw_access, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins d_guestpagefault_load_with_access_bit_zero         = binsof(hext__ptw__cp_dside_gstage_lvl1_leaf_ptw_valid) intersect {1} &&
                                                                 binsof(hext__accesstype__cp_instr_2_lvl.loads) &&
                                                                 binsof(hext__ptw__cp_dside_gstage_lvl1_leaf_ptw_read) intersect {1} &&
@@ -2888,7 +2929,7 @@ covergroup hext__cg with function sample(
                                                               hext__ptw__cp_dside_gstage_lvl1_leaf_ptw_access, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins d_guestpagefault_h_load_with_access_bit_zero       = binsof(hext__ptw__cp_dside_gstage_lvl1_leaf_ptw_valid) intersect {1} &&
                                                                 binsof(hext__accesstype__cp_h_instr_2_lvl.h_loads) &&
                                                                 binsof(hext__ptw__cp_dside_gstage_lvl1_leaf_ptw_read) intersect {1} &&
@@ -2903,7 +2944,7 @@ covergroup hext__cg with function sample(
                                                           hext__privilege__cp_dside_eff_privilege_mode, hext__csr__cp_vsstatus_sum, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         // Guest-stage always treats privilege as U-mode, so U=0 pages cause faults in all virtual modes
         bins d_guestpagefault_in_v_user_mode_with_pte_u_bit_zero= binsof(hext__ptw__cp_dside_gstage_lvl1_leaf_ptw_valid) intersect {1} &&
                                                                 binsof(hext__ptw__cp_dside_gstage_lvl1_leaf_ptw_user) intersect {0} &&
@@ -2922,7 +2963,7 @@ covergroup hext__cg with function sample(
     hext__traps__cr_data_guestpagefault_lvl1_leaf_pbmt: cross hext__ptw__cp_dside_gstage_lvl1_leaf_ptw_valid, hext__ptw__cp_dside_gstage_lvl1_leaf_pbmt, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins d_guestpagefault_due_to_leaf_pbmt                  = binsof(hext__ptw__cp_dside_gstage_lvl1_leaf_ptw_valid) intersect {1} && 
                                                                 binsof(hext__ptw__cp_dside_gstage_lvl1_leaf_pbmt.pbmt_d_leaf_reserved);
     }
@@ -2930,7 +2971,7 @@ covergroup hext__cg with function sample(
     hext__traps__cr_data_guestpagefault_lvl1_nonleaf_pbmt: cross hext__ptw__cp_dside_gstage_lvl1_nonleaf_ptw_valid, hext__ptw__cp_dside_gstage_lvl1_nonleaf_pbmt, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins d_guestpagefault_due_to_nonleaf_pbmt               = binsof(hext__ptw__cp_dside_gstage_lvl1_nonleaf_ptw_valid) intersect {1} && 
                                                                 binsof(hext__ptw__cp_dside_gstage_lvl1_nonleaf_pbmt.pbmt_d_nonleaf_reserved);
     }
@@ -2938,7 +2979,7 @@ covergroup hext__cg with function sample(
     hext__traps__cr_data_guestpagefault_lvl1_nonleaf_access: cross hext__ptw__cp_dside_gstage_lvl1_nonleaf_ptw_valid, hext__ptw__cp_dside_gstage_lvl1_nonleaf_ptw_access, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins d_guestpagefault_nonleaf_with_access            = binsof(hext__ptw__cp_dside_gstage_lvl1_nonleaf_ptw_valid) intersect {1} && 
                                                                 binsof(hext__ptw__cp_dside_gstage_lvl1_nonleaf_ptw_access) intersect {1};
     }
@@ -2946,7 +2987,7 @@ covergroup hext__cg with function sample(
     hext__traps__cr_data_guestpagefault_lvl1_nonleaf_dirty: cross hext__ptw__cp_dside_gstage_lvl1_nonleaf_ptw_valid, hext__ptw__cp_dside_gstage_lvl1_nonleaf_ptw_dirty, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins d_guestpagefault_nonleaf_with_dirty             = binsof(hext__ptw__cp_dside_gstage_lvl1_nonleaf_ptw_valid) intersect {1} && 
                                                                 binsof(hext__ptw__cp_dside_gstage_lvl1_nonleaf_ptw_dirty) intersect {1};
     }
@@ -2954,7 +2995,7 @@ covergroup hext__cg with function sample(
     hext__traps__cr_data_guestpagefault_lvl1_nonleaf_user: cross hext__ptw__cp_dside_gstage_lvl1_nonleaf_ptw_valid, hext__ptw__cp_dside_gstage_lvl1_nonleaf_ptw_user, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins d_guestpagefault_nonleaf_with_user              = binsof(hext__ptw__cp_dside_gstage_lvl1_nonleaf_ptw_valid) intersect {1} && 
                                                                 binsof(hext__ptw__cp_dside_gstage_lvl1_nonleaf_ptw_user) intersect {1};
     }
@@ -2962,7 +3003,7 @@ covergroup hext__cg with function sample(
     hext__traps__cr_data_guestpagefault_lvl2_read: cross hext__ptw__cp_dside_gstage_lvl2_leaf_ptw_valid, hext__ptw__cp_dside_gstage_lvl2_leaf_ptw_read, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins d_leaf_guestpagefault_with_pte_r_zero = binsof(hext__ptw__cp_dside_gstage_lvl2_leaf_ptw_valid) intersect {1} &&
                                                      binsof(hext__ptw__cp_dside_gstage_lvl2_leaf_ptw_read) intersect {0};
     }
@@ -2971,7 +3012,7 @@ covergroup hext__cg with function sample(
                                                             hext__ptw__cp_dside_gstage_lvl2_leaf_ptw_read, hext__ptw__cp_dside_gstage_lvl2_leaf_ptw_access, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins d_guestpagefault_load_with_access_bit_zero         = binsof(hext__ptw__cp_dside_gstage_lvl2_leaf_ptw_valid) intersect {1} &&
                                                                 binsof(hext__accesstype__cp_instr_2_lvl.loads) &&
                                                                 binsof(hext__ptw__cp_dside_gstage_lvl2_leaf_ptw_read) intersect {1} &&
@@ -2983,7 +3024,7 @@ covergroup hext__cg with function sample(
                                                               hext__ptw__cp_dside_gstage_lvl2_leaf_ptw_access, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins d_guestpagefault_h_load_with_access_bit_zero       = binsof(hext__ptw__cp_dside_gstage_lvl2_leaf_ptw_valid) intersect {1} &&
                                                                 binsof(hext__accesstype__cp_h_instr_2_lvl.h_loads) &&
                                                                 binsof(hext__ptw__cp_dside_gstage_lvl2_leaf_ptw_read) intersect {1} &&
@@ -2998,7 +3039,7 @@ covergroup hext__cg with function sample(
                                                           hext__privilege__cp_dside_eff_privilege_mode, hext__csr__cp_vsstatus_sum, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins d_guestpagefault_in_v_user_mode_with_pte_u_bit_zero= binsof(hext__ptw__cp_dside_gstage_lvl2_leaf_ptw_valid) intersect {1} &&
                                                                binsof(hext__ptw__cp_dside_gstage_lvl2_leaf_ptw_user) intersect {0} &&
                                                                binsof(hext__privilege__cp_dside_eff_privilege_mode.effective_priv_virtual_user);
@@ -3016,7 +3057,7 @@ covergroup hext__cg with function sample(
     hext__traps__cr_data_guestpagefault_lvl2_leaf_pbmt: cross hext__ptw__cp_dside_gstage_lvl2_leaf_ptw_valid, hext__ptw__cp_dside_gstage_lvl2_leaf_pbmt, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins d_guestpagefault_due_to_leaf_pbmt                  = binsof(hext__ptw__cp_dside_gstage_lvl2_leaf_ptw_valid) intersect {1} && 
                                                                 binsof(hext__ptw__cp_dside_gstage_lvl2_leaf_pbmt.pbmt_d_leaf_reserved);
     }
@@ -3024,7 +3065,7 @@ covergroup hext__cg with function sample(
     hext__traps__cr_data_guestpagefault_lvl2_nonleaf_pbmt: cross hext__ptw__cp_dside_gstage_lvl2_nonleaf_ptw_valid, hext__ptw__cp_dside_gstage_lvl2_nonleaf_pbmt, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins d_guestpagefault_due_to_nonleaf_pbmt               = binsof(hext__ptw__cp_dside_gstage_lvl2_nonleaf_ptw_valid) intersect {1} && 
                                                                 binsof(hext__ptw__cp_dside_gstage_lvl2_nonleaf_pbmt.pbmt_d_nonleaf_reserved);
     }
@@ -3032,7 +3073,7 @@ covergroup hext__cg with function sample(
     hext__traps__cr_data_guestpagefault_lvl2_nonleaf_access: cross hext__ptw__cp_dside_gstage_lvl2_nonleaf_ptw_valid, hext__ptw__cp_dside_gstage_lvl2_nonleaf_ptw_access, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins d_guestpagefault_nonleaf_with_access            = binsof(hext__ptw__cp_dside_gstage_lvl2_nonleaf_ptw_valid) intersect {1} && 
                                                                 binsof(hext__ptw__cp_dside_gstage_lvl2_nonleaf_ptw_access) intersect {1};
     }
@@ -3040,7 +3081,7 @@ covergroup hext__cg with function sample(
     hext__traps__cr_data_guestpagefault_lvl2_nonleaf_dirty: cross hext__ptw__cp_dside_gstage_lvl2_nonleaf_ptw_valid, hext__ptw__cp_dside_gstage_lvl2_nonleaf_ptw_dirty, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins d_guestpagefault_nonleaf_with_dirty             = binsof(hext__ptw__cp_dside_gstage_lvl2_nonleaf_ptw_valid) intersect {1} && 
                                                                 binsof(hext__ptw__cp_dside_gstage_lvl2_nonleaf_ptw_dirty) intersect {1};
     }
@@ -3048,7 +3089,7 @@ covergroup hext__cg with function sample(
     hext__traps__cr_data_guestpagefault_lvl2_nonleaf_user: cross hext__ptw__cp_dside_gstage_lvl2_nonleaf_ptw_valid, hext__ptw__cp_dside_gstage_lvl2_nonleaf_ptw_user, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins d_guestpagefault_nonleaf_with_user              = binsof(hext__ptw__cp_dside_gstage_lvl2_nonleaf_ptw_valid) intersect {1} && 
                                                                 binsof(hext__ptw__cp_dside_gstage_lvl2_nonleaf_ptw_user) intersect {1};
     }
@@ -3056,7 +3097,7 @@ covergroup hext__cg with function sample(
     hext__traps__cr_data_guestpagefault_lvl3_read: cross hext__ptw__cp_dside_gstage_lvl3_leaf_ptw_valid, hext__ptw__cp_dside_gstage_lvl3_leaf_ptw_read, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins d_leaf_guestpagefault_with_pte_r_zero = binsof(hext__ptw__cp_dside_gstage_lvl3_leaf_ptw_valid) intersect {1} &&
                                                      binsof(hext__ptw__cp_dside_gstage_lvl3_leaf_ptw_read) intersect {0};
     }
@@ -3065,7 +3106,7 @@ covergroup hext__cg with function sample(
                                                             hext__ptw__cp_dside_gstage_lvl3_leaf_ptw_read, hext__ptw__cp_dside_gstage_lvl3_leaf_ptw_access, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins d_guestpagefault_load_with_access_bit_zero         = binsof(hext__ptw__cp_dside_gstage_lvl3_leaf_ptw_valid) intersect {1} &&
                                                                 binsof(hext__accesstype__cp_instr_2_lvl.loads) &&
                                                                 binsof(hext__ptw__cp_dside_gstage_lvl3_leaf_ptw_read) intersect {1} &&
@@ -3077,7 +3118,7 @@ covergroup hext__cg with function sample(
                                                               hext__ptw__cp_dside_gstage_lvl3_leaf_ptw_access, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins d_guestpagefault_h_load_with_access_bit_zero       = binsof(hext__ptw__cp_dside_gstage_lvl3_leaf_ptw_valid) intersect {1} &&
                                                                 binsof(hext__accesstype__cp_h_instr_2_lvl.h_loads) &&
                                                                 binsof(hext__ptw__cp_dside_gstage_lvl3_leaf_ptw_read) intersect {1} &&
@@ -3092,7 +3133,7 @@ covergroup hext__cg with function sample(
                                                           hext__privilege__cp_dside_eff_privilege_mode, hext__csr__cp_vsstatus_sum, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins d_guestpagefault_in_v_user_mode_with_pte_u_bit_zero= binsof(hext__ptw__cp_dside_gstage_lvl3_leaf_ptw_valid) intersect {1} &&
                                                                binsof(hext__ptw__cp_dside_gstage_lvl3_leaf_ptw_user) intersect {0} &&
                                                                binsof(hext__privilege__cp_dside_eff_privilege_mode.effective_priv_virtual_user);
@@ -3110,7 +3151,7 @@ covergroup hext__cg with function sample(
     hext__traps__cr_data_guestpagefault_lvl3_leaf_pbmt: cross hext__ptw__cp_dside_gstage_lvl3_leaf_ptw_valid, hext__ptw__cp_dside_gstage_lvl3_leaf_pbmt, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins d_guestpagefault_due_to_leaf_pbmt                  = binsof(hext__ptw__cp_dside_gstage_lvl3_leaf_ptw_valid) intersect {1} && 
                                                                 binsof(hext__ptw__cp_dside_gstage_lvl3_leaf_pbmt.pbmt_d_leaf_reserved);
     }
@@ -3118,7 +3159,7 @@ covergroup hext__cg with function sample(
     hext__traps__cr_data_guestpagefault_lvl3_nonleaf_pbmt: cross hext__ptw__cp_dside_gstage_lvl3_nonleaf_ptw_valid, hext__ptw__cp_dside_gstage_lvl3_nonleaf_pbmt, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins d_guestpagefault_due_to_nonleaf_pbmt               = binsof(hext__ptw__cp_dside_gstage_lvl3_nonleaf_ptw_valid) intersect {1} && 
                                                                 binsof(hext__ptw__cp_dside_gstage_lvl3_nonleaf_pbmt.pbmt_d_nonleaf_reserved);
     }
@@ -3126,7 +3167,7 @@ covergroup hext__cg with function sample(
     hext__traps__cr_data_guestpagefault_lvl3_nonleaf_access: cross hext__ptw__cp_dside_gstage_lvl3_nonleaf_ptw_valid, hext__ptw__cp_dside_gstage_lvl3_nonleaf_ptw_access, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins d_guestpagefault_nonleaf_with_access            = binsof(hext__ptw__cp_dside_gstage_lvl3_nonleaf_ptw_valid) intersect {1} && 
                                                                 binsof(hext__ptw__cp_dside_gstage_lvl3_nonleaf_ptw_access) intersect {1};
     }
@@ -3134,7 +3175,7 @@ covergroup hext__cg with function sample(
     hext__traps__cr_data_guestpagefault_lvl3_nonleaf_dirty: cross hext__ptw__cp_dside_gstage_lvl3_nonleaf_ptw_valid, hext__ptw__cp_dside_gstage_lvl3_nonleaf_ptw_dirty, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins d_guestpagefault_nonleaf_with_dirty             = binsof(hext__ptw__cp_dside_gstage_lvl3_nonleaf_ptw_valid) intersect {1} && 
                                                                 binsof(hext__ptw__cp_dside_gstage_lvl3_nonleaf_ptw_dirty) intersect {1};
     }
@@ -3142,7 +3183,7 @@ covergroup hext__cg with function sample(
     hext__traps__cr_data_guestpagefault_lvl3_nonleaf_user: cross hext__ptw__cp_dside_gstage_lvl3_nonleaf_ptw_valid, hext__ptw__cp_dside_gstage_lvl3_nonleaf_ptw_user, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins d_guestpagefault_nonleaf_with_user              = binsof(hext__ptw__cp_dside_gstage_lvl3_nonleaf_ptw_valid) intersect {1} && 
                                                                 binsof(hext__ptw__cp_dside_gstage_lvl3_nonleaf_ptw_user) intersect {1};
     }
@@ -3150,7 +3191,7 @@ covergroup hext__cg with function sample(
     hext__traps__cr_data_guestpagefault_lvl4_read: cross hext__ptw__cp_dside_gstage_lvl4_leaf_ptw_valid, hext__ptw__cp_dside_gstage_lvl4_leaf_ptw_read, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins d_leaf_guestpagefault_with_pte_r_zero = binsof(hext__ptw__cp_dside_gstage_lvl4_leaf_ptw_valid) intersect {1} &&
                                                      binsof(hext__ptw__cp_dside_gstage_lvl4_leaf_ptw_read) intersect {0};
     }
@@ -3159,7 +3200,7 @@ covergroup hext__cg with function sample(
                                                             hext__ptw__cp_dside_gstage_lvl4_leaf_ptw_read, hext__ptw__cp_dside_gstage_lvl4_leaf_ptw_access, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins d_guestpagefault_load_with_access_bit_zero         = binsof(hext__ptw__cp_dside_gstage_lvl4_leaf_ptw_valid) intersect {1} &&
                                                                 binsof(hext__accesstype__cp_instr_2_lvl.loads) &&
                                                                 binsof(hext__ptw__cp_dside_gstage_lvl4_leaf_ptw_read) intersect {1} &&
@@ -3171,7 +3212,7 @@ covergroup hext__cg with function sample(
                                                               hext__ptw__cp_dside_gstage_lvl4_leaf_ptw_access, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins d_guestpagefault_h_load_with_access_bit_zero       = binsof(hext__ptw__cp_dside_gstage_lvl4_leaf_ptw_valid) intersect {1} &&
                                                                 binsof(hext__accesstype__cp_h_instr_2_lvl.h_loads) &&
                                                                 binsof(hext__ptw__cp_dside_gstage_lvl4_leaf_ptw_read) intersect {1} &&
@@ -3186,7 +3227,7 @@ covergroup hext__cg with function sample(
                                                           hext__privilege__cp_dside_eff_privilege_mode, hext__csr__cp_vsstatus_sum, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins d_guestpagefault_in_v_user_mode_with_pte_u_bit_zero= binsof(hext__ptw__cp_dside_gstage_lvl4_leaf_ptw_valid) intersect {1} &&
                                                                binsof(hext__ptw__cp_dside_gstage_lvl4_leaf_ptw_user) intersect {0} &&
                                                                binsof(hext__privilege__cp_dside_eff_privilege_mode.effective_priv_virtual_user);
@@ -3204,7 +3245,7 @@ covergroup hext__cg with function sample(
     hext__traps__cr_data_guestpagefault_lvl4_leaf_pbmt: cross hext__ptw__cp_dside_gstage_lvl4_leaf_ptw_valid, hext__ptw__cp_dside_gstage_lvl4_leaf_pbmt, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins d_guestpagefault_due_to_leaf_pbmt                  = binsof(hext__ptw__cp_dside_gstage_lvl4_leaf_ptw_valid) intersect {1} && 
                                                                 binsof(hext__ptw__cp_dside_gstage_lvl4_leaf_pbmt.pbmt_d_leaf_reserved);
     }
@@ -3212,7 +3253,7 @@ covergroup hext__cg with function sample(
     hext__traps__cr_data_guestpagefault_lvl4_nonleaf_pbmt: cross hext__ptw__cp_dside_gstage_lvl4_nonleaf_ptw_valid, hext__ptw__cp_dside_gstage_lvl4_nonleaf_pbmt, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins d_guestpagefault_due_to_nonleaf_pbmt               = binsof(hext__ptw__cp_dside_gstage_lvl4_nonleaf_ptw_valid) intersect {1} && 
                                                                 binsof(hext__ptw__cp_dside_gstage_lvl4_nonleaf_pbmt.pbmt_d_nonleaf_reserved);
     }
@@ -3220,7 +3261,7 @@ covergroup hext__cg with function sample(
     hext__traps__cr_data_guestpagefault_lvl4_nonleaf_access: cross hext__ptw__cp_dside_gstage_lvl4_nonleaf_ptw_valid, hext__ptw__cp_dside_gstage_lvl4_nonleaf_ptw_access, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins d_guestpagefault_nonleaf_with_access            = binsof(hext__ptw__cp_dside_gstage_lvl4_nonleaf_ptw_valid) intersect {1} && 
                                                                 binsof(hext__ptw__cp_dside_gstage_lvl4_nonleaf_ptw_access) intersect {1};
     }
@@ -3228,7 +3269,7 @@ covergroup hext__cg with function sample(
     hext__traps__cr_data_guestpagefault_lvl4_nonleaf_dirty: cross hext__ptw__cp_dside_gstage_lvl4_nonleaf_ptw_valid, hext__ptw__cp_dside_gstage_lvl4_nonleaf_ptw_dirty, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins d_guestpagefault_nonleaf_with_dirty             = binsof(hext__ptw__cp_dside_gstage_lvl4_nonleaf_ptw_valid) intersect {1} && 
                                                                 binsof(hext__ptw__cp_dside_gstage_lvl4_nonleaf_ptw_dirty) intersect {1};
     }
@@ -3236,7 +3277,7 @@ covergroup hext__cg with function sample(
     hext__traps__cr_data_guestpagefault_lvl4_nonleaf_user: cross hext__ptw__cp_dside_gstage_lvl4_nonleaf_ptw_valid, hext__ptw__cp_dside_gstage_lvl4_nonleaf_ptw_user, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins d_guestpagefault_nonleaf_with_user              = binsof(hext__ptw__cp_dside_gstage_lvl4_nonleaf_ptw_valid) intersect {1} && 
                                                                 binsof(hext__ptw__cp_dside_gstage_lvl4_nonleaf_ptw_user) intersect {1};
     }
@@ -3244,7 +3285,7 @@ covergroup hext__cg with function sample(
     hext__traps__cr_data_guestpagefault_lvl5_read: cross hext__ptw__cp_dside_gstage_lvl5_leaf_ptw_valid, hext__ptw__cp_dside_gstage_lvl5_leaf_ptw_read, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins d_leaf_guestpagefault_with_pte_r_zero = binsof(hext__ptw__cp_dside_gstage_lvl5_leaf_ptw_valid) intersect {1} &&
                                                      binsof(hext__ptw__cp_dside_gstage_lvl5_leaf_ptw_read) intersect {0};
     }
@@ -3254,7 +3295,7 @@ covergroup hext__cg with function sample(
                                                               hext__ptw__cp_dside_gstage_lvl5_leaf_ptw_access, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins d_guestpagefault_h_load_with_access_bit_zero       = binsof(hext__ptw__cp_dside_gstage_lvl5_leaf_ptw_valid) intersect {1} &&
                                                                 binsof(hext__accesstype__cp_h_instr_2_lvl.h_loads) &&
                                                                 binsof(hext__ptw__cp_dside_gstage_lvl5_leaf_ptw_read) intersect {1} &&
@@ -3269,7 +3310,7 @@ covergroup hext__cg with function sample(
                                                           hext__privilege__cp_dside_eff_privilege_mode, hext__csr__cp_vsstatus_sum, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins d_guestpagefault_in_v_user_mode_with_pte_u5_bit_zero= binsof(hext__ptw__cp_dside_gstage_lvl5_leaf_ptw_valid) intersect {1} &&
                                                                binsof(hext__privilege__cp_dside_eff_privilege_mode.effective_priv_virtual_user_due_to_mprv) &&
                                                                binsof(hext__ptw__cp_dside_gstage_lvl5_leaf_ptw_user) intersect {0};
@@ -3281,7 +3322,7 @@ covergroup hext__cg with function sample(
     hext__traps__cr_data_guestpagefault_lvl5_leaf_pbmt: cross hext__ptw__cp_dside_gstage_lvl5_leaf_ptw_valid, hext__ptw__cp_dside_gstage_lvl5_leaf_pbmt, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins d_guestpagefault_due_to_leaf_pbmt                  = binsof(hext__ptw__cp_dside_gstage_lvl5_leaf_ptw_valid) intersect {1} && 
                                                                 binsof(hext__ptw__cp_dside_gstage_lvl5_leaf_pbmt.pbmt_d_leaf_reserved);
     }
@@ -3289,7 +3330,7 @@ covergroup hext__cg with function sample(
     hext__traps__cr_data_guestpagefault_lvl5_nonleaf_pbmt: cross hext__ptw__cp_dside_gstage_lvl5_nonleaf_ptw_valid, hext__ptw__cp_dside_gstage_lvl5_nonleaf_pbmt, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins d_guestpagefault_due_to_nonleaf_pbmt               = binsof(hext__ptw__cp_dside_gstage_lvl5_nonleaf_ptw_valid) intersect {1} && 
                                                                 binsof(hext__ptw__cp_dside_gstage_lvl5_nonleaf_pbmt.pbmt_d_nonleaf_reserved);
     }
@@ -3297,7 +3338,7 @@ covergroup hext__cg with function sample(
     hext__traps__cr_data_guestpagefault_lvl5_nonleaf_access: cross hext__ptw__cp_dside_gstage_lvl5_nonleaf_ptw_valid, hext__ptw__cp_dside_gstage_lvl5_nonleaf_ptw_access, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins d_guestpagefault_nonleaf_with_access            = binsof(hext__ptw__cp_dside_gstage_lvl5_nonleaf_ptw_valid) intersect {1} && 
                                                                 binsof(hext__ptw__cp_dside_gstage_lvl5_nonleaf_ptw_access) intersect {1};
     }
@@ -3305,7 +3346,7 @@ covergroup hext__cg with function sample(
     hext__traps__cr_data_guestpagefault_lvl5_nonleaf_dirty: cross hext__ptw__cp_dside_gstage_lvl5_nonleaf_ptw_valid, hext__ptw__cp_dside_gstage_lvl5_nonleaf_ptw_dirty, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins d_guestpagefault_nonleaf_with_dirty             = binsof(hext__ptw__cp_dside_gstage_lvl5_nonleaf_ptw_valid) intersect {1} && 
                                                                 binsof(hext__ptw__cp_dside_gstage_lvl5_nonleaf_ptw_dirty) intersect {1};
     }
@@ -3313,7 +3354,7 @@ covergroup hext__cg with function sample(
     hext__traps__cr_data_guestpagefault_lvl5_nonleaf_user: cross hext__ptw__cp_dside_gstage_lvl5_nonleaf_ptw_valid, hext__ptw__cp_dside_gstage_lvl5_nonleaf_ptw_user, hext__traps__cp_excp_def
     {
         option.cross_auto_bin_max   = 0;
-        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_LOAD) && !binsof(hext__traps__cp_excp_def.GUEST_PAGE_FLT_STORE);
+        ignore_bins invalid = !binsof(hext__traps__cp_excp_def.guest_page_flt_load) && !binsof(hext__traps__cp_excp_def.guest_page_flt_store);
         bins d_guestpagefault_nonleaf_with_user              = binsof(hext__ptw__cp_dside_gstage_lvl5_nonleaf_ptw_valid) intersect {1} && 
                                                                 binsof(hext__ptw__cp_dside_gstage_lvl5_nonleaf_ptw_user) intersect {1};
     }

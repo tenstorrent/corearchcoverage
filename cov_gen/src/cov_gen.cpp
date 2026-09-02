@@ -116,7 +116,6 @@ void CovGen<URV>::printArchInfoPoints(std::ofstream& CpFile) {
 
     int NumArchCoverPoints = archInfoPointsMap.size();
     CpFile << "\tparameter NUM_ARCH_COVER_POINTS = " << NumArchCoverPoints << ";\n\n";
-
     CpFile << "\t//ArchInfo CoverPoints\n";
     CpFile << "\ttypedef enum {\n";
     int i=0;

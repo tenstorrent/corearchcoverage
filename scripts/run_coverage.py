@@ -159,6 +159,9 @@ def run_simulation(boost_lib_path: str, cxx_path: str, whisper_config: str, test
     )
     ldflags_str = (
         f"-L{boost_dir}/lib "
+        # VCS sets its own RPATH on simv, so the Boost lib dir must be baked in
+        # explicitly or the loader cannot find libboost_program_options.so.
+        f"-Wl,-rpath={boost_dir}/lib "
         f"-L{project_root}/whisper/build-Linux "
         f"-L{project_root}/whisper/virtual_memory "
         f"-L{project_root}/whisper/pci"
@@ -211,9 +214,7 @@ def run_simulation(boost_lib_path: str, cxx_path: str, whisper_config: str, test
                 universal_newlines=True
             )
         print(f"✔ VCS COMPILATION SUCCESSFUL!")
-        run_simulation_with_whisper(whisper_config=whisper_config, test=test)
-        print(f"✔ SIMULATION SUCCESSFUL!")
-        return True
+        return run_simulation_with_whisper(whisper_config=whisper_config, test=test)
 
     except FileNotFoundError:
         print(f"Error: The 'vcs' command was not found.")
@@ -242,6 +243,7 @@ def run_simulation_with_whisper(whisper_config: str, test: str) -> None:
     try:
         subprocess.run(cmd, check=True, universal_newlines=True)
         print(f"✔ SIMULATION WITH WHISPER SUCCESSFUL!")
+        return True
     except subprocess.CalledProcessError as e:
         print(f"✘ SIMULATION WITH WHISPER FAILED WITH EXIT CODE {e.returncode}.")
         return False

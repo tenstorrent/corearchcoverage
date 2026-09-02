@@ -45,6 +45,12 @@ bit         match_fext;
 bit         match_dext;
 bit         match_vext;
 
+bit         counter_csr_access;
+bit[4:0]    counter_csr_index;
+bit         mcounteren_access_bit;
+bit         hcounteren_access_bit;
+bit         scounteren_access_bit;
+
 bit         in_excp_handler;
 bit         in_trigger_handler;
 bit         interrupt_taken;
@@ -280,6 +286,44 @@ const bit[15:0] ZFHEXT_SNAN_NEG      = 16'hfc01;
 const bit[15:0] ZFHEXT_QNAN          = 16'h7e00;
 const bit[15:0] ZFHEXT_QNAN_NEG      = 16'hfe00;
 
+//Bit Positions 
+// mcause exception codes (mcause[63] == 0). Codes 14, 17 and 24-31 are reserved.
+// These double as the bit positions of the matching medeleg/hedeleg bits.
+const int INSTR_ADDR_MISALIGNED          = 0;
+const int INSTR_ACC_FAULT_EXCP           = 1;
+const int INSTR_ILLEGAL_EXCP             = 2;
+const int BREAKPOINT_EXCP                = 3;
+const int LOAD_ADDR_MISALIGNED           = 4;
+const int LOAD_ACC_FAULT_EXCP            = 5;
+const int STORE_ADDR_MISALIGNED          = 6;
+const int STORE_ACC_FAULT_EXCP           = 7;
+const int U_ENV_CALL_EXCP                = 8;
+const int S_ENV_CALL_EXCP                = 9;
+const int VS_ENV_CALL_EXCP               = 10;
+const int M_ENV_CALL_EXCP                = 11;
+const int INSTR_PAGE_FAULT_EXCP          = 12;
+const int LOAD_PAGE_FAULT_EXCP           = 13;
+const int STORE_PAGE_FAULT_EXCP          = 15;
+const int DOUBLE_TRAP_EXCP               = 16;
+const int SOFTWARE_CHECK_EXCP            = 18;
+const int HARDWARE_ERROR_EXCP            = 19;
+const int INSTR_GUEST_PAGE_FAULT_EXCP    = 20;
+const int LOAD_GUEST_PAGE_FAULT_EXCP     = 21;
+const int VIRT_INSTR_EXCP                = 22;
+const int STORE_GUEST_PAGE_FAULT_EXCP    = 23;
+
+const int HSTATUS_VTSR  = 22; 
+const int HSTATUS_VTW   = 21;
+const int HSTATUS_VTVM  = 20;
+const int MSTATUS_TW    = 21;
+
+// Unprivileged counter/timer CSRs: cycle..hpmcounter31 and their high-half aliases.
+localparam bit[11:0] CSR_COUNTER_LO  = 12'hc00;
+localparam bit[11:0] CSR_COUNTER_HI  = 12'hc1f;
+localparam bit[11:0] CSR_COUNTERH_LO = 12'hc80;
+localparam bit[11:0] CSR_COUNTERH_HI = 12'hc9f;
+
+
 parameter PTE_VALID = 0;
 parameter PTE_READ = 1;
 parameter PTE_WRITE= 2;
@@ -392,6 +436,43 @@ function automatic void classify_csr_instruction(input logic [31:0] instr);
             match_csr_w_instr = 1;
         end 
     end 
+
+endfunction
+
+function automatic bit is_counter_csr(input logic [11:0] addr, input bit incl_high_half = 0);
+    return (addr inside {[CSR_COUNTER_LO:CSR_COUNTER_HI]}) ||
+           (incl_high_half && (addr inside {[CSR_COUNTERH_LO:CSR_COUNTERH_HI]}));
+endfunction
+
+// Must be called after classify_csr_instruction(), which sets match_csr_r/w_instr.
+// The counter number is the low 5 bits of the CSR address for both the 0xc00 block
+// and its 0xc80 high-half aliases, so no base-address arithmetic is needed.
+function automatic void classify_counter_csr_access(input logic [31:0] instr,
+                                                    input logic [63:0] mcounteren_value,
+                                                    input logic [63:0] hcounteren_value,
+                                                    input logic [63:0] scounteren_value);
+
+    logic [11:0] addr;
+
+    counter_csr_access    = 1'b0;
+    counter_csr_index     = 5'b0;
+    mcounteren_access_bit = 1'b0;
+    hcounteren_access_bit = 1'b0;
+    scounteren_access_bit = 1'b0;
+
+    addr = instr[31:20];
+
+    if (!(match_csr_r_instr || match_csr_w_instr))
+        return;
+
+    if (!is_counter_csr(addr))
+        return;
+
+    counter_csr_access    = 1'b1;
+    counter_csr_index     = addr[4:0];
+    mcounteren_access_bit = mcounteren_value[counter_csr_index];
+    hcounteren_access_bit = hcounteren_value[counter_csr_index];
+    scounteren_access_bit = scounteren_value[counter_csr_index];
 
 endfunction
 

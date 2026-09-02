@@ -18,6 +18,7 @@ class user_cov_sample;
     fext__cg        fext_cg_var;
     iext__cg        iext_cg_var;
     mext__cg        mext_cg_var;
+    hext__cg        hext_cg_var;
     zfhext__cg      zfhext_cg_var;
     sstc__cg        sstc_cg_var;
     zicond__cg      zicond_cg_var;
@@ -30,6 +31,7 @@ class user_cov_sample;
         iext_cg_var       = new();
         fext_cg_var       = new();
         dext_cg_var       = new();
+        hext_cg_var       = new();
         zfhext_cg_var     = new();
         sstc_cg_var       = new();
         zicond_cg_var     = new();
@@ -89,6 +91,10 @@ class user_cov_sample;
 
         if (table.exists(POINT_INST)) begin
             classify_csr_instruction(Inst);
+            classify_counter_csr_access(Inst,
+                                        csr_cov_local.mcounteren_csr_inst.value,
+                                        csr_cov_local.hcounteren_csr_inst.value,
+                                        csr_cov_local.scounteren_csr_inst.value);
         end
 
         if (instrenum_var inside {
@@ -282,6 +288,7 @@ class user_cov_sample;
         interrupt_taken = 0;
         match_csr_r_instr = 0;
         match_csr_w_instr = 0;
+        counter_csr_access = 0;
         match_instr_load = 0;
         match_instr_store = 0;
         match_aext = 0;
@@ -301,6 +308,7 @@ class user_cov_sample;
         aext_cg_var.sample(csr_cov_local);
         fext_cg_var.sample(csr_cov_local);
         dext_cg_var.sample(csr_cov_local);
+        hext_cg_var.sample(csr_cov_local);
         zfhext_cg_var.sample(csr_cov_local);
         cext_cg_var.sample(csr_cov_local);
         sstc_cg_var.sample(csr_cov_local);
