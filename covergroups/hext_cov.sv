@@ -561,7 +561,9 @@ covergroup hext__cg with function sample(
         ignore_bins mmode_non_delegation =  binsof(hext__deleg__cp_medeleg_illegal.non_delegation_mmode) &&
                                             binsof(hext__deleg__cp_hedeleg_illegal.delegation_vsmode);
     }
+    
 
+    //SATP Coverpoints
     hext__satp__cp_modes: coverpoint prev_satp_csr[63:60]{
         bins legal_satp_bare_mode           = {0};
         bins legal_satp_modes[]             = {[8:10]};
@@ -570,21 +572,32 @@ covergroup hext__cg with function sample(
         bins legal_to_legal_mode            = ([8:9] => 10),([9:10] => 8),(8,10 => 9);
     }
     
-    hext__satp__cp_asid: coverpoint prev_satp_csr[59:44]{
-        bins asid_0x0_to_0xf        = {[16'b0000000000000000:16'b0000000000001111]};
-        bins asid_0x10_to_0xff      = {[16'b0000000000010000:16'b0000000011111111]};
-        bins asid_0x100_to_0xfff    = {[16'b0000000100000000:16'b0000111111111111]};
-        bins asid_0x1000_to_0xffff  = {[16'b0001000000000000:16'b1111111111111111]};
+    hext__satp__cp_asid_special_cases: coverpoint prev_satp_csr[59:44]{
+        bins asid_0x0_to_0xf        = {[16'h0000:16'h000f]};
+        bins asid_0x10_to_0xff      = {[16'h0010:16'h00ff]};
+        bins asid_0x100_to_0xfff    = {[16'h0100:16'h0fff]};
+        bins asid_0x1000_to_0xffff  = {[16'h1000:16'hffff]};
     }
     
-    hext__satp__cp_ppn: coverpoint prev_satp_csr[43:0]{
-        bins ppn_0x0_0xff                     = {[44'b00000000000000000000000000000000000000000000:44'b00000000000000000000000000000000000011111111]};
-        bins ppn_0x100_0xffff                 = {[44'b00000000000000000000000000000000000100000000:44'b00000000000000000000000000001111111111111111]};
-        bins ppn_0x10000_0xffffff             = {[44'b00000000000000000000000000010000000000000000:44'b00000000000000000000111111111111111111111111]};
-        bins ppn_0x1000000_0xffffffff         = {[44'b00000000000000000001000000000000000000000000:44'b00000000000011111111111111111111111111111111]};
-        bins ppn_0x100000000_0xffffffffffff   = {[44'b00000000000100000000000000000000000000000000:44'b11111111111111111111111111111111111111111111]};
+    hext__satp__cp_asid: coverpoint prev_satp_csr[59:44]{
+        bins zero = {0};
+        bins non_zero = {[1:$]};
+    }
+    
+    hext__satp__cp_ppn_special_cases: coverpoint prev_satp_csr[43:0]{
+        bins ppn_0x0_0xff                     = {[44'h000_0000_0000:44'h000_0000_00ff]};
+        bins ppn_0x100_0xffff                 = {[44'h000_0000_0100:44'h000_0000_ffff]};
+        bins ppn_0x10000_0xffffff             = {[44'h000_0001_0000:44'h000_00ff_ffff]};
+        bins ppn_0x1000000_0xffffffff         = {[44'h000_0100_0000:44'h000_ffff_ffff]};
+        bins ppn_0x100000000_0xfffffffffff    = {[44'h001_0000_0000:44'hfff_ffff_ffff]};
     }
 
+    hext__satp__cp_ppn: coverpoint prev_satp_csr[43:0]{
+        bins zero = {0};
+        bins non_zero = {[1:$]};
+    }
+
+    //VSATP Coverpoints
     hext__vsatp__cp_modes: coverpoint prev_vsatp_csr[63:60]{
         bins legal_vsatp_bare_mode          = {0};
         bins legal_vsatp_modes[]            = {[8:10]};
@@ -600,11 +613,16 @@ covergroup hext__cg with function sample(
         bins sv57 = {10};
     }
 
+    hext__vsatp__cp_asid_special_cases: coverpoint prev_vsatp_csr[59:44]{
+        bins asid_0x0_to_0xf        = {[16'h0000:16'h000f]};
+        bins asid_0x10_to_0xff      = {[16'h0010:16'h00ff]};
+        bins asid_0x100_to_0xfff    = {[16'h0100:16'h0fff]};
+        bins asid_0x1000_to_0xffff  = {[16'h1000:16'hffff]};
+    }
+    
     hext__vsatp__cp_asid: coverpoint prev_vsatp_csr[59:44]{
-        bins asid_0x0_to_0xf        = {[16'b0000000000000000:16'b0000000000001111]};
-        bins asid_0x10_to_0xff      = {[16'b0000000000010000:16'b0000000011111111]};
-        bins asid_0x100_to_0xfff    = {[16'b0000000100000000:16'b0000111111111111]};
-        bins asid_0x1000_to_0xffff  = {[16'b0001000000000000:16'b1111111111111111]};
+        bins zero = {0};
+        bins non_zero = {[1:$]};
     }
 
     hext__vsatp__cp_asid_discoverability_asidlen_16: coverpoint i_csr_cov_sample.vsatp_csr_inst.asid iff (match_csr_w_instr && Inst[31:20] == 12'h280){
@@ -626,18 +644,24 @@ covergroup hext__cg with function sample(
         bins asid_bit_15 = {1<<15};
     }
 
+    hext__vsatp__cp_ppn_special_cases: coverpoint prev_vsatp_csr[43:0]{
+        bins ppn_0x0_0xff                     = {[44'h000_0000_0000:44'h000_0000_00ff]};
+        bins ppn_0x100_0xffff                 = {[44'h000_0000_0100:44'h000_0000_ffff]};
+        bins ppn_0x10000_0xffffff             = {[44'h000_0001_0000:44'h000_00ff_ffff]};
+        bins ppn_0x1000000_0xffffffff         = {[44'h000_0100_0000:44'h000_ffff_ffff]};
+        bins ppn_0x100000000_0xfffffffffff    = {[44'h001_0000_0000:44'hfff_ffff_ffff]};
+    }
+    
     hext__vsatp__cp_ppn: coverpoint prev_vsatp_csr[43:0]{
-        bins ppn_0x0_0xff                     = {[44'b00000000000000000000000000000000000000000000:44'b00000000000000000000000000000000000011111111]};
-        bins ppn_0x100_0xffff                 = {[44'b00000000000000000000000000000000000100000000:44'b00000000000000000000000000001111111111111111]};
-        bins ppn_0x10000_0xffffff             = {[44'b00000000000000000000000000010000000000000000:44'b00000000000000000000111111111111111111111111]};
-        bins ppn_0x1000000_0xffffffff         = {[44'b00000000000000000001000000000000000000000000:44'b00000000000011111111111111111111111111111111]};
-        bins ppn_0x100000000_0xffffffffffff   = {[44'b00000000000100000000000000000000000000000000:44'b11111111111111111111111111111111111111111111]};
+        bins zero = {0};
+        bins non_zero = {[1:$]};
     }
 
     hext__vsatp__cp_warl_illegal_mode_write: coverpoint rs1_val[63:60] iff (match_csr_w_instr && Inst[31:20] == 12'h280) {
         bins illegal_mode_values = {[1:7], [11:15]};
     }
 
+    //HGATP Coverpoints
     hext__hgatp__cp_modes: coverpoint prev_hgatp_csr[63:60]{
         bins legal_hgatp_bare_mode          = {0};
         bins legal_hgatp_modes[]            = {[8:10]};
@@ -653,11 +677,16 @@ covergroup hext__cg with function sample(
         bins sv57 = {10};
     }
     
-    hext__hgatp__cp_vmid: coverpoint prev_hgatp_csr[57:44]{
+    hext__hgatp__cp_vmid_special_cases : coverpoint prev_hgatp_csr[57:44]{
         bins vmid_0x0_to_0xf        = {[14'b00000000000000:14'b00000000001111]};
         bins vmid_0x10_to_0xff      = {[14'b00000000010000:14'b00000011111111]};
         bins vmid_0x100_to_0xfff    = {[14'b00000100000000:14'b00111111111111]};
         bins vmid_0x1000_to_0x3fff  = {[14'b01000000000000:14'b11111111111111]};
+    }
+    
+    hext__hgatp__cp_vmid : coverpoint prev_hgatp_csr[57:44]{
+        bins zero = {0};
+        bins non_zero = {[1:$]};
     }
 
     hext__hgatp__cp_vmid_discoverability_vmidlen_14: coverpoint i_csr_cov_sample.hgatp_csr_inst.vmid iff (match_csr_w_instr && Inst[31:20] == 12'h680){
@@ -681,12 +710,17 @@ covergroup hext__cg with function sample(
         bins illegal_mode_values = {[1:7], [11:15]};
     }
 
+    hext__hgatp__cp_ppn_special_cases: coverpoint prev_hgatp_csr[43:0]{
+        bins ppn_0x0_0xff                     = {[44'h000_0000_0000:44'h000_0000_00ff]};
+        bins ppn_0x100_0xffff                 = {[44'h000_0000_0100:44'h000_0000_ffff]};
+        bins ppn_0x10000_0xffffff             = {[44'h000_0001_0000:44'h000_00ff_ffff]};
+        bins ppn_0x1000000_0xffffffff         = {[44'h000_0100_0000:44'h000_ffff_ffff]};
+        bins ppn_0x100000000_0xfffffffffff    = {[44'h001_0000_0000:44'hfff_ffff_ffff]};
+    }
+    
     hext__hgatp__cp_ppn: coverpoint prev_hgatp_csr[43:0]{
-        bins ppn_0x0_0xff                     = {[44'b00000000000000000000000000000000000000000000:44'b00000000000000000000000000000000000011111111]};
-        bins ppn_0x100_0xffff                 = {[44'b00000000000000000000000000000000000100000000:44'b00000000000000000000000000001111111111111111]};
-        bins ppn_0x10000_0xffffff             = {[44'b00000000000000000000000000010000000000000000:44'b00000000000000000000111111111111111111111111]};
-        bins ppn_0x1000000_0xffffffff         = {[44'b00000000000000000001000000000000000000000000:44'b00000000000011111111111111111111111111111111]};
-        bins ppn_0x100000000_0xffffffffffff   = {[44'b00000000000100000000000000000000000000000000:44'b11111111111111111111111111111111111111111111]};
+        bins zero = {0};
+        bins non_zero = {[1:$]};
     }
    
     hext__accesstype__cp_load: coverpoint instrenum_var {
